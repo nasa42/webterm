@@ -22,6 +22,13 @@ pub async fn proxy_handler(
     mut req: Request,
 ) -> Result<Response, StatusCode> {
     let path = req.uri().path();
+
+    let hmr_header = req.headers().get("sec-websocket-protocol");
+    if hmr_header.is_some() && hmr_header.unwrap() == "vite-hmr" {
+        println!("Rejecting HMR request");
+        return Err(StatusCode::BAD_REQUEST);
+    }
+
     let path_query = req
         .uri()
         .path_and_query()
