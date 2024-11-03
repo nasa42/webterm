@@ -8,11 +8,9 @@ use axum::{
 
 #[tokio::main]
 async fn main() {
-    let mut app = Router::new()
+    let app = Router::new()
         .route("/", get(controllers::index::handler))
         .route("/up", get(controllers::up::handler));
-
-    let app = app;
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
