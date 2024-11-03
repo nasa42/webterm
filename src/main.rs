@@ -8,7 +8,9 @@ use axum::{
 
 #[tokio::main]
 async fn main() {
-    let mut app = Router::new().route("/up", get(controllers::up::handler));
+    let mut app = Router::new()
+        .route("/", get(controllers::index::handler))
+        .route("/up", get(controllers::up::handler));
 
     let app = app;
 
