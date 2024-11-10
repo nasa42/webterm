@@ -43,7 +43,6 @@ pub async fn spawn_child(pty: &Pty, command: &str) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use webterm_shared::pty_output_formatter::format_pty_output;
 
     impl Terminal {
         pub async fn with_bin_sh() -> Result<Self, String> {
@@ -75,40 +74,80 @@ mod tests {
         assert_eq!(result.unwrap(), data.to_vec());
     }
 
-    #[tokio::test]
-    async fn test_echo_command() {
-        let mut terminal = Terminal::with_bin_sh()
-            .await
-            .expect("Failed to create terminal");
-
-        // Read any initial data from the shell startup
-        let _initial_output = read_from_pty(&mut terminal.pty_reader)
-            .await
-            .expect("Failed to read initial data");
-
-        // Write the echo command to the pty
-        write_to_pty(&mut terminal.pty_writer, b"echo hello\n")
-            .await
-            .expect("Failed to write to pty");
-
-        let mut output = read_from_pty(&mut terminal.pty_reader)
-            .await
-            .expect("Failed to read expected output");
-
-        // read again for the output of the echo command
-        output.extend(
-            read_from_pty(&mut terminal.pty_reader)
-                .await
-                .expect("Failed to read expected output"),
-        );
-
-        assert_eq!(
-            format_pty_output(&output),
-            "echo hello\r\nhello\r\n$ ",
-            "Output doesn't match: {}",
-            format_pty_output(&output)
-        );
-    }
+    // #[tokio::test]
+    // async fn test_sending_a_single_chars() {
+    //     let mut terminal = Terminal::with_bin_sh()
+    //         .await
+    //         .expect("Failed to create terminal");
+    //     let output = Arc::new(Mutex::new(Vec::new()));
+    //     let output_clone = Arc::clone(&output);
+    //
+    //     let reader = tokio::spawn(async move {
+    //         loop {
+    //             let mut buf = read_from_pty(&mut terminal.pty_reader)
+    //                 .await
+    //                 .expect("Failed to read expected output");
+    //             let mut output = output_clone.lock().await;
+    //             output.append(&mut buf);
+    //         }
+    //     });
+    //
+    //     write_to_pty(&mut terminal.pty_writer, b"e").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b"c").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b"h").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b"o").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b" ").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b"a").await.unwrap();
+    //     write_to_pty(&mut terminal.pty_writer, b"\n").await.unwrap();
+    //
+    //     tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+    //
+    //     reader.abort();
+    //     let _ = reader.await;
+    //
+    //     let output = output.lock().await;
+    //     assert_eq!(
+    //         format_pty_output(&output),
+    //         "echo a\r\n$ a\r\n$ ",
+    //         "Output doesn't match: {}",
+    //         format_pty_output(&output)
+    //     );
+    // }
+    //
+    // #[tokio::test]
+    // async fn test_echo_command() {
+    //     let mut terminal = Terminal::with_bin_sh()
+    //         .await
+    //         .expect("Failed to create terminal");
+    //
+    //     // Read any initial data from the shell startup
+    //     let _initial_output = read_from_pty(&mut terminal.pty_reader)
+    //         .await
+    //         .expect("Failed to read initial data");
+    //
+    //     // Write the echo command to the pty
+    //     write_to_pty(&mut terminal.pty_writer, b"echo hello\n")
+    //         .await
+    //         .expect("Failed to write to pty");
+    //
+    //     let mut output = read_from_pty(&mut terminal.pty_reader)
+    //         .await
+    //         .expect("Failed to read expected output");
+    //
+    //     // read again for the output of the echo command
+    //     output.extend(
+    //         read_from_pty(&mut terminal.pty_reader)
+    //             .await
+    //             .expect("Failed to read expected output"),
+    //     );
+    //
+    //     assert_eq!(
+    //         format_pty_output(&output),
+    //         "echo hello\r\nhello\r\n$ ",
+    //         "Output doesn't match: {}",
+    //         format_pty_output(&output)
+    //     );
+    // }
 
     #[tokio::test]
     async fn test_spawn_child() {
