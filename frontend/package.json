@@ -1,5 +1,5 @@
 {
-  "name": "web-terminal-frontend",
+  "name": "webterm-frontend",
   "private": true,
   "type": "module",
   "version": "0.0.1",
@@ -12,11 +12,18 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@popperjs/core": "^2.11.8",
+    "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "astro": "^4.16.8",
+    "bootstrap": "^5.3.3",
+    "flatbuffers": "^24.3.25",
+    "lodash": "^4.17.21",
     "typescript": "^5.6.3"
   },
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "@types/lodash": "^4.17.13",
+    "prettier": "^3.3.3",
+    "sass": "^1.80.6"
   }
 }

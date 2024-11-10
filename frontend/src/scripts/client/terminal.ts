@@ -1,14 +1,12 @@
 import "@xterm/xterm/css/xterm.css";
-import { Terminal } from "@xterm/xterm";
+import { Session } from "./Session.ts";
 
 (() => {
-  const $element = document.getElementById("terminal");
+  const $element = document.getElementById("wt-terminal");
 
   if (!$element) {
     return;
   }
 
-  const term = new Terminal();
-  term.open($element);
-  term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
+  new Session("ws://localhost:3000/ws", $element);
 })();

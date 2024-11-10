@@ -1,0 +1,67 @@
+enum FrontendToRelayMessageType : uint8 {
+  ToAgent,
+  Error,
+}
+
+enum FrontendToAgentMessageType : uint8 {
+  Data,
+  Error,
+  Resize,
+}
+
+enum RelayToFrontendMessageType : uint8 {
+  FromAgent,
+  Error,
+}
+
+enum RelayToAgentMessageType : uint8 {
+  FromFrontend,
+  Error,
+}
+
+enum AgentToFrontendMessageType : uint8 {
+  Data,
+  Error,
+}
+
+enum AgentToRelayMessageType : uint8 {
+  ToFrontend,
+  Error,
+}
+
+table FrontendToRelayMessage {
+  type: FrontendToRelayMessageType;
+  data: [uint8];
+}
+
+table FrontendToAgentMessage {
+  type: FrontendToAgentMessageType;
+  data: [uint8];
+}
+
+table RelayToFrontendMessage {
+  type: RelayToFrontendMessageType;
+  data: [uint8];
+}
+
+table RelayToAgentMessage {
+  type: RelayToAgentMessageType;
+  data: [uint8];
+}
+
+table AgentToFrontendMessage {
+  type: AgentToFrontendMessageType;
+  data: [uint8];
+}
+
+table AgentToRelayMessage {
+  type: AgentToRelayMessageType;
+  data: [uint8];
+}
+
+table ResizeData {
+  cols: uint16;
+  rows: uint16;
+}
+
+root_type FrontendToRelayMessage;
