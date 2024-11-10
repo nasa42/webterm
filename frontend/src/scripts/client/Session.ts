@@ -15,7 +15,7 @@ export class Session {
     this.fitAddon = new FitAddon();
     this.initTerminal(element);
     this.relayConnection = new RelayConnection(this.socket, this.terminal);
-    new TerminalConnection(this.relayConnection, this.terminal, this.fitAddon);
+    new TerminalConnection(this.relayConnection, this.terminal);
   }
 
   private initTerminal(element: HTMLElement) {
