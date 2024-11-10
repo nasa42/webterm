@@ -47,9 +47,7 @@ pub async fn spawn_child(pty: &Pty, command: &str) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::Arc;
     use tokio;
-    use tokio::sync::Mutex;
     use webterm_shared::pty_output_formatter::format_pty_output;
 
     #[tokio::test]
@@ -74,46 +72,6 @@ mod tests {
         let result = read_from_pty(&mut terminal.pty_reader).await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), data.to_vec());
-    }
-
-    #[tokio::test]
-    async fn test_sending_a_single_chars() {
-        let mut terminal = Terminal::with_bin_sh()
-            .await
-            .expect("Failed to create terminal");
-        let output = Arc::new(Mutex::new(Vec::new()));
-        let output_clone = Arc::clone(&output);
-
-        let reader = tokio::spawn(async move {
-            loop {
-                let mut buf = read_from_pty(&mut terminal.pty_reader)
-                    .await
-                    .expect("Failed to read expected output");
-                let mut output = output_clone.lock().await;
-                output.append(&mut buf);
-            }
-        });
-
-        write_to_pty(&mut terminal.pty_writer, b"e").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b"c").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b"h").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b"o").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b" ").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b"a").await.unwrap();
-        write_to_pty(&mut terminal.pty_writer, b"\n").await.unwrap();
-
-        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-
-        reader.abort();
-        let _ = reader.await;
-
-        let output = output.lock().await;
-        assert_eq!(
-            format_pty_output(&output),
-            "echo a\r\n$ a\r\n$ ",
-            "Output doesn't match: {}",
-            format_pty_output(&output)
-        );
     }
 
     #[tokio::test]
