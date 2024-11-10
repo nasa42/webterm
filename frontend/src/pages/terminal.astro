@@ -1,5 +1,9 @@
 ---
+import Layout from "../layouts/Layout.astro";
 ---
-
-<div id="terminal"></div>
+<Layout>
+  <div class="container-fluid p-0 m-0">
+    <div id="wt-terminal" class="w-100 h-100"></div>
+  </div>
+</Layout>
 <script src="../scripts/client/terminal.ts"/>
