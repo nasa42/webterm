@@ -8,7 +8,6 @@ export class Session {
   private readonly terminal: Terminal;
   private readonly fitAddon: FitAddon;
   private readonly relayConnection: RelayConnection;
-  private readonly terminalConnection: TerminalConnection;
 
   constructor(url: string, element: HTMLElement) {
     this.socket = new WebSocket(url);
@@ -16,7 +15,7 @@ export class Session {
     this.fitAddon = new FitAddon();
     this.initTerminal(element);
     this.relayConnection = new RelayConnection(this.socket, this.terminal);
-    this.terminalConnection = new TerminalConnection(this.relayConnection, this.terminal, this.fitAddon);
+    new TerminalConnection(this.relayConnection, this.terminal, this.fitAddon);
   }
 
   private initTerminal(element: HTMLElement) {
