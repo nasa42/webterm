@@ -12,10 +12,18 @@ permissions:
 jobs:
   eslint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      - run: npm ci
       - uses: reviewdog/action-eslint@v1
         with:
-          workdir: ./frontend
           reporter: github-pr-check
           fail_on_error: true
