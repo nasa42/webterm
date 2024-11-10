@@ -6,6 +6,9 @@ on:
   pull_request:
 jobs:
   astro-check:
+    defaults:
+      run:
+        working-directory: ./frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
