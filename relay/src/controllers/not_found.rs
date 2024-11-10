@@ -1,7 +1,6 @@
 use askama_axum::Template;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use tracing::Instrument;
 
 #[derive(Template)]
 #[template(path = "404.html")]

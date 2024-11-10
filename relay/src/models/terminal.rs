@@ -1,5 +1,5 @@
 use pty_process::{Command, OwnedReadPty, OwnedWritePty, Pty};
-use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 pub type PtyWriter = OwnedWritePty;
 pub type PtyReader = OwnedReadPty;
@@ -10,10 +10,6 @@ pub struct Terminal {
 }
 
 impl Terminal {
-    pub async fn with_bin_sh() -> Result<Self, String> {
-        Self::new("/bin/sh").await
-    }
-
     pub async fn new(command: &str) -> Result<Self, String> {
         let pty = Pty::new().map_err(|e| e.to_string())?;
         spawn_child(&pty, command).await?;
@@ -47,8 +43,13 @@ pub async fn spawn_child(pty: &Pty, command: &str) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tokio;
     use webterm_shared::pty_output_formatter::format_pty_output;
+
+    impl Terminal {
+        pub async fn with_bin_sh() -> Result<Self, String> {
+            Self::new("/bin/sh").await
+        }
+    }
 
     #[tokio::test]
     async fn test_terminal_new() {

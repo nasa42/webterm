@@ -89,6 +89,13 @@ async fn read_from_frontend(
                         )
                         .await;
                     }
+                    FrontendToRelayMessageType::Error => {
+                        let _ = send_error(
+                            &frontend_writer,
+                            std::str::from_utf8(data).unwrap_or_default(),
+                        )
+                        .await;
+                    }
                     _ => {
                         // ignore for now
                     }
@@ -102,7 +109,8 @@ async fn write_to_frontend(frontend_writer: FrontendWriterArcMutex, mut pty_read
     loop {
         println!("\x1b[32mWRITER LOOP\x1b[0m");
 
-        let mut payload: Option<(AgentToFrontendMessageType, Vec<u8>)> = None;
+        let payload: Option<(AgentToFrontendMessageType, Vec<u8>)>;
+        let mut should_break = false;
 
         let data = read_from_pty(&mut pty_reader).await;
         match data {
@@ -112,7 +120,7 @@ async fn write_to_frontend(frontend_writer: FrontendWriterArcMutex, mut pty_read
             Err(e) => {
                 payload = Some((AgentToFrontendMessageType::Error, e.as_bytes().to_vec()));
                 send_error(&frontend_writer, &e).await;
-                break;
+                should_break = true;
             }
         }
 
@@ -126,6 +134,10 @@ async fn write_to_frontend(frontend_writer: FrontendWriterArcMutex, mut pty_read
                 .await
                 .send(WSMessage::Binary(message))
                 .await;
+        }
+
+        if should_break {
+            break;
         }
     }
 }

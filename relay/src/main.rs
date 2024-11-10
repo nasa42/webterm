@@ -2,14 +2,12 @@ mod config;
 mod controllers;
 mod models;
 
-use axum::response::IntoResponse;
 use axum::{
     routing::{any, get},
-    Router, ServiceExt,
+    Router,
 };
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::{info, Level};
-use tracing_subscriber;
 
 #[tokio::main]
 async fn main() {

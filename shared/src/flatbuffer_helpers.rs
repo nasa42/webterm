@@ -23,10 +23,7 @@ pub fn create_relay_to_frontend_message(
     builder.finished_data().to_vec()
 }
 
-pub fn create_agent_to_frontend_message(
-    type_: AgentToFrontendMessageType,
-    data: &Vec<u8>,
-) -> Vec<u8> {
+pub fn create_agent_to_frontend_message(type_: AgentToFrontendMessageType, data: &[u8]) -> Vec<u8> {
     let mut builder = FlatBufferBuilder::new();
 
     let args = AgentToFrontendMessageArgs {

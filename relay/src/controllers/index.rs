@@ -9,8 +9,8 @@ struct IndexTemplate<'a> {
 }
 
 pub async fn handler() -> impl IntoResponse {
-    return IndexTemplate {
+    IndexTemplate {
         browser_title: "Web Terminal Relay",
         project_url: "https://github.com/cloudray-io/webterm",
-    };
+    }
 }
