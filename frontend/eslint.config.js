@@ -1,9 +1,12 @@
 import eslintPluginAstro from "eslint-plugin-astro";
+import tsEsLint from "typescript-eslint";
 
 export default [
-  // add more generic rule sets here, such as:
-  // js.configs.recommended,
-  ...eslintPluginAstro.configs.recommended,
+  {
+    ignores: ["src/generated/flatbuffers_schema/"],
+  },
+  ...tsEsLint.configs.recommended,
+  ...eslintPluginAstro.configs["flat/recommended"],
   {
     rules: {
       // override/add rules settings here, such as:
