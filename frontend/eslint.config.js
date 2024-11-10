@@ -3,7 +3,7 @@ import tsEsLint from "typescript-eslint";
 
 export default [
   {
-    ignores: ["src/generated/flatbuffers_schema/"],
+    ignores: ["src/env.d.ts", "src/generated/flatbuffers_schema/"],
   },
   ...tsEsLint.configs.recommended,
   ...eslintPluginAstro.configs["flat/recommended"],
