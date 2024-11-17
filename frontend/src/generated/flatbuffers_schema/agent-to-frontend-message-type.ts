@@ -4,5 +4,10 @@
 
 export enum AgentToFrontendMessageType {
   Data = 0,
-  Error = 1
+  Resize = 1,
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+  ErrorPtyRead = 102,
+  ErrorPtyWrite = 104,
+  ErrorPtyResizeFailed = 105
 }

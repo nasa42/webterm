@@ -1,37 +1,40 @@
 mod config;
 mod controllers;
 mod models;
+mod router;
+mod services;
 
-use axum::{
-    routing::{any, get},
-    Router,
-};
-use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use crate::models::relay_error::RelayError;
+use crate::router::app_router;
+use clap::Parser;
 use tracing::{info, Level};
+use tracing_subscriber::EnvFilter;
+
+#[derive(Parser, Debug)]
+#[command(version,  long_about = None)]
+#[command(about = "Learn more at https://github.com/nasa42/webterm")]
+struct Args {
+    #[arg(long, env = "WT_RELAY_BIND_HOST", default_value = "localhost")]
+    pub bind_host: String,
+
+    #[arg(long, env = "WT_RELAY_BIND_PORT", default_value = "3000")]
+    pub bind_port: String,
+}
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), RelayError> {
+    let args = Args::parse();
+
     tracing_subscriber::fmt()
         .with_max_level(Level::DEBUG)
         .with_target(true)
-        .with_thread_names(true)
         .init();
 
-    let app = Router::new()
-        .route("/", get(controllers::index::handler))
-        .route("/up", get(controllers::up::handler))
-        .route("/ws", any(controllers::ws::handler))
-        .fallback(get(controllers::not_found::handler))
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new())
-                .on_request(DefaultOnRequest::new())
-                .on_response(DefaultOnResponse::new()),
-        );
-
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = tokio::net::TcpListener::bind(format!("{}:{}", args.bind_host, args.bind_port))
         .await
         .expect("failed to bind to port 3000");
-    info!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    info!("listening on {}", listener.local_addr()?);
+    axum::serve(listener, app_router()).await?;
+
+    Ok(())
 }

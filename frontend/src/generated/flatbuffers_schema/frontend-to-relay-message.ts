@@ -74,14 +74,6 @@ static endFrontendToRelayMessage(builder:flatbuffers.Builder):flatbuffers.Offset
   return offset;
 }
 
-static finishFrontendToRelayMessageBuffer(builder:flatbuffers.Builder, offset:flatbuffers.Offset) {
-  builder.finish(offset);
-}
-
-static finishSizePrefixedFrontendToRelayMessageBuffer(builder:flatbuffers.Builder, offset:flatbuffers.Offset) {
-  builder.finish(offset, undefined, true);
-}
-
 static createFrontendToRelayMessage(builder:flatbuffers.Builder, type:FrontendToRelayMessageType, dataOffset:flatbuffers.Offset):flatbuffers.Offset {
   FrontendToRelayMessage.startFrontendToRelayMessage(builder);
   FrontendToRelayMessage.addType(builder, type);

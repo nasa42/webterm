@@ -1,0 +1,16 @@
+enum AgentToFrontendMessageType : uint8 {
+  Data = 0,
+  Resize = 1,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+  ErrorPtyRead = 102,
+  ErrorPtyWrite = 104,
+  ErrorPtyResizeFailed = 105,
+}
+
+table AgentToFrontendMessage {
+  type: AgentToFrontendMessageType;
+  data: [uint8];
+}

@@ -1,0 +1,14 @@
+enum FrontendToAgentMessageType : uint8 {
+  Data = 0,
+  Resize = 1,
+  SpawnTerminal = 2,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table FrontendToAgentMessage {
+  type: FrontendToAgentMessageType;
+  data: [uint8];
+}

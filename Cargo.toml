@@ -1,8 +1,7 @@
 [workspace]
-
-members = [
-  "relay",
-  "shared",
-]
-
 resolver = "2"
+members = ["agent", "relay", "shared"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"

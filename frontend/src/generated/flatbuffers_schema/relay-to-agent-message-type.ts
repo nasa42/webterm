@@ -4,5 +4,6 @@
 
 export enum RelayToAgentMessageType {
   FromFrontend = 0,
-  Error = 1
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101
 }

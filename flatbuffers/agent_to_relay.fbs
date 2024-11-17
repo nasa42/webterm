@@ -1,0 +1,14 @@
+enum AgentToRelayMessageType : uint8 {
+  ToFrontend = 0,
+  CloseFrontend = 1,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table AgentToRelayMessage {
+  type: AgentToRelayMessageType;
+  data: [uint8];
+  frontend_id: uint64;
+}

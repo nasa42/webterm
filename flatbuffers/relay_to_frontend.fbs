@@ -1,0 +1,12 @@
+enum RelayToFrontendMessageType : uint8 {
+  FromAgent = 0,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table RelayToFrontendMessage {
+  type: RelayToFrontendMessageType;
+  data: [uint8];
+}

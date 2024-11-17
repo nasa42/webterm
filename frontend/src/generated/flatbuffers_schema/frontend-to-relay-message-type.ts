@@ -4,5 +4,6 @@
 
 export enum FrontendToRelayMessageType {
   ToAgent = 0,
-  Error = 1
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101
 }
