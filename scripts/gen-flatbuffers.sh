@@ -1,7 +1,11 @@
 set -e
 
-flatc --rust -o ./shared/src/generated/ ./flatbuffers/schema.fbs
-mv ./shared/src/generated/schema_generated.rs ./shared/src/generated/flatbuffers_schema.rs
+SCHEMA_PATH="./flatbuffers/*.fbs"
+SHARED_PATH="./shared/src/generated/flatbuffers_schema/"
+FRONTEND_PATH="./frontend/src/generated/flatbuffers_schema/"
 
-rm -rf ./frontend/src/generated/flatbuffers_schema
-flatc --ts -o ./frontend/src/generated/flatbuffers_schema ./flatbuffers/schema.fbs
+rm -rf $SHARED_PATH
+flatc --rust --rust-module-root-file -o $SHARED_PATH $SCHEMA_PATH
+
+rm -rf $FRONTEND_PATH
+flatc --ts -o $FRONTEND_PATH $SCHEMA_PATH

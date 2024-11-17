@@ -12,7 +12,7 @@ struct HTMLTemplate<'a> {
 pub async fn handler() -> impl IntoResponse {
     let template = HTMLTemplate {
         browser_title: "Web Terminal Relay",
-        project_url: "https://github.com/cloudray-io/webterm",
+        project_url: "https://github.com/nasa42/webterm",
     };
 
     (StatusCode::NOT_FOUND, template)

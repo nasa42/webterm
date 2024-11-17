@@ -4,6 +4,8 @@
 
 export enum FrontendToAgentMessageType {
   Data = 0,
-  Error = 1,
-  Resize = 2
+  Resize = 1,
+  SpawnTerminal = 2,
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101
 }

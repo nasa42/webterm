@@ -21,14 +21,15 @@ export class RelayConnection {
   }
 
   private registerEventListeners() {
-    this.socket.addEventListener("open", () => this.onOpen);
+    this.socket.addEventListener("open", () => this.onOpen());
     this.socket.addEventListener("message", (event) => this.onMessage(event));
-    this.socket.addEventListener("close", () => this.onClose);
+    this.socket.addEventListener("close", () => this.onClose());
     this.socket.addEventListener("error", (error) => this.onError(error));
   }
 
   private onOpen() {
-    this.terminal.writeln("Connected to WebSocket connection...");
+    console.log("Connected to WebSocket connection...");
+    this.spawnTerminalOnAgent();
   }
 
   private onMessage(event: MessageEvent<ArrayBuffer | string>) {
@@ -79,5 +80,9 @@ export class RelayConnection {
   dispatchResize(cols: number, rows: number) {
     const resizeMessage = createResizeData(cols, rows);
     this.dispatchToAgent(FrontendToAgentMessageType.Resize, resizeMessage);
+  }
+
+  spawnTerminalOnAgent() {
+    this.dispatchToAgent(FrontendToAgentMessageType.SpawnTerminal, "");
   }
 }

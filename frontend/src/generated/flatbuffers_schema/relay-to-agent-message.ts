@@ -45,8 +45,13 @@ dataArray():Uint8Array|null {
   return offset ? new Uint8Array(this.bb!.bytes().buffer, this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset), this.bb!.__vector_len(this.bb_pos + offset)) : null;
 }
 
+frontendId():bigint {
+  const offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
+}
+
 static startRelayToAgentMessage(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 }
 
 static addType(builder:flatbuffers.Builder, type:RelayToAgentMessageType) {
@@ -69,15 +74,20 @@ static startDataVector(builder:flatbuffers.Builder, numElems:number) {
   builder.startVector(1, numElems, 1);
 }
 
+static addFrontendId(builder:flatbuffers.Builder, frontendId:bigint) {
+  builder.addFieldInt64(2, frontendId, BigInt('0'));
+}
+
 static endRelayToAgentMessage(builder:flatbuffers.Builder):flatbuffers.Offset {
   const offset = builder.endObject();
   return offset;
 }
 
-static createRelayToAgentMessage(builder:flatbuffers.Builder, type:RelayToAgentMessageType, dataOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createRelayToAgentMessage(builder:flatbuffers.Builder, type:RelayToAgentMessageType, dataOffset:flatbuffers.Offset, frontendId:bigint):flatbuffers.Offset {
   RelayToAgentMessage.startRelayToAgentMessage(builder);
   RelayToAgentMessage.addType(builder, type);
   RelayToAgentMessage.addData(builder, dataOffset);
+  RelayToAgentMessage.addFrontendId(builder, frontendId);
   return RelayToAgentMessage.endRelayToAgentMessage(builder);
 }
 }
