@@ -8,7 +8,7 @@ struct IndexTemplate<'a> {
     project_url: &'a str,
 }
 
-pub async fn handler() -> impl IntoResponse {
+pub async fn index_handler() -> impl IntoResponse {
     IndexTemplate {
         browser_title: "Web Terminal Relay",
         project_url: "https://github.com/nasa42/webterm",

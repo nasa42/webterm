@@ -9,7 +9,7 @@ pub struct Relay {
 }
 
 impl Relay {
-    pub fn new(config: &Config, host: &str) -> Result<Self, AgentError> {
+    pub fn new(host: &str) -> Result<Self, AgentError> {
         info!("Creating relay with host: {}", host);
 
         let mut host_with_scheme = host.to_string();
@@ -48,11 +48,11 @@ impl Relay {
 
     pub fn websocket_url(&self) -> String {
         let scheme = if self.use_http { "ws" } else { "wss" };
-        format!("{}://{}/ws/agent", scheme, self.host)
+        format!("{}://{}/talk/v1/agent", scheme, self.host)
     }
 
-    pub fn auth_url(&self) -> String {
+    pub fn handshake_url(&self) -> String {
         let scheme = if self.use_http { "http" } else { "https" };
-        format!("{}://{}/auth/agent", scheme, self.host)
+        format!("{}://{}/handshake/v1/agent", scheme, self.host)
     }
 }

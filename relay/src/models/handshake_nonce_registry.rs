@@ -3,6 +3,7 @@ use crate::models::agent_connection::AgentConnection;
 use crate::models::agent_registry::AgentRegistry;
 use crate::models::relay_error::RelayError;
 use std::sync::{Arc, OnceLock};
+use webterm_shared::random::random_string;
 use webterm_shared::simple_cache::SimpleCache;
 
 pub struct HandshakeNonceRegistry {
@@ -36,17 +37,20 @@ impl HandshakeNonceRegistry {
         frontend
     }
 
-    pub async fn register(&self, nonce: String, server_id: String) -> Result<(), RelayError> {
+    pub async fn create_nonce(&self, server_id: String) -> Result<String, RelayError> {
+        let nonce = random_string(64);
+
         self.map
-            .insert(nonce, server_id, HANDSHAKE_NONCE_EXPIRE_IN)
+            .insert(nonce.clone(), server_id, HANDSHAKE_NONCE_EXPIRE_IN)
             .await?;
 
-        Ok(())
+        Ok(nonce)
     }
 
     pub async fn consume_nonce(&self, nonce: &str) -> Result<Arc<AgentConnection>, RelayError> {
         let server_id = self.map.remove(&nonce.to_string()).await?;
         let agent_connection = AgentRegistry::find(&server_id).await?;
+
         Ok(agent_connection)
     }
 }

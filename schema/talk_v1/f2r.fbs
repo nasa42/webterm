@@ -1,0 +1,12 @@
+enum F2rMessageType : uint8 {
+  ToAgent = 0,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table F2rMessage {
+  type: F2rMessageType;
+  data: [uint8];
+}

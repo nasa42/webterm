@@ -1,12 +1,12 @@
 import {
-  createFrontendToAgentMessage,
-  createFrontendToRelayMessage,
+  createF2aMessage,
+  createF2rMessage,
   createResizeData,
-  readAgentToFrontendMessage,
-  readRelayToFrontendMessage,
-} from "./flatbuffers_helpers.ts";
+  readA2fMessage,
+  readR2fMessage,
+} from "./talk_v1_helpers.ts";
 import { Terminal } from "@xterm/xterm";
-import { FrontendToAgentMessageType, FrontendToRelayMessageType } from "../../generated/flatbuffers_schema/schema.ts";
+import { F2aMessageType, F2rMessageType } from "../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
 
 export class RelayConnection {
   private readonly socket: WebSocket;
@@ -38,18 +38,18 @@ export class RelayConnection {
       return;
     }
 
-    const fromRelay = readRelayToFrontendMessage(new Uint8Array(event.data));
+    const fromRelay = readR2fMessage(new Uint8Array(event.data));
     if (!fromRelay) {
       return;
     }
 
-    const fromAgent = readAgentToFrontendMessage(fromRelay.data);
+    const fromAgent = readA2fMessage(fromRelay.dataArray() ?? new Uint8Array());
     if (!fromAgent) {
       return;
     }
 
     console.log("Received message from agent:", fromAgent);
-    this.terminal.write(fromAgent.data);
+    this.terminal.write(fromAgent.dataArray() ?? new Uint8Array());
   }
 
   private onClose() {
@@ -62,27 +62,29 @@ export class RelayConnection {
     this.terminal.writeln(`WebSocket error: ${error}`);
   }
 
-  dispatchToAgent(type: FrontendToAgentMessageType, data: string | Uint8Array) {
+  dispatchToAgent(type: F2aMessageType, data: string | Uint8Array) {
+    console.log("Dispatching message to agent:", type);
     if (typeof data === "string") {
       data = this.encoder.encode(data);
     }
 
-    const innerMessage = createFrontendToAgentMessage(type, data);
+    const innerMessage = createF2aMessage(type, data);
 
-    const outerMessage = createFrontendToRelayMessage(FrontendToRelayMessageType.ToAgent, innerMessage);
+    const outerMessage = createF2rMessage(F2rMessageType.ToAgent, innerMessage);
     this.socket.send(outerMessage);
   }
 
   dispatchData(data: string) {
-    this.dispatchToAgent(FrontendToAgentMessageType.Data, data);
+    this.dispatchToAgent(F2aMessageType.ActivityInput, data);
   }
 
   dispatchResize(cols: number, rows: number) {
     const resizeMessage = createResizeData(cols, rows);
-    this.dispatchToAgent(FrontendToAgentMessageType.Resize, resizeMessage);
+    this.dispatchToAgent(F2aMessageType.TerminalResize, resizeMessage);
   }
 
   spawnTerminalOnAgent() {
-    this.dispatchToAgent(FrontendToAgentMessageType.SpawnTerminal, "");
+    console.debug("Spawning terminal on agent...");
+    this.dispatchToAgent(F2aMessageType.ActivityCreateTerminal, "");
   }
 }

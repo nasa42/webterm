@@ -7,7 +7,7 @@ pub struct Response {
 }
 
 #[axum::debug_handler]
-pub async fn handler() -> Json<Response> {
+pub async fn index_handler() -> Json<Response> {
     Json(Response {
         status: "ok".to_string(),
     })

@@ -6,10 +6,12 @@ export class RelayParseError extends Error {
 }
 
 export class Relay {
+  originalHost: string;
   host: string;
   useHttp: boolean;
 
   constructor(host: string) {
+    this.originalHost = host;
     let hostWithScheme = host;
     if (!host.includes("://")) {
       hostWithScheme = "https://" + host;
@@ -34,11 +36,11 @@ export class Relay {
 
   websocketUrl(handshakeNonce: string): string {
     const scheme = this.useHttp ? "ws" : "wss";
-    return `${scheme}://${this.host}/ws/frontend?handshake_nonce=${handshakeNonce}`;
+    return `${scheme}://${this.host}/talk/v1/frontend?handshake_nonce=${handshakeNonce}`;
   }
 
-  authUrl(): string {
+  handshakeUrl(): string {
     const scheme = this.useHttp ? "http" : "https";
-    return `${scheme}://${this.host}/auth/frontend`;
+    return `${scheme}://${this.host}/handshake/v1/frontend`;
   }
 }

@@ -1,0 +1,14 @@
+enum F2aMessageType : uint8 {
+  ActivityInput = 0,
+  ActivityCreateTerminal = 1,
+  TerminalResize = 2,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table F2aMessage {
+  type: F2aMessageType;
+  data: [uint8];
+}

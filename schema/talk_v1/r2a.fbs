@@ -1,0 +1,14 @@
+enum R2aMessageType : uint8 {
+  FromFrontend = 0,
+  RelayShuttingDown = 1,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table R2aMessage {
+  type: R2aMessageType;
+  data: [uint8];
+  session_id: uint64;
+}

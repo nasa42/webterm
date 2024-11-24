@@ -1,5 +1,7 @@
 import { Relay } from "./relay.ts";
 
+export const TEST_SERVER_ID = "test";
+
 const defaultRelays = (): Relay[] => {
   const fromEnv: string | null | undefined = import.meta.env.PUBLIC_DEFAULT_RELAYS.toString();
 

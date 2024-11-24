@@ -1,23 +1,11 @@
 extern crate dashmap;
 extern crate tokio;
 
-pub mod flatbuffer_helpers;
 pub mod generated;
+pub mod handshake_v1_helpers;
 pub mod models;
 pub mod pty_output_formatter;
+pub mod random;
 pub mod simple_cache;
-
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub mod talk_v1_helpers;
+pub mod types;

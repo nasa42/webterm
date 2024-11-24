@@ -1,0 +1,5 @@
+struct Version {
+  major: uint8;
+  minor: uint8;
+  patch: uint8;
+}

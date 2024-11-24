@@ -1,11 +1,13 @@
-use rand::Rng;
+use crate::random::random_in_range;
 use std::collections::HashMap;
+use std::fmt::{Debug, Display};
 use std::hash::Hash;
 use std::sync::{Arc, PoisonError};
 use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 use tokio::task::JoinHandle;
 use tokio::time;
 use tokio::time::{Duration, Instant};
+use tracing::debug;
 
 const MAX_CLEANUP_DURATION: Duration = Duration::from_millis(200);
 const CLEANUP_EVERY: Duration = Duration::from_secs(10);
@@ -51,7 +53,7 @@ pub struct SimpleCache<K, V> {
 
 impl<K, V> SimpleCache<K, V>
 where
-    K: Hash + Eq + Send + Sync + 'static,
+    K: Hash + Eq + Send + Sync + Display + Debug + 'static,
     V: Send + Sync + Clone + 'static,
 {
     pub fn new(max_size: usize) -> Self {
@@ -87,8 +89,11 @@ where
     }
 
     pub async fn get(&self, key: &K) -> Result<V, CacheError> {
+        debug!("starting simple_cache/get for key {:?}", key);
         let map = self.map.read().await;
+        debug!("simple_cache/get map read lock acquired");
         let result = map.get(key).map(|(value, expires_at)| {
+            debug!("simple_cache/get map.get() result: {:?}", expires_at);
             if &Instant::now() <= expires_at {
                 Some(value)
             } else {
@@ -96,9 +101,13 @@ where
             }
         });
 
+        debug!("simple_cache/get map.get() result loop finished");
+
         if let Some(Some(value)) = result {
+            debug!("simple_cache/get returning value");
             Ok(value.clone())
         } else {
+            debug!("simple_cache/get returning key not found");
             Err(CacheError::KeyNotFound)
         }
     }
@@ -138,7 +147,7 @@ where
         }
 
         // shrink to fit at randomly every 100th iteration
-        if rand::thread_rng().gen_range(0..100) == 0 {
+        if random_in_range(0, 100) == 0 {
             map.write().await.shrink_to_fit();
         }
 
