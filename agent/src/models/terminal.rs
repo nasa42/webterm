@@ -3,6 +3,7 @@ use crate::models::terminal_reader::TerminalReader;
 use pty_process::{Command, OwnedWritePty, Pty, Size};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
+use webterm_shared::types::ActivityId;
 
 pub struct Terminal {
     terminal_reader: TerminalReader,
@@ -10,14 +11,14 @@ pub struct Terminal {
 }
 
 impl Terminal {
-    pub async fn new(frontend_id: u64, command: &str) -> Result<Self, AgentError> {
+    pub async fn new(activity_id: ActivityId, command: &str) -> Result<Self, AgentError> {
         let pty = Pty::new()?;
         let mut command = Command::new(command);
         command.spawn(&pty.pts().unwrap())?;
         let (pty_reader, pty_writer) = pty.into_split();
         let pty_writer = Mutex::new(pty_writer);
         Ok(Terminal {
-            terminal_reader: TerminalReader::new(frontend_id, pty_reader),
+            terminal_reader: TerminalReader::new(activity_id, pty_reader),
             pty_writer,
         })
     }

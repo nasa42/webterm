@@ -1,0 +1,26 @@
+enum A2fMessageType : uint8 {
+  ActivityOutput = 0,
+  ActivityCreateResponse = 2,
+  TerminalResize = 1,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+  ErrorPtyRead = 102,
+  ErrorPtyWrite = 103,
+  ErrorPtyResizeFailed = 104,
+  ErrorAuthInvalidSecretKey = 105,
+}
+
+table A2fMessage {
+  type: A2fMessageType;
+  data: [uint8];
+}
+
+table A2fAuthSuccess {
+  key: [uint8]; // the encryption/decryption key for this session
+}
+
+table A2fActivityCreateResponse {
+  success: bool;
+}

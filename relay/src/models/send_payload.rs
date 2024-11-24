@@ -1,13 +1,10 @@
 use crate::models::relay_error::RelayError;
 use crate::models::socket_writer::SocketPublisher;
 use tracing::debug;
-use webterm_shared::flatbuffer_helpers::{
-    create_relay_to_agent_message, create_relay_to_frontend_message,
-};
-use webterm_shared::generated::flatbuffers_schema::{
-    RelayToAgentMessageType, RelayToFrontendMessageType,
-};
+use webterm_shared::generated::flatbuffers_schema::talk_v1::{R2aMessageType, R2fMessageType};
 use webterm_shared::pty_output_formatter::format_pty_output;
+use webterm_shared::talk_v1_helpers::{create_r2a_message, create_r2f_message};
+use webterm_shared::types::SessionId;
 
 pub struct SendPayload {
     to_frontend: Option<Vec<u8>>,
@@ -38,20 +35,20 @@ impl SendPayload {
         Ok(())
     }
 
-    pub fn prepare_for_frontend(&mut self, type_: RelayToFrontendMessageType, data: Vec<u8>) {
+    pub fn prepare_for_frontend(&mut self, type_: R2fMessageType, data: Vec<u8>) {
         debug!("prepare_for_frontend: {:?}", format_pty_output(&data));
-        let payload = create_relay_to_frontend_message(type_, data);
+        let payload = create_r2f_message(type_, data);
         self.to_frontend = Some(payload);
     }
 
     pub fn prepare_for_agent(
         &mut self,
-        frontend_id: Option<u64>,
-        type_: RelayToAgentMessageType,
+        session_id: SessionId,
+        type_: R2aMessageType,
         data: Vec<u8>,
     ) {
         debug!("prepare_for_agent: {:?}", format_pty_output(&data));
-        let payload = create_relay_to_agent_message(type_, data, frontend_id);
+        let payload = create_r2a_message(type_, data, session_id);
 
         self.to_agent = Some(payload);
     }

@@ -1,11 +1,17 @@
 set -e
 
-SCHEMA_PATH="./flatbuffers/*.fbs"
-SHARED_PATH="./shared/src/generated/flatbuffers_schema/"
-FRONTEND_PATH="./frontend/src/generated/flatbuffers_schema/"
+SCHEMAS=("handshake_v1" "talk_v1")
+SHARED_BASE_PATH="./shared/src/generated/flatbuffers_schema/"
+FRONTEND_BASE_PATH="./frontend/src/generated/flatbuffers_schema/"
 
-rm -rf $SHARED_PATH
-flatc --rust --rust-module-root-file -o $SHARED_PATH $SCHEMA_PATH
+for SCHEMA in "${SCHEMAS[@]}"; do
+  SCHEMA_PATH="./schema/$SCHEMA.fbs"
+  SHARED_PATH="${SHARED_BASE_PATH}${SCHEMA}/"
+  FRONTEND_PATH="${FRONTEND_BASE_PATH}${SCHEMA}/"
 
-rm -rf $FRONTEND_PATH
-flatc --ts -o $FRONTEND_PATH $SCHEMA_PATH
+  rm -rf $SHARED_PATH
+  flatc --rust --rust-module-root-file --gen-all -o $SHARED_PATH $SCHEMA_PATH
+
+  rm -rf $FRONTEND_PATH
+  flatc --ts --gen-all -o $FRONTEND_PATH $SCHEMA_PATH
+done

@@ -1,21 +1,24 @@
 use crate::args::Args;
 use crate::models::relay::Relay;
-use rand::Rng;
+use std::sync::Arc;
+use std::time::Duration;
+use tracing::error;
+use webterm_shared::random::random_in_range;
 
-const DEFAULT_RELAYS: [&str; 1] = ["r1.relays.webterm.run"];
+const DEFAULT_RELAYS: [&str; 2] = ["r1.relays.webterm.run", "r2.relays.webterm.run"];
+pub const RELAY_RECONNECT_INTERVAL: Duration = Duration::from_secs(5);
 
 pub struct Config {
     args: Args,
-    available_relays: Option<Vec<String>>,
-    chosen_relay: Option<Relay>,
+    available_relays: Vec<Arc<Relay>>,
 }
 
 impl Config {
     pub fn new(args: Args) -> Self {
+        let available_relays = Self::init_available_relays(&args);
         Self {
             args,
-            available_relays: None,
-            chosen_relay: None,
+            available_relays,
         }
     }
 
@@ -27,45 +30,40 @@ impl Config {
         &self.args.secret_key
     }
 
-    pub fn available_relays(&mut self) -> Vec<String> {
-        if self.available_relays.is_none() {
-            let result: Vec<String> = self
-                .args
-                .relays
-                .as_ref()
-                .map(|relays| {
-                    relays
-                        .split(',')
-                        .map(|s| s.trim().to_string())
-                        .filter(|s| !s.is_empty())
-                        .collect()
-                })
-                .unwrap_or_default();
+    fn init_available_relays(args: &Args) -> Vec<Arc<Relay>> {
+        let mut result: Vec<Arc<Relay>> = args
+            .relays
+            .as_ref()
+            .map(|relays| {
+                relays
+                    .split(',')
+                    .map(|s| s.trim().to_string())
+                    .filter(|s| !s.is_empty())
+                    .map(|s| match Relay::new(&s) {
+                        Ok(relay) => Some(Arc::new(relay)),
+                        Err(e) => {
+                            error!("Failed to create relay for {}: {}", s, e);
+                            None
+                        }
+                    })
+                    .filter_map(|relay| relay)
+                    .collect()
+            })
+            .unwrap_or_default();
 
-            if result.is_empty() {
-                self.available_relays =
-                    Some(DEFAULT_RELAYS.iter().map(|s| s.to_string()).collect());
-            } else {
-                self.available_relays = Some(result);
-            }
-        };
-
-        self.available_relays.clone().unwrap_or_default()
-    }
-
-    pub fn relay(&mut self) -> &Relay {
-        if self.chosen_relay.is_none() {
-            let chosen = self.random_relay();
-            let relay = Relay::new(&self, &chosen).expect("Failed to create relay");
-            self.chosen_relay = Some(relay);
+        if result.is_empty() {
+            result = DEFAULT_RELAYS
+                .iter()
+                .map(|s| Arc::new(Relay::new(s).unwrap()))
+                .collect()
         }
 
-        self.chosen_relay.as_ref().unwrap()
+        result
     }
 
-    fn random_relay(&mut self) -> String {
-        let relays = self.available_relays();
-        let index = rand::thread_rng().gen_range(0..relays.len());
+    pub fn random_relay(&self) -> Arc<Relay> {
+        let relays = &self.available_relays;
+        let index = random_in_range(0, relays.len());
         relays[index].clone()
     }
 }

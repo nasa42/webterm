@@ -1718,6 +1718,7 @@ dependencies = [
  "flatbuffers",
  "futures",
  "hyper",
+ "log",
  "rand",
  "serde",
  "serde_json",

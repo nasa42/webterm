@@ -5,6 +5,7 @@ use tokio::sync::{broadcast, mpsc, Mutex};
 use tracing::debug;
 use tracing::info;
 use webterm_shared::pty_output_formatter::format_pty_output;
+use webterm_shared::types::ActivityId;
 
 pub type TerminalSubscriber = broadcast::Receiver<Vec<u8>>;
 
@@ -15,7 +16,7 @@ type ChannelType = (
 
 #[derive(Debug, Clone)]
 pub struct TerminalReaderPayload {
-    pub(crate) frontend_id: u64,
+    pub(crate) activity_id: ActivityId,
     pub(crate) data: Vec<u8>,
 }
 
@@ -38,7 +39,7 @@ impl TerminalReader {
         &Self::channel().1
     }
 
-    pub fn new(frontend_id: u64, mut reader_stream: OwnedReadPty) -> Self {
+    pub fn new(activity_id: ActivityId, mut reader_stream: OwnedReadPty) -> Self {
         let sender = Self::sender();
         tokio::spawn(async move {
             debug!("starting new terminal reader stream");
@@ -51,7 +52,7 @@ impl TerminalReader {
                     );
                     sender
                         .send(TerminalReaderPayload {
-                            frontend_id,
+                            activity_id,
                             data: buf[..length].to_vec(),
                         })
                         .await

@@ -1,0 +1,4 @@
+table R2fHandshake {
+  success: bool;
+  relay_auth_nonce: string;
+}

@@ -1,0 +1,13 @@
+enum A2rMessageType : uint8 {
+  ToFrontend = 0,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table A2rMessage {
+  type: A2rMessageType;
+  data: [uint8];
+  session_id: uint64;
+}

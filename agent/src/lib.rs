@@ -4,10 +4,11 @@ pub mod messaging;
 pub mod models;
 
 use crate::config::Config;
-use crate::models::agent_error::AgentError;
+use crate::models::panic_error::PanicError;
 use crate::models::runner::Runner;
+use std::sync::Arc;
 
-pub async fn start(config: Config) -> Result<(), AgentError> {
+pub async fn start(config: Arc<Config>) -> Result<(), PanicError> {
     let runner = Runner::new();
     runner.run(config).await
 }

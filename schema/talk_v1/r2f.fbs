@@ -1,0 +1,13 @@
+enum R2fMessageType : uint8 {
+  FromAgent = 0,
+  RelayShuttingDown = 1,
+
+  // Errors
+  ErrorUnspecified = 100,
+  ErrorInvalidData = 101,
+}
+
+table R2fMessage {
+  type: R2fMessageType;
+  data: [uint8];
+}
