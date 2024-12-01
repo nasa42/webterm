@@ -7,7 +7,7 @@ edition.workspace = true
 askama = "0.12.1"
 askama_axum = "0.4.0"
 axum = { version = "0.7.7", features = ["macros", "ws", "http2"] }
-clap = { version = "4.5.20", features = ["derive", "env"] }
+clap = { version = "4.5.21", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
 hyper = { version = "1.5.0", features = ["full"] }
