@@ -1,9 +1,9 @@
 use crate::config::TEST_SERVER_ID;
 use crate::models::agent_connection::AgentConnection;
 use crate::models::agent_registry::AgentRegistry;
+use crate::models::bridge::Bridge;
 use crate::models::frontend_connection::FrontendConnection;
 use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
-use crate::models::session::Session;
 use axum::extract::ws::WebSocket;
 use axum::extract::Query;
 use axum::{extract::WebSocketUpgrade, response::IntoResponse};
@@ -33,7 +33,7 @@ pub async fn agent_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
 async fn on_upgrade_frontend(socket: WebSocket, handshake_nonce: String) {
     info!("Starting new WebSocket connection for frontend");
 
-    let result = Session::connect_and_run(socket, handshake_nonce).await;
+    let result = Bridge::connect_and_run(socket, handshake_nonce).await;
 
     if let Err(error) = result {
         error!(

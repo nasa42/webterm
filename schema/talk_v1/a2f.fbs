@@ -1,26 +1,70 @@
-enum A2fMessageType : uint8 {
-  ActivityOutput = 0,
-  ActivityCreateResponse = 2,
-  TerminalResize = 1,
-
-  // Errors
-  ErrorUnspecified = 100,
-  ErrorInvalidData = 101,
-  ErrorPtyRead = 102,
-  ErrorPtyWrite = 103,
-  ErrorPtyResizeFailed = 104,
-  ErrorAuthInvalidSecretKey = 105,
+enum A2fMessageFormat: uint8 {
+  Plain = 0,
+  AesGcm256Uncompressed = 1,
+  AesGcm256DeflateRaw = 2,
 }
 
-table A2fMessage {
-  type: A2fMessageType;
-  data: [uint8];
+enum A2fErrorType: uint8 {
+  ErrorUnspecified = 0,
+  ErrorInvalidData = 1,
+  ErrorPtyRead = 2,
+  ErrorPtyWrite = 4,
+  ErrorPtyResizeFailed = 5,
+  ErrorAuthInvalidSecretKey = 6,
 }
 
-table A2fAuthSuccess {
-  key: [uint8]; // the encryption/decryption key for this session
+table A2fError {
+  error_type: A2fErrorType;
+}
+
+table A2fActivityOutput {
+  activity_id: uint64;
+  output: [uint8]; // Activity's output serialised. E.g., for terminals, it would be TerminalOutput
 }
 
 table A2fActivityCreateResponse {
   success: bool;
+  activity_id: uint64;
+}
+
+union A2fMessage {
+  Error: A2fError = 1,
+  ActivityOutput: A2fActivityOutput = 2,
+  ActivityCreateResponse: A2fActivityCreateResponse = 4,
+}
+
+table A2fEncryptedRoot {
+  message: A2fMessage;
+}
+
+table A2fPlainAuthPreamble {
+  agent_version: Version;
+  salt: Bits256;
+  pbkdf2_iterations: uint32;
+  challenge_encryption_type: A2fMessageFormat;
+  challenge_iv: Bits96;
+  challenge_nonce: Bits256;
+
+  // DoS protection:
+  // however, if the "server ID" is not easily guessable, it is hard to DoS the server
+  // pow_start_nonce: [uint8];
+  // pow_difficulty: uint8;
+}
+
+table A2fPlainAuthResult {
+  success_auth: bool;
+  session_id: uint64;
+  // success_pow: bool;
+}
+
+union A2fPlainMessage {
+  AuthPreamble: A2fPlainAuthPreamble = 1,
+  AuthResult: A2fPlainAuthResult = 2,
+}
+
+table A2fRoot {
+  format: A2fMessageFormat;
+  iv: Bits96;
+  plain_message: A2fPlainMessage;
+  encrypted_payload: [uint8]; // A2fEncryptedRoot
 }

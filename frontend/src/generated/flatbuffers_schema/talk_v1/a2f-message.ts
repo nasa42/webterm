@@ -2,82 +2,41 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
-import * as flatbuffers from 'flatbuffers';
+import { A2fActivityCreateResponse } from './a2f-activity-create-response.js';
+import { A2fActivityOutput } from './a2f-activity-output.js';
+import { A2fError } from './a2f-error.js';
 
-import { A2fMessageType } from './a2f-message-type.js';
 
-
-export class A2fMessage {
-  bb: flatbuffers.ByteBuffer|null = null;
-  bb_pos = 0;
-  __init(i:number, bb:flatbuffers.ByteBuffer):A2fMessage {
-  this.bb_pos = i;
-  this.bb = bb;
-  return this;
+export enum A2fMessage {
+  NONE = 0,
+  Error = 1,
+  ActivityOutput = 2,
+  ActivityCreateResponse = 4
 }
 
-static getRootAsA2fMessage(bb:flatbuffers.ByteBuffer, obj?:A2fMessage):A2fMessage {
-  return (obj || new A2fMessage()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
-
-static getSizePrefixedRootAsA2fMessage(bb:flatbuffers.ByteBuffer, obj?:A2fMessage):A2fMessage {
-  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new A2fMessage()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
-}
-
-type():A2fMessageType {
-  const offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? this.bb!.readUint8(this.bb_pos + offset) : A2fMessageType.ActivityOutput;
-}
-
-data(index: number):number|null {
-  const offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
-}
-
-dataLength():number {
-  const offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
-}
-
-dataArray():Uint8Array|null {
-  const offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? new Uint8Array(this.bb!.bytes().buffer, this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset), this.bb!.__vector_len(this.bb_pos + offset)) : null;
-}
-
-static startA2fMessage(builder:flatbuffers.Builder) {
-  builder.startObject(2);
-}
-
-static addType(builder:flatbuffers.Builder, type:A2fMessageType) {
-  builder.addFieldInt8(0, type, A2fMessageType.ActivityOutput);
-}
-
-static addData(builder:flatbuffers.Builder, dataOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(1, dataOffset, 0);
-}
-
-static createDataVector(builder:flatbuffers.Builder, data:number[]|Uint8Array):flatbuffers.Offset {
-  builder.startVector(1, data.length, 1);
-  for (let i = data.length - 1; i >= 0; i--) {
-    builder.addInt8(data[i]!);
+export function unionToA2fMessage(
+  type: A2fMessage,
+  accessor: (obj:A2fActivityCreateResponse|A2fActivityOutput|A2fError) => A2fActivityCreateResponse|A2fActivityOutput|A2fError|null
+): A2fActivityCreateResponse|A2fActivityOutput|A2fError|null {
+  switch(A2fMessage[type]) {
+    case 'NONE': return null; 
+    case 'Error': return accessor(new A2fError())! as A2fError;
+    case 'ActivityOutput': return accessor(new A2fActivityOutput())! as A2fActivityOutput;
+    case 'ActivityCreateResponse': return accessor(new A2fActivityCreateResponse())! as A2fActivityCreateResponse;
+    default: return null;
   }
-  return builder.endVector();
 }
 
-static startDataVector(builder:flatbuffers.Builder, numElems:number) {
-  builder.startVector(1, numElems, 1);
-}
-
-static endA2fMessage(builder:flatbuffers.Builder):flatbuffers.Offset {
-  const offset = builder.endObject();
-  return offset;
-}
-
-static createA2fMessage(builder:flatbuffers.Builder, type:A2fMessageType, dataOffset:flatbuffers.Offset):flatbuffers.Offset {
-  A2fMessage.startA2fMessage(builder);
-  A2fMessage.addType(builder, type);
-  A2fMessage.addData(builder, dataOffset);
-  return A2fMessage.endA2fMessage(builder);
-}
+export function unionListToA2fMessage(
+  type: A2fMessage, 
+  accessor: (index: number, obj:A2fActivityCreateResponse|A2fActivityOutput|A2fError) => A2fActivityCreateResponse|A2fActivityOutput|A2fError|null, 
+  index: number
+): A2fActivityCreateResponse|A2fActivityOutput|A2fError|null {
+  switch(A2fMessage[type]) {
+    case 'NONE': return null; 
+    case 'Error': return accessor(index, new A2fError())! as A2fError;
+    case 'ActivityOutput': return accessor(index, new A2fActivityOutput())! as A2fActivityOutput;
+    case 'ActivityCreateResponse': return accessor(index, new A2fActivityCreateResponse())! as A2fActivityCreateResponse;
+    default: return null;
+  }
 }

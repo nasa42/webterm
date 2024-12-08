@@ -4,7 +4,6 @@ use axum::extract::ws::WebSocket;
 use futures::StreamExt;
 
 pub struct FrontendConnection {
-    pub closed: bool,
     frontend_writer: SocketWriter,
     frontend_reader: SocketReader,
 }
@@ -15,7 +14,6 @@ impl FrontendConnection {
         let frontend_reader = SocketReader::new(frontend_reader);
         let frontend_writer = SocketWriter::new(frontend_writer);
         Self {
-            closed: false,
             frontend_writer,
             frontend_reader,
         }
@@ -27,5 +25,9 @@ impl FrontendConnection {
 
     pub fn subscriber(&self) -> SocketSubscriber {
         self.frontend_reader.subscriber()
+    }
+
+    pub async fn close(&self) {
+        let _ = self.frontend_writer.close().await;
     }
 }

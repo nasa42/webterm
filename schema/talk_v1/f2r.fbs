@@ -1,12 +1,20 @@
-enum F2rMessageType : uint8 {
-  ToAgent = 0,
-
-  // Errors
-  ErrorUnspecified = 100,
-  ErrorInvalidData = 101,
+enum F2rErrorType: uint8 {
+  ErrorUnspecified = 0,
 }
 
-table F2rMessage {
-  type: F2rMessageType;
-  data: [uint8];
+table F2rError {
+  error_type: F2rErrorType;
+}
+
+table F2rToAgent {
+  payload: [uint8];
+}
+
+union F2rRootPayload {
+  Error: F2rError = 1,
+  ToAgent: F2rToAgent = 2,
+}
+
+table F2rRoot {
+  root_payload: F2rRootPayload;
 }

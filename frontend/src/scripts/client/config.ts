@@ -1,9 +1,14 @@
-import { Relay } from "./relay.ts";
+import { Relay } from "./models/Relay.ts";
 
 export const TEST_SERVER_ID = "test";
+export const VERSION = {
+  major: parseInt(import.meta.env.WEBTERM_VERSION_MAJOR || "0"),
+  minor: parseInt(import.meta.env.WEBTERM_VERSION_MINOR || "0"),
+  patch: parseInt(import.meta.env.WEBTERM_VERSION_PATCH || "0"),
+};
 
 const defaultRelays = (): Relay[] => {
-  const fromEnv: string | null | undefined = import.meta.env.PUBLIC_DEFAULT_RELAYS.toString();
+  const fromEnv: string | null | undefined = import.meta.env.PUBLIC_DEFAULT_RELAYS;
 
   if (!fromEnv || fromEnv === "") {
     return [];

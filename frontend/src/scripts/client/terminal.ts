@@ -1,6 +1,6 @@
 import "@xterm/xterm/css/xterm.css";
-import { Session } from "./Session.ts";
-import { Relay } from "./relay.ts";
+import { Runner } from "./models/Runner.ts";
+import { Relay } from "./models/Relay.ts";
 
 const initTerminal = (elementID: string) => {
   const $element = document.getElementById(elementID);
@@ -27,7 +27,7 @@ const initTerminal = (elementID: string) => {
   const relay = new Relay(relay_host);
 
   console.log("Connecting to relay:", relay.websocketUrl(handshakeNonce));
-  new Session(relay.websocketUrl(handshakeNonce), $element);
+  new Runner(relay.websocketUrl(handshakeNonce), $element);
 };
 
 initTerminal("wt-terminal");

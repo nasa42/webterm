@@ -1,89 +1,69 @@
+use crate::models::activity::Activity;
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
+use crate::models::session::Session;
 use crate::models::socket_writer::SocketPublisher;
 use crate::models::terminal::Terminal;
 use std::sync::Arc;
 use tracing::debug;
-use webterm_shared::generated::flatbuffers_schema::talk_v1::{
-    A2fMessageType, A2rMessageType, ResizeData,
+use webterm_core::generated::flatbuffers_schema::talk_v1::{
+    A2fRootBuilder, A2rErrorType, A2rRootBuilder, A2rRootPayload,
 };
-use webterm_shared::pty_output_formatter::format_pty_output;
-use webterm_shared::talk_v1_helpers::{create_a2f_message, create_a2r_message};
-use webterm_shared::types::SessionId;
+use webterm_core::pty_output_formatter::format_pty_output;
+use webterm_core::serialisers::talk_v1::a2f_builder::{
+    A2fBuilder, A2fRootBlob, BuilderState, EncryptionReady, Initial, PlainReady,
+};
+use webterm_core::serialisers::talk_v1::a2r_builder::{A2rBuilder, A2rRootBlob};
+use webterm_core::serialisers::talk_v1::terminal_output_builder::ActivityInputBlob;
+use webterm_core::types::{ActivityId, FrontendId, SessionId};
 
 pub struct SendPayload {
-    pub(crate) session_id: SessionId,
-    to_relay: Option<Vec<u8>>,
-    to_pty: Option<Vec<u8>>,
-    to_pty_resize: Option<(u16, u16)>, // (cols, rows)
+    to_relay: Option<A2rRootBlob>,
+    to_activity: Option<(Arc<Activity>, ActivityInputBlob)>,
     is_relay_shutdown: bool,
 }
 
 impl SendPayload {
-    pub fn new(session_id: SessionId) -> Self {
+    pub fn new() -> Self {
         SendPayload {
-            session_id,
             to_relay: None,
-            to_pty: None,
-            to_pty_resize: None,
+            to_activity: None,
             is_relay_shutdown: false,
         }
     }
 
-    pub async fn dispatch(&self, relay_pub: &SocketPublisher) -> Result<(), AgentError> {
-        if let Some(data) = &self.to_relay {
+    pub async fn dispatch(self, relay_pub: &SocketPublisher) -> Result<(), AgentError> {
+        if let Some(payload) = self.to_relay {
             debug!("dispatching to relay");
-            relay_pub.send(data.to_owned()).await?;
+            relay_pub.send(payload.0).await?;
         }
 
-        if let Some(data) = &self.to_pty {
-            debug!("dispatching to pty {:?}", format_pty_output(data));
-            ActivityRegistry::singleton()
-                .await
-                .get_terminal_for_session(self.session_id)
-                .await
-                .ok_or(AgentError::RuntimeError(format!(
-                    "terminal not found for session {}",
-                    self.session_id
-                )))?
-                .write(data)
-                .await?;
-        }
-
-        if let Some((cols, rows)) = &self.to_pty_resize {
-            debug!("resizing pty");
-            if let Some(terminal) = ActivityRegistry::singleton()
-                .await
-                .get_terminal_for_session(self.session_id)
-                .await
-            {
-                terminal.resize(*cols, *rows).await?;
-            } else {
-                debug!("terminal not found");
-            }
+        if let Some((activity, data)) = (self.to_activity) {
+            debug!("dispatching to pty {:?}", format_pty_output(&data.0));
+            activity.receive_input(data).await?;
         }
 
         Ok(())
     }
 
-    pub fn prepare_for_frontend(&mut self, type_: A2fMessageType, data: Vec<u8>) {
-        let payload = create_a2f_message(type_, data);
-        debug!("prepare_for_frontend: {:?}", format_pty_output(&payload));
-        self.prepare_for_relay(A2rMessageType::ToFrontend, payload);
+    pub fn prepare_for_frontend(&mut self, frontend_id: FrontendId, frontend_payload: A2fRootBlob) {
+        debug!(
+            "prepare_for_frontend: {:?}",
+            format_pty_output(&frontend_payload.0)
+        );
+        let a2r = A2rBuilder::new();
+        let payload = a2r
+            .root_payload_to_frontend(frontend_id, frontend_payload)
+            .to_flatbuffers();
+        self.prepare_for_relay(payload);
     }
 
-    pub fn prepare_for_relay(&mut self, type_: A2rMessageType, data: Vec<u8>) {
-        let payload = create_a2r_message(type_, data, self.session_id);
-
-        self.to_relay = Some(payload);
+    pub fn prepare_for_relay(&mut self, data: A2rRootBlob) {
+        self.to_relay = Some(data);
     }
 
-    pub fn prepare_for_pty(&mut self, data: Vec<u8>) {
-        self.to_pty = Some(data);
-    }
-
-    pub fn prepare_for_pty_resize(&mut self, data: ResizeData) {
-        self.to_pty_resize = Some((data.cols(), data.rows()));
+    pub fn prepare_for_activity(&mut self, activity: Arc<Activity>, data: ActivityInputBlob) {
+        self.to_activity = Some((activity, data));
     }
 
     pub fn prepare_for_relay_shutdown(&mut self) {

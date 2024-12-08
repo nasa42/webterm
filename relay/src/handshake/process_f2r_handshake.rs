@@ -3,9 +3,9 @@ use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
 use futures::future::err;
 use tracing::error;
 use tracing::{debug, info};
-use webterm_shared::generated::flatbuffers_schema::handshake_v1::F2rHandshake;
-use webterm_shared::handshake_v1_helpers::create_r2f_handshake;
-use webterm_shared::random::random_string;
+use webterm_core::generated::flatbuffers_schema::handshake_v1::F2rHandshake;
+use webterm_core::handshake_v1_helpers::create_r2f_handshake;
+use webterm_core::random::random_string;
 
 pub async fn process_f2r_handshake(message: F2rHandshake<'_>) -> Vec<u8> {
     let req_server_id = message.server_id();

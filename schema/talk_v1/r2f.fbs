@@ -1,13 +1,22 @@
-enum R2fMessageType : uint8 {
-  FromAgent = 0,
-  RelayShuttingDown = 1,
-
-  // Errors
-  ErrorUnspecified = 100,
-  ErrorInvalidData = 101,
+enum R2fErrorType: uint8 {
+  ErrorUnspecified = 0,
+  ErrorActivityNotFound = 1,
 }
 
-table R2fMessage {
-  type: R2fMessageType;
-  data: [uint8];
+table R2fError {
+  error_type: R2fErrorType;
+}
+
+table R2fFromAgent {
+  payload: [uint8];
+}
+
+union R2fRootPayload {
+  Error: R2fError = 1,
+  FromAgent: R2fFromAgent = 2,
+  RelayShuttingDown: EmptyTable = 4,
+}
+
+table R2fRoot {
+  root_payload: R2fRootPayload;
 }

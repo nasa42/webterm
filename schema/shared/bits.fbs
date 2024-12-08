@@ -1,0 +1,7 @@
+struct Bits96 {
+  bytes: [uint8:12];
+}
+
+struct Bits256 {
+  bytes: [uint8:32];
+}

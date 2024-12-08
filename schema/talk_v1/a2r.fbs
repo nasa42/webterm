@@ -1,13 +1,22 @@
-enum A2rMessageType : uint8 {
-  ToFrontend = 0,
-
-  // Errors
-  ErrorUnspecified = 100,
-  ErrorInvalidData = 101,
+enum A2rErrorType: uint8 {
+  ErrorUnspecified = 0,
+  ErrorInvalidData = 1,
 }
 
-table A2rMessage {
-  type: A2rMessageType;
-  data: [uint8];
-  session_id: uint64;
+table A2rError {
+  error_type: A2rErrorType;
+}
+
+table A2rToFrontend {
+  frontend_id: uint64;
+  payload: [uint8];
+}
+
+union A2rRootPayload {
+  Error: A2rError = 1,
+  ToFrontend: A2rToFrontend = 2,
+}
+
+table A2rRoot {
+  root_payload: A2rRootPayload;
 }

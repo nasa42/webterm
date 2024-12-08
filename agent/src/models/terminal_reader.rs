@@ -1,11 +1,15 @@
+use crate::models::activity::Activity;
 use pty_process::OwnedReadPty;
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 use tokio::io::AsyncReadExt;
 use tokio::sync::{broadcast, mpsc, Mutex};
 use tracing::debug;
 use tracing::info;
-use webterm_shared::pty_output_formatter::format_pty_output;
-use webterm_shared::types::ActivityId;
+use webterm_core::pty_output_formatter::format_pty_output;
+use webterm_core::serialisers::talk_v1::terminal_output_builder::{
+    ActivityOutputBlob, TerminalOutputBuilder,
+};
+use webterm_core::types::{ActivityId, SessionId};
 
 pub type TerminalSubscriber = broadcast::Receiver<Vec<u8>>;
 
@@ -14,10 +18,16 @@ type ChannelType = (
     Mutex<mpsc::Receiver<TerminalReaderPayload>>,
 );
 
-#[derive(Debug, Clone)]
 pub struct TerminalReaderPayload {
     pub(crate) activity_id: ActivityId,
     pub(crate) data: Vec<u8>,
+}
+
+impl TerminalReaderPayload {
+    pub fn to_terminal_output(&self) -> ActivityOutputBlob {
+        let builder = TerminalOutputBuilder::new();
+        builder.build_output(&self.data).to_flatbuffers()
+    }
 }
 
 pub struct TerminalReader {}

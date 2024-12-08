@@ -3,7 +3,7 @@ use futures::stream::SplitStream;
 use futures::StreamExt;
 use tokio::sync::broadcast;
 use tracing::{error, info};
-use webterm_shared::models::reader_socket_error::ReaderSocketError;
+use webterm_core::models::reader_socket_error::ReaderSocketError;
 
 pub type SocketSubscriber = broadcast::Receiver<Result<Option<Vec<u8>>, ReaderSocketError>>;
 

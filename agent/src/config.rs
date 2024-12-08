@@ -1,12 +1,19 @@
 use crate::args::Args;
 use crate::models::relay::Relay;
+use std::num::NonZeroU32;
 use std::sync::Arc;
 use std::time::Duration;
 use tracing::error;
-use webterm_shared::random::random_in_range;
+use webterm_core::random::random_in_range;
 
-const DEFAULT_RELAYS: [&str; 2] = ["r1.relays.webterm.run", "r2.relays.webterm.run"];
+const DEFAULT_RELAYS: [&str; 4] = [
+    "r1.relays.webterm.run",
+    "r2.relays.webterm.run",
+    "r4.relays.webterm.run",
+    "r5.relays.webterm.run",
+];
 pub const RELAY_RECONNECT_INTERVAL: Duration = Duration::from_secs(5);
+pub const DEFAULT_PBKDF2_ITERATIONS: u32 = 100_000;
 
 pub struct Config {
     args: Args,

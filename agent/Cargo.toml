@@ -2,6 +2,7 @@
 name = "webterm-agent"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 
 [dependencies]
 clap = { version = "4.5.20", features = ["derive", "env"] }
@@ -13,5 +14,7 @@ tokio = "1.41.1"
 tokio-tungstenite = "0.24.0"
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-webterm-shared = { path = "../shared" }
+webterm-core = { path = "../core" }
 url = "2.5.3"
+ring = "0.17.8"
+semver = "1.0.23"

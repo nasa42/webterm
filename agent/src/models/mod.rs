@@ -1,10 +1,15 @@
+pub mod activity;
 pub mod activity_registry;
 pub mod agent_error;
+pub mod frontend;
+pub mod frontend_registry;
 pub mod panic_error;
 pub mod relay;
 pub mod relay_connection;
 pub mod runner;
 pub mod send_payload;
+pub mod session;
+pub mod session_registry;
 pub mod socket_reader;
 pub mod socket_writer;
 pub mod terminal;

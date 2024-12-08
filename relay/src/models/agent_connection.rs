@@ -1,16 +1,18 @@
+use crate::models::agent_registry::AgentRegistry;
 use crate::models::socket_reader::{SocketReader, SocketSubscriber};
 use crate::models::socket_writer::{SocketPublisher, SocketWriter};
 use axum::extract::ws::WebSocket;
 use futures::StreamExt;
 use std::sync::atomic::{AtomicU64, Ordering};
 use tokio::sync::Notify;
+use webterm_core::types::FrontendId;
 
 pub struct AgentConnection {
     pub server_id: String,
     agent_writer: SocketWriter,
     agent_reader: SocketReader,
     close_notifier: Notify,
-    next_session_id: AtomicU64,
+    next_frontend_id: AtomicU64,
 }
 
 impl AgentConnection {
@@ -24,7 +26,7 @@ impl AgentConnection {
             agent_writer,
             agent_reader,
             close_notifier: Notify::new(),
-            next_session_id: AtomicU64::new(1),
+            next_frontend_id: AtomicU64::new(1),
         }
     }
 
@@ -34,6 +36,7 @@ impl AgentConnection {
 
     pub async fn close(&self) {
         self.close_notifier.notify_waiters();
+        let _ = AgentRegistry::remove(&self.server_id).await;
     }
 
     pub fn publisher(&self) -> SocketPublisher {
@@ -44,7 +47,7 @@ impl AgentConnection {
         self.agent_reader.subscriber()
     }
 
-    pub fn next_session_id(&self) -> u64 {
-        self.next_session_id.fetch_add(1, Ordering::SeqCst)
+    pub fn next_frontend_id(&self) -> FrontendId {
+        FrontendId(self.next_frontend_id.fetch_add(1, Ordering::SeqCst))
     }
 }

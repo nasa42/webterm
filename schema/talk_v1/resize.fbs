@@ -1,4 +1,0 @@
-table ResizeData {
-  cols: uint16;
-  rows: uint16;
-}

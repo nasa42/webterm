@@ -1,12 +1,15 @@
-use crate::config::{AGENT_EXPIRE_IN, MAX_AGENTS};
+use crate::config::MAX_AGENTS;
 use crate::models::agent_connection::AgentConnection;
 use crate::models::relay_error::RelayError;
+use axum::routing::get;
+use std::collections::HashMap;
 use std::sync::{Arc, OnceLock};
+use tokio::sync::RwLock;
 use tracing::debug;
-use webterm_shared::simple_cache::SimpleCache;
+use webterm_core::simple_cache::SimpleCache;
 
 pub struct AgentRegistry {
-    agents: SimpleCache<String, Arc<AgentConnection>>,
+    agents: Arc<RwLock<HashMap<String, Arc<AgentConnection>>>>,
 }
 
 impl AgentRegistry {
@@ -14,7 +17,7 @@ impl AgentRegistry {
         static INSTANCE: OnceLock<Arc<AgentRegistry>> = OnceLock::new();
         INSTANCE.get_or_init(|| {
             Arc::new(AgentRegistry {
-                agents: SimpleCache::new(MAX_AGENTS),
+                agents: Arc::new(RwLock::new(HashMap::new())),
             })
         })
     }
@@ -23,19 +26,34 @@ impl AgentRegistry {
         debug!("finding agent {}", server_id);
         let registry = Self::singleton().await;
         debug!("registry acquired");
-        match registry.agents.get(&server_id.to_string()).await {
-            Err(_) => Err(RelayError::AgentNotFound),
-            Ok(agent) => Ok(agent.clone()),
-        }
+        Ok(registry
+            .agents
+            .read()
+            .await
+            .get(&server_id.to_string())
+            .ok_or(RelayError::AgentNotFound)?
+            .clone())
     }
 
     pub async fn register(agent: Arc<AgentConnection>) -> Result<(), RelayError> {
         let registry = Self::singleton().await;
+        debug!("Registering agent {}", agent.server_id);
         registry
             .agents
-            .insert(agent.server_id.clone(), agent, AGENT_EXPIRE_IN)
-            .await?;
+            .write()
+            .await
+            .insert(agent.server_id.clone(), agent);
 
         Ok(())
+    }
+
+    pub async fn remove(server_id: &str) -> Result<Arc<AgentConnection>, RelayError> {
+        let registry = Self::singleton().await;
+        registry
+            .agents
+            .write()
+            .await
+            .remove(&server_id.to_string())
+            .ok_or(RelayError::AgentNotFound)
     }
 }

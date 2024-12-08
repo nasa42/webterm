@@ -5,6 +5,7 @@ use crate::models::agent_error::AgentError;
 use crate::models::panic_error::PanicError;
 use crate::models::relay_connection::RelayConnection;
 use crate::models::send_payload::SendPayload;
+use crate::models::session_registry::SessionRegistry;
 use crate::models::socket_reader::SocketSubscriber;
 use crate::models::socket_writer::SocketPublisher;
 use crate::models::terminal::Terminal;
@@ -16,8 +17,8 @@ use tokio::sync::Notify;
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
 use tracing::{debug, error, info};
-use webterm_shared::generated::flatbuffers_schema::talk_v1::A2fMessageType;
-use webterm_shared::pty_output_formatter::format_pty_output;
+use webterm_core::pty_output_formatter::format_pty_output;
+use webterm_core::serialisers::talk_v1::a2f_builder::A2fBuilder;
 
 pub struct Runner {}
 
@@ -27,12 +28,16 @@ impl Runner {
     }
 
     pub async fn run(self, config: Arc<Config>) -> Result<(), PanicError> {
-        let rc = RelayConnection::new(config).await;
+        let rc = RelayConnection::new(config.clone()).await;
 
         loop {
             if let Some((relay_pub, relay_sub)) = rc.pub_sub().await {
-                let r2a_task =
-                    tokio::spawn(Self::r2a_task(relay_sub, relay_pub.clone(), rc.clone()));
+                let r2a_task = tokio::spawn(Self::r2a_task(
+                    relay_sub,
+                    relay_pub.clone(),
+                    rc.clone(),
+                    config.clone(),
+                ));
 
                 let a2r_task = tokio::spawn(Self::a2r_task(relay_pub.clone(), rc.clone()));
 
@@ -77,12 +82,14 @@ impl Runner {
         mut relay_sub: SocketSubscriber,
         relay_pub: SocketPublisher,
         rc: Arc<RelayConnection>,
+        config: Arc<Config>,
     ) -> Result<(), AgentError> {
         loop {
             let data = relay_sub.recv().await;
             match data {
                 Ok(Ok(Some(data))) => {
-                    let send = process_r2a(&data).await?;
+                    let send = SendPayload::new();
+                    let send = process_r2a(&data, send, &config).await?;
                     if send.is_relay_shutdown() {
                         error!("Relay is shutting down");
                         rc.disconnect().await;
@@ -106,18 +113,43 @@ impl Runner {
         let receiver = TerminalReader::receiver();
 
         loop {
-            let data = receiver.lock().await.recv().await;
-            if let Some(data) = data {
-                let session_id = ActivityRegistry::singleton()
-                    .await
-                    .session_for_activity(data.activity_id)
-                    .await;
-                if let Some(session_id) = session_id {
-                    let mut send = SendPayload::new(session_id);
-                    send.prepare_for_frontend(A2fMessageType::ActivityOutput, data.data);
-                    send.dispatch(&relay_pub).await?;
+            let output = receiver.lock().await.recv().await;
+            if let Some(output) = output {
+                let activity = ActivityRegistry::find(output.activity_id).await;
+                if let Ok(activity) = activity {
+                    let session = activity.parent_session().await;
+                    if let Ok(session) = session {
+                        let session = session.lock().await;
+                        let frontend = session.current_frontend();
+                        if let Ok(frontend) = frontend {
+                            let frontend = frontend.lock().await;
+                            let mut send = SendPayload::new();
+                            let a2f = A2fBuilder::new();
+                            let payload = a2f
+                                .build_activity_output(
+                                    output.activity_id,
+                                    &output.to_terminal_output().0,
+                                )
+                                .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
+                            send.prepare_for_frontend(frontend.frontend_id(), payload);
+                            send.dispatch(&relay_pub).await?;
+                        } else {
+                            debug!(
+                                "frontend not found for session_id: {:?}",
+                                session.session_id()
+                            );
+                        }
+                    } else {
+                        debug!(
+                            "session not found for activity_id: {:?}",
+                            output.activity_id
+                        )
+                    }
                 } else {
-                    debug!("session not found for activity_id: {}", data.activity_id);
+                    debug!(
+                        "activity not found for activity_id: {:?}",
+                        output.activity_id
+                    );
                 }
             }
         }
