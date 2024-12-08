@@ -17,7 +17,7 @@
     "@popperjs/core": "^2.11.8",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "astro": "^4.16.12",
+    "astro": "^5.0.3",
     "bootstrap": "^5.3.3",
     "flatbuffers": "^24.3.25",
     "lodash": "^4.17.21",
