@@ -1,4 +1,5 @@
 table R2fHandshake {
   success: bool;
+  relay_version: Version;
   relay_auth_nonce: string;
 }

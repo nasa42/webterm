@@ -3,11 +3,12 @@ use std::fmt;
 use std::sync::Arc;
 use tokio::sync::broadcast::error::RecvError;
 use tokio::sync::mpsc::error::SendError;
-use webterm_shared::models::reader_socket_error::ReaderSocketError;
-use webterm_shared::simple_cache::CacheError;
+use webterm_core::models::reader_socket_error::ReaderSocketError;
+use webterm_core::simple_cache::CacheError;
 
 #[derive(Debug)]
 pub enum RelayError {
+    FBParseError(String),
     FlatbufferError(InvalidFlatbuffer),
     SocketSendError(SendError<Vec<u8>>),
     SocketRecvError(RecvError),
@@ -23,6 +24,7 @@ impl std::error::Error for RelayError {}
 impl fmt::Display for RelayError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            RelayError::FBParseError(e) => write!(f, "Flatbuffer parse error: {}", e),
             RelayError::FlatbufferError(e) => write!(f, "Flatbuffer error: {}", e),
             RelayError::SocketSendError(e) => write!(f, "Socket send error: {}", e),
             RelayError::SocketRecvError(e) => write!(f, "Socket receive error: {}", e),
@@ -56,6 +58,12 @@ impl From<RecvError> for RelayError {
 impl From<Arc<axum::Error>> for RelayError {
     fn from(err: Arc<axum::Error>) -> Self {
         RelayError::AxumError(err)
+    }
+}
+
+impl From<axum::Error> for RelayError {
+    fn from(err: axum::Error) -> Self {
+        RelayError::AxumError(Arc::new(err))
     }
 }
 

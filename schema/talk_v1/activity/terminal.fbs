@@ -1,0 +1,23 @@
+namespace Activity;
+
+table TerminalResize {
+  cols: uint16;
+  rows: uint16;
+}
+
+union TerminalInput {
+  UserInput: VectorTable = 1,
+  Resize: TerminalResize = 2,
+}
+
+union TerminalOutput {
+  Output: VectorTable = 1,
+}
+
+table TerminalInputRoot {
+  payload: TerminalInput;
+}
+
+table TerminalOutputRoot {
+  payload: TerminalOutput;
+}

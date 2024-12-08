@@ -1,14 +1,54 @@
-enum F2aMessageType : uint8 {
-  ActivityInput = 0,
-  ActivityCreateTerminal = 1,
-  TerminalResize = 2,
-
-  // Errors
-  ErrorUnspecified = 100,
-  ErrorInvalidData = 101,
+enum F2aMessageFormat: uint8 {
+  Plain = 0,
+  AesGcm256Uncompressed = 1,
+  AesGcm256DeflateRaw = 2,
 }
 
-table F2aMessage {
-  type: F2aMessageType;
-  data: [uint8];
+enum F2aErrorType: uint8 {
+  ErrorUnspecified = 0,
+}
+
+table F2aError {
+  error_type: F2aErrorType;
+}
+
+union F2aMessage {
+  Error: F2aError = 1,
+  ActivityInput: F2aActivityInput = 2,
+  ActivityCreateTerminal: EmptyTable = 4,
+  TerminalResize: EmptyTable = 5,
+}
+
+table F2aActivityInput {
+  activity_id: uint64;
+  input: [uint8]; // Activity's input serialised. E.g., for terminals, it would be TerminalInput
+}
+
+table F2aEncryptedRoot {
+  message: F2aMessage;
+}
+
+table F2aPlainAuthRequestPreamble {
+  frontend_version: Version;
+}
+
+table F2aPlainAuthPresentVerification {
+  challenge_solution: Bits256;
+  resume_session_id: uint64; // if zero, create a new session
+}
+
+union F2aPlainMessage {
+  AuthRequestPreamble: F2aPlainAuthRequestPreamble = 1,
+  AuthPresentVerification: F2aPlainAuthPresentVerification = 2,
+}
+
+table F2aPlainPayload {
+  plain_message: F2aPlainMessage;
+}
+
+table F2aRoot {
+  format: F2aMessageFormat;
+  iv: Bits96;
+  plain_message: F2aPlainMessage;
+  encrypted_payload: [uint8]; // F2aEncryptedRoot
 }

@@ -4,6 +4,9 @@
 
 import * as flatbuffers from 'flatbuffers';
 
+import { Version } from './version.js';
+
+
 export class R2fHandshake {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
@@ -27,23 +30,32 @@ success():boolean {
   return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
 }
 
+relayVersion(obj?:Version):Version|null {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? (obj || new Version()).__init(this.bb_pos + offset, this.bb!) : null;
+}
+
 relayAuthNonce():string|null
 relayAuthNonce(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
 relayAuthNonce(optionalEncoding?:any):string|Uint8Array|null {
-  const offset = this.bb!.__offset(this.bb_pos, 6);
+  const offset = this.bb!.__offset(this.bb_pos, 8);
   return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
 }
 
 static startR2fHandshake(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 }
 
 static addSuccess(builder:flatbuffers.Builder, success:boolean) {
   builder.addFieldInt8(0, +success, +false);
 }
 
+static addRelayVersion(builder:flatbuffers.Builder, relayVersionOffset:flatbuffers.Offset) {
+  builder.addFieldStruct(1, relayVersionOffset, 0);
+}
+
 static addRelayAuthNonce(builder:flatbuffers.Builder, relayAuthNonceOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(1, relayAuthNonceOffset, 0);
+  builder.addFieldOffset(2, relayAuthNonceOffset, 0);
 }
 
 static endR2fHandshake(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -51,10 +63,4 @@ static endR2fHandshake(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createR2fHandshake(builder:flatbuffers.Builder, success:boolean, relayAuthNonceOffset:flatbuffers.Offset):flatbuffers.Offset {
-  R2fHandshake.startR2fHandshake(builder);
-  R2fHandshake.addSuccess(builder, success);
-  R2fHandshake.addRelayAuthNonce(builder, relayAuthNonceOffset);
-  return R2fHandshake.endR2fHandshake(builder);
-}
 }

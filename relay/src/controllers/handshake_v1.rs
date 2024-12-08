@@ -3,12 +3,12 @@ use askama_axum::IntoResponse;
 use axum::body::Bytes;
 use axum::http::{header, StatusCode};
 use axum::response::Response;
-use futures::TryStreamExt;
-use webterm_shared::handshake_v1_helpers::read_f2r_handshake;
+use webterm_core::flatbuffers_helpers::read_message;
+use webterm_core::generated::flatbuffers_schema::handshake_v1::F2rHandshake;
 
 #[axum::debug_handler]
 pub async fn frontend_handler(body: Bytes) -> Result<Response, StatusCode> {
-    let message = read_f2r_handshake(&body).map_err(|_| StatusCode::BAD_REQUEST)?;
+    let message = read_message::<F2rHandshake>(&body).map_err(|_| StatusCode::BAD_REQUEST)?;
     let response_bytes = process_f2r_handshake(message).await;
 
     build_octet_response(response_bytes)

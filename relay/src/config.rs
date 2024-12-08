@@ -11,7 +11,6 @@ pub const MAX_AGENTS: usize = 50_000;
 pub const MAX_FRONTENDS: usize = 50_000;
 pub const HANDSHAKE_MAX_NONCES: usize = 50_000;
 pub const HANDSHAKE_NONCE_EXPIRE_IN: Duration = Duration::from_secs(600);
-pub const AGENT_EXPIRE_IN: Duration = Duration::from_secs(60);
 
 static NEXT_CHANNEL_REQUEST_ID: AtomicU64 = AtomicU64::new(1);
 

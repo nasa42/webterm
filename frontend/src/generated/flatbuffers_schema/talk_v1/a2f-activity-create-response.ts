@@ -27,12 +27,21 @@ success():boolean {
   return offset ? !!this.bb!.readInt8(this.bb_pos + offset) : false;
 }
 
+activityId():bigint {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
+}
+
 static startA2fActivityCreateResponse(builder:flatbuffers.Builder) {
-  builder.startObject(1);
+  builder.startObject(2);
 }
 
 static addSuccess(builder:flatbuffers.Builder, success:boolean) {
   builder.addFieldInt8(0, +success, +false);
+}
+
+static addActivityId(builder:flatbuffers.Builder, activityId:bigint) {
+  builder.addFieldInt64(1, activityId, BigInt('0'));
 }
 
 static endA2fActivityCreateResponse(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -40,9 +49,10 @@ static endA2fActivityCreateResponse(builder:flatbuffers.Builder):flatbuffers.Off
   return offset;
 }
 
-static createA2fActivityCreateResponse(builder:flatbuffers.Builder, success:boolean):flatbuffers.Offset {
+static createA2fActivityCreateResponse(builder:flatbuffers.Builder, success:boolean, activityId:bigint):flatbuffers.Offset {
   A2fActivityCreateResponse.startA2fActivityCreateResponse(builder);
   A2fActivityCreateResponse.addSuccess(builder, success);
+  A2fActivityCreateResponse.addActivityId(builder, activityId);
   return A2fActivityCreateResponse.endA2fActivityCreateResponse(builder);
 }
 }

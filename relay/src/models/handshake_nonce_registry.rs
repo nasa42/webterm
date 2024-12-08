@@ -3,8 +3,8 @@ use crate::models::agent_connection::AgentConnection;
 use crate::models::agent_registry::AgentRegistry;
 use crate::models::relay_error::RelayError;
 use std::sync::{Arc, OnceLock};
-use webterm_shared::random::random_string;
-use webterm_shared::simple_cache::SimpleCache;
+use webterm_core::random::random_string;
+use webterm_core::simple_cache::SimpleCache;
 
 pub struct HandshakeNonceRegistry {
     map: SimpleCache<String, String>,

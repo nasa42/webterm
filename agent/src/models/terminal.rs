@@ -3,7 +3,7 @@ use crate::models::terminal_reader::TerminalReader;
 use pty_process::{Command, OwnedWritePty, Pty, Size};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
-use webterm_shared::types::ActivityId;
+use webterm_core::types::ActivityId;
 
 pub struct Terminal {
     terminal_reader: TerminalReader,

@@ -1,7 +1,8 @@
 [workspace]
 resolver = "2"
-members = ["agent", "relay", "shared"]
+members = ["agent", "core", "relay"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.83.0"

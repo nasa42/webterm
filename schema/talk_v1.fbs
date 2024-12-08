@@ -1,7 +1,13 @@
+include "./shared/bits.fbs";
+include "./shared/version.fbs";
+include "./shared/empty_table.fbs";
+include "./shared/vector_table.fbs";
+
 include "./talk_v1/a2f.fbs";
 include "./talk_v1/a2r.fbs";
 include "./talk_v1/f2a.fbs";
 include "./talk_v1/f2r.fbs";
 include "./talk_v1/r2a.fbs";
 include "./talk_v1/r2f.fbs";
-include "./talk_v1/resize.fbs";
+
+include "./talk_v1/activity/terminal.fbs";

@@ -1,5 +1,6 @@
 import { CONFIG } from "./config.ts";
-import { createF2rHandshake, readR2fHandshake } from "./handshake_v1_helpers.ts";
+import { createF2rHandshake } from "./functions/createF2rHandshake.ts";
+import { readR2fHandshake } from "./functions/readR2fHandshake.ts";
 
 const init = () => {
   const $connectButton = document.getElementById("wt-connect-button");

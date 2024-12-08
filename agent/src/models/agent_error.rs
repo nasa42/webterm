@@ -3,12 +3,15 @@ use std::fmt;
 use tokio::sync::broadcast::error::RecvError;
 use tokio::sync::mpsc::error::SendError;
 use tokio_tungstenite::tungstenite;
-use webterm_shared::models::reader_socket_error::ReaderSocketError;
+use webterm_core::models::reader_socket_error::ReaderSocketError;
+use webterm_core::models::webterm_error::WebtermError;
+use webterm_core::types::{ActivityId, FrontendId, SessionId};
 
 #[derive(Debug)]
 pub enum AgentError {
     RuntimeError(String),
     FlatbuffersError(InvalidFlatbuffer),
+    FBParseError(String),
     SocketError(tungstenite::Error),
     SocketClosed,
     SocketSendError(SendError<Vec<u8>>),
@@ -17,6 +20,10 @@ pub enum AgentError {
     PtyProcessError(pty_process::Error),
     IOError(std::io::Error),
     URLParseError(url::ParseError),
+    CoreError(WebtermError),
+    FrontendNotFound(Option<FrontendId>),
+    SessionNotFound(Option<SessionId>),
+    ActivityNotFound(Option<ActivityId>),
 }
 
 impl std::error::Error for AgentError {}
@@ -26,6 +33,7 @@ impl fmt::Display for AgentError {
         match self {
             AgentError::RuntimeError(e) => write!(f, "Runtime error: {}", e),
             AgentError::FlatbuffersError(e) => write!(f, "Flatbuffers error: {}", e),
+            AgentError::FBParseError(e) => write!(f, "Flatbuffers parse error: {}", e),
             AgentError::SocketError(e) => write!(f, "Socket error: {}", e),
             AgentError::SocketClosed => write!(f, "Socket closed"),
             AgentError::SocketSendError(e) => write!(f, "Socket send error: {}", e),
@@ -34,6 +42,10 @@ impl fmt::Display for AgentError {
             AgentError::PtyProcessError(e) => write!(f, "Pty process error: {}", e),
             AgentError::IOError(e) => write!(f, "IO error: {}", e),
             AgentError::URLParseError(e) => write!(f, "URL parse error: {}", e),
+            AgentError::CoreError(e) => write!(f, "CoreError: {}", e),
+            AgentError::FrontendNotFound(e) => write!(f, "Frontend not found: {:?}", e),
+            AgentError::SessionNotFound(e) => write!(f, "Session not found: {:?}", e),
+            AgentError::ActivityNotFound(e) => write!(f, "Activity not found: {:?}", e),
         }
     }
 }
@@ -83,5 +95,11 @@ impl From<std::io::Error> for AgentError {
 impl From<url::ParseError> for AgentError {
     fn from(err: url::ParseError) -> Self {
         AgentError::URLParseError(err)
+    }
+}
+
+impl From<WebtermError> for AgentError {
+    fn from(err: WebtermError) -> Self {
+        AgentError::CoreError(err)
     }
 }

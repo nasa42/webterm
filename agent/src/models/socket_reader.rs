@@ -5,7 +5,7 @@ use tokio::sync::broadcast;
 use tokio_tungstenite::tungstenite::Message;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use tracing::{error, info};
-use webterm_shared::models::reader_socket_error::ReaderSocketError;
+use webterm_core::models::reader_socket_error::ReaderSocketError;
 
 pub type SocketSubscriber = broadcast::Receiver<Result<Option<Vec<u8>>, ReaderSocketError>>;
 
