@@ -1,5 +1,8 @@
+use crate::models::agent_error::AgentError;
+use crate::models::relay_connection::RelayConnection;
 use futures::stream::SplitSink;
 use futures::SinkExt;
+use std::sync::Arc;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
 use tokio_tungstenite::tungstenite::Message;
@@ -10,19 +13,24 @@ pub type SocketPublisher = mpsc::Sender<Vec<u8>>;
 
 pub struct SocketWriter {
     _tx: SocketPublisher,
+    rc: Arc<RelayConnection>,
 }
 
 impl SocketWriter {
     pub fn new(
         mut writer_stream: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
+        rc: Arc<RelayConnection>,
     ) -> Self {
         let (_tx, mut rx) = mpsc::channel::<Vec<u8>>(16);
+        let rc_clone = rc.clone();
+
         tokio::spawn(async move {
             loop {
                 let received = rx.recv().await;
                 match received {
                     None => {
                         info!("mpsc rx closed");
+                        rc_clone.disconnect().await;
                         break;
                     }
                     Some(message) => {
@@ -33,6 +41,11 @@ impl SocketWriter {
                             }
                             Err(error) => {
                                 info!("Error sending message to writer stream: {:?}", error);
+                                rc_clone
+                                    .disconnect_with_error(AgentError::RuntimeError(
+                                        error.to_string(),
+                                    ))
+                                    .await;
                                 break;
                             }
                         }
@@ -40,7 +53,7 @@ impl SocketWriter {
                 }
             }
         });
-        Self { _tx }
+        Self { _tx, rc }
     }
 
     pub fn publisher(&self) -> SocketPublisher {

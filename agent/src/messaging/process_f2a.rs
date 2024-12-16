@@ -5,8 +5,9 @@ use crate::models::send_payload::SendPayload;
 use crate::models::session_registry::SessionRegistry;
 use webterm_core::flatbuffers_helpers::read_message;
 use webterm_core::generated::flatbuffers_schema::talk_v1::{
-    F2aEncryptedRoot, F2aMessage, F2aMessageFormat, F2aPlainMessage, F2aRoot,
+    A2fErrorType, F2aEncryptedRoot, F2aMessage, F2aMessageFormat, F2aPlainMessage, F2aRoot,
 };
+use webterm_core::models::webterm_error::WebtermError;
 use webterm_core::serialisers::talk_v1::a2f_builder::A2fBuilder;
 use webterm_core::serialisers::talk_v1::terminal_output_builder::ActivityInputBlob;
 use webterm_core::types::{ActivityId, Bits96, FrontendId, SessionId};
@@ -44,7 +45,6 @@ async fn process_plain(
                     version,
                     frontend.salt(),
                     frontend.pbkdf2_iterations(),
-                    frontend.challenge_iv()?,
                     frontend.challenge_nonce()?,
                 )
                 .to_flatbuffers_plain();
@@ -59,6 +59,26 @@ async fn process_plain(
             let frontend_arc = FrontendRegistry::find(frontend_id).await?;
             let mut frontend = frontend_arc.lock().await;
 
+            let mut success = false;
+            frontend.init_cryptographer(config.secret_key());
+
+            let decrypted = frontend.cryptographer()?.decrypt(
+                &message
+                    .challenge_aes256gcm_solution()
+                    .ok_or(AgentError::FBParseError(
+                    "Expected challenge aes256gcm solution for auth present verification, got None"
+                        .to_string(),
+                ))?.bytes().to_vec(),
+                &Bits96::from(message.challenge_iv().ok_or(AgentError::FBParseError(
+                    "Expected challenge iv for auth present verification, got None".to_string(),
+                ))?),
+                false,
+            )?;
+
+            if (decrypted == frontend.challenge_nonce()?.0.to_vec()) {
+                success = true;
+            }
+
             let session_arc = if SessionId(message.resume_session_id()) == SessionId(0) {
                 SessionRegistry::build_session().await?
             } else {
@@ -70,9 +90,8 @@ async fn process_plain(
             let mut session = session_arc.lock().await;
             session.set_current_frontend(frontend_arc.clone());
             frontend.register_session(session_arc.clone());
-            frontend.init_cryptographer(config.secret_key());
             let payload = a2f
-                .build_auth_result(true, session.session_id())
+                .build_auth_result(success, session.session_id())
                 .to_flatbuffers_plain();
 
             send.prepare_for_frontend(frontend.frontend_id(), payload)
@@ -94,6 +113,11 @@ async fn process_encrypted(
     frontend_id: FrontendId,
     mut send: SendPayload,
 ) -> Result<SendPayload, AgentError> {
+    let compressed = match root.format() {
+        F2aMessageFormat::Aes256GcmDeflateRaw => true,
+        _ => false,
+    };
+
     let frontend = FrontendRegistry::find(frontend_id).await?;
     let frontend = frontend.lock().await;
 
@@ -104,12 +128,30 @@ async fn process_encrypted(
         frontend.frontend_id(),
     )))?;
 
-    let decrypted = frontend.cryptographer()?.decrypt(
-        encrypted_payload.bytes(),
-        &Bits96::from(root.iv().ok_or(AgentError::FBParseError(
-            "Expected iv for encrypted message, got None".to_string(),
-        ))?),
-    )?;
+    let iv = Bits96::from(root.iv().ok_or(AgentError::FBParseError(
+        "Expected iv for encrypted message, got None".to_string(),
+    ))?);
+
+    let decrypted =
+        match frontend
+            .cryptographer()?
+            .decrypt(encrypted_payload.bytes(), &iv, compressed)
+        {
+            Ok(decrypted) => decrypted,
+            Err(e) => {
+                return match e {
+                    WebtermError::DecryptionError(_) => {
+                        let a2f = A2fBuilder::new();
+                        let error_payload = a2f
+                            .build_error(A2fErrorType::ErrorDecryptionFailed)
+                            .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
+                        send.prepare_for_frontend(frontend.frontend_id(), error_payload);
+                        Ok(send)
+                    }
+                    _ => Err(e.into()),
+                }
+            }
+        };
 
     let message = read_message::<F2aEncryptedRoot>(&decrypted)?;
 

@@ -5,6 +5,7 @@
 export enum A2fErrorType {
   ErrorUnspecified = 0,
   ErrorInvalidData = 1,
+  ErrorDecryptionFailed = 2,
   ErrorPtyRead = 2,
   ErrorPtyWrite = 4,
   ErrorPtyResizeFailed = 5,

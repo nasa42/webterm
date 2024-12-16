@@ -23,7 +23,13 @@ impl<'a> R2fBuilder<'a> {
     }
 
     pub fn root_payload_error(mut self, error_type: R2fErrorType) -> Self {
-        let error = R2fError::create(&mut self.builder, &R2fErrorArgs { error_type });
+        let error = R2fError::create(
+            &mut self.builder,
+            &R2fErrorArgs {
+                error_type,
+                error_message: None,
+            },
+        );
         self.root_payload_type = R2fRootPayload::Error;
         self.root_payload = Some(error.as_union_value());
         self

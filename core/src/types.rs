@@ -39,3 +39,65 @@ impl From<&FbBits256> for Bits256 {
         Self(<[u8; 32]>::from(bits.bytes()))
     }
 }
+
+impl From<u64> for Bits96 {
+    fn from(value: u64) -> Self {
+        let mut data = [0u8; 12];
+        data[4..].copy_from_slice(&value.to_be_bytes());
+        Self(data)
+    }
+}
+
+impl From<u64> for Bits256 {
+    fn from(value: u64) -> Self {
+        let mut data = [0u8; 32];
+        data[24..].copy_from_slice(&value.to_be_bytes());
+        Self(data)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_bits96_conversion() {
+        let original = Bits96([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+        let fb: FbBits96 = original.into();
+        let converted: Bits96 = (&fb).into();
+        assert_eq!(original, converted);
+    }
+
+    #[test]
+    fn test_bits256_conversion() {
+        let mut data = [0u8; 32];
+        for i in 0..32 {
+            data[i] = i as u8;
+        }
+        let original = Bits256(data);
+        let fb: FbBits256 = original.into();
+        let converted: Bits256 = (&fb).into();
+        assert_eq!(original, converted);
+    }
+
+    #[test]
+    fn test_u64_to_bits_conversion() {
+        let value: u64 = 0x1234567890ABCDEF;
+        let bits96 = Bits96::from(value);
+        let bits256 = Bits256::from(value);
+
+        assert_eq!(
+            bits96.0,
+            [0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF]
+        );
+
+        assert_eq!(
+            bits256.0,
+            [
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x34, 0x56, 0x78,
+                0x90, 0xAB, 0xCD, 0xEF
+            ]
+        );
+    }
+}

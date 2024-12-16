@@ -1,12 +1,13 @@
 enum A2fMessageFormat: uint8 {
   Plain = 0,
-  AesGcm256Uncompressed = 1,
-  AesGcm256DeflateRaw = 2,
+  Aes256GcmUncompressed = 1,
+  Aes256GcmDeflateRaw = 2,
 }
 
 enum A2fErrorType: uint8 {
   ErrorUnspecified = 0,
   ErrorInvalidData = 1,
+  ErrorDecryptionFailed = 2,
   ErrorPtyRead = 2,
   ErrorPtyWrite = 4,
   ErrorPtyResizeFailed = 5,
@@ -15,6 +16,7 @@ enum A2fErrorType: uint8 {
 
 table A2fError {
   error_type: A2fErrorType;
+  error_message: string;
 }
 
 table A2fActivityOutput {
@@ -41,9 +43,7 @@ table A2fPlainAuthPreamble {
   agent_version: Version;
   salt: Bits256;
   pbkdf2_iterations: uint32;
-  challenge_encryption_type: A2fMessageFormat;
-  challenge_iv: Bits96;
-  challenge_nonce: Bits256;
+  challenge_nonce: [uint8];
 
   // DoS protection:
   // however, if the "server ID" is not easily guessable, it is hard to DoS the server

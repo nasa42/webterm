@@ -1,5 +1,8 @@
+use crate::models::agent_error::AgentError;
+use crate::models::relay_connection::RelayConnection;
 use futures::stream::SplitStream;
 use futures::StreamExt;
+use std::sync::Arc;
 use tokio::net::TcpStream;
 use tokio::sync::broadcast;
 use tokio_tungstenite::tungstenite::Message;
@@ -11,18 +14,27 @@ pub type SocketSubscriber = broadcast::Receiver<Result<Option<Vec<u8>>, ReaderSo
 
 pub struct SocketReader {
     _tx: broadcast::Sender<Result<Option<Vec<u8>>, ReaderSocketError>>,
+    rc: Arc<RelayConnection>,
 }
 
 impl SocketReader {
-    pub fn new(mut reader_stream: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>) -> Self {
+    pub fn new(
+        mut reader_stream: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
+        rc: Arc<RelayConnection>,
+    ) -> Self {
         let (_tx, _rx) = broadcast::channel::<Result<Option<Vec<u8>>, ReaderSocketError>>(16);
         let tx = _tx.clone();
+        let rc_clone = rc.clone();
+
         tokio::spawn(async move {
             loop {
                 if let Some(received) = reader_stream.next().await {
                     let received = match received {
                         Ok(Message::Binary(received)) => Ok(Some(received)),
-                        Ok(Message::Close(_)) => Err(ReaderSocketError::SocketClosed),
+                        Ok(Message::Close(_)) => {
+                            rc_clone.disconnect().await;
+                            break;
+                        }
                         Ok(Message::Ping(_)) =>
                         /* TODO: handle ping */
                         {
@@ -45,6 +57,9 @@ impl SocketReader {
                         }
                         Err(error) => {
                             error!("Error receiving message from stream: {}", error);
+                            rc_clone
+                                .disconnect_with_error(AgentError::RuntimeError(error.to_string()))
+                                .await;
                             break;
                         }
                     };
@@ -52,11 +67,12 @@ impl SocketReader {
                     let _ = tx.send(received);
                 } else {
                     info!("Reader stream closed");
+                    rc_clone.disconnect().await;
                     break;
                 }
             }
         });
-        Self { _tx }
+        Self { _tx, rc }
     }
 
     pub fn subscriber(&self) -> SocketSubscriber {

@@ -4,6 +4,7 @@ enum F2rErrorType: uint8 {
 
 table F2rError {
   error_type: F2rErrorType;
+  error_message: string;
 }
 
 table F2rToAgent {

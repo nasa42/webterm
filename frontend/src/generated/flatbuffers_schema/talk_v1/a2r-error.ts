@@ -30,12 +30,23 @@ errorType():A2rErrorType {
   return offset ? this.bb!.readUint8(this.bb_pos + offset) : A2rErrorType.ErrorUnspecified;
 }
 
+errorMessage():string|null
+errorMessage(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
+errorMessage(optionalEncoding?:any):string|Uint8Array|null {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
+}
+
 static startA2rError(builder:flatbuffers.Builder) {
-  builder.startObject(1);
+  builder.startObject(2);
 }
 
 static addErrorType(builder:flatbuffers.Builder, errorType:A2rErrorType) {
   builder.addFieldInt8(0, errorType, A2rErrorType.ErrorUnspecified);
+}
+
+static addErrorMessage(builder:flatbuffers.Builder, errorMessageOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(1, errorMessageOffset, 0);
 }
 
 static endA2rError(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -43,9 +54,10 @@ static endA2rError(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createA2rError(builder:flatbuffers.Builder, errorType:A2rErrorType):flatbuffers.Offset {
+static createA2rError(builder:flatbuffers.Builder, errorType:A2rErrorType, errorMessageOffset:flatbuffers.Offset):flatbuffers.Offset {
   A2rError.startA2rError(builder);
   A2rError.addErrorType(builder, errorType);
+  A2rError.addErrorMessage(builder, errorMessageOffset);
   return A2rError.endA2rError(builder);
 }
 }

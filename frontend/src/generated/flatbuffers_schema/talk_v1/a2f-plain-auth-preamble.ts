@@ -4,9 +4,7 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { A2fMessageFormat } from './a2f-message-format.js';
 import { Bits256 } from './bits256.js';
-import { Bits96 } from './bits96.js';
 import { Version } from './version.js';
 
 
@@ -43,23 +41,23 @@ pbkdf2Iterations():number {
   return offset ? this.bb!.readUint32(this.bb_pos + offset) : 0;
 }
 
-challengeEncryptionType():A2fMessageFormat {
+challengeNonce(index: number):number|null {
   const offset = this.bb!.__offset(this.bb_pos, 10);
-  return offset ? this.bb!.readUint8(this.bb_pos + offset) : A2fMessageFormat.Plain;
+  return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
 }
 
-challengeIv(obj?:Bits96):Bits96|null {
-  const offset = this.bb!.__offset(this.bb_pos, 12);
-  return offset ? (obj || new Bits96()).__init(this.bb_pos + offset, this.bb!) : null;
+challengeNonceLength():number {
+  const offset = this.bb!.__offset(this.bb_pos, 10);
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
 }
 
-challengeNonce(obj?:Bits256):Bits256|null {
-  const offset = this.bb!.__offset(this.bb_pos, 14);
-  return offset ? (obj || new Bits256()).__init(this.bb_pos + offset, this.bb!) : null;
+challengeNonceArray():Uint8Array|null {
+  const offset = this.bb!.__offset(this.bb_pos, 10);
+  return offset ? new Uint8Array(this.bb!.bytes().buffer, this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset), this.bb!.__vector_len(this.bb_pos + offset)) : null;
 }
 
 static startA2fPlainAuthPreamble(builder:flatbuffers.Builder) {
-  builder.startObject(6);
+  builder.startObject(4);
 }
 
 static addAgentVersion(builder:flatbuffers.Builder, agentVersionOffset:flatbuffers.Offset) {
@@ -74,16 +72,20 @@ static addPbkdf2Iterations(builder:flatbuffers.Builder, pbkdf2Iterations:number)
   builder.addFieldInt32(2, pbkdf2Iterations, 0);
 }
 
-static addChallengeEncryptionType(builder:flatbuffers.Builder, challengeEncryptionType:A2fMessageFormat) {
-  builder.addFieldInt8(3, challengeEncryptionType, A2fMessageFormat.Plain);
-}
-
-static addChallengeIv(builder:flatbuffers.Builder, challengeIvOffset:flatbuffers.Offset) {
-  builder.addFieldStruct(4, challengeIvOffset, 0);
-}
-
 static addChallengeNonce(builder:flatbuffers.Builder, challengeNonceOffset:flatbuffers.Offset) {
-  builder.addFieldStruct(5, challengeNonceOffset, 0);
+  builder.addFieldOffset(3, challengeNonceOffset, 0);
+}
+
+static createChallengeNonceVector(builder:flatbuffers.Builder, data:number[]|Uint8Array):flatbuffers.Offset {
+  builder.startVector(1, data.length, 1);
+  for (let i = data.length - 1; i >= 0; i--) {
+    builder.addInt8(data[i]!);
+  }
+  return builder.endVector();
+}
+
+static startChallengeNonceVector(builder:flatbuffers.Builder, numElems:number) {
+  builder.startVector(1, numElems, 1);
 }
 
 static endA2fPlainAuthPreamble(builder:flatbuffers.Builder):flatbuffers.Offset {

@@ -15,9 +15,10 @@ pub const ENUM_MIN_A_2F_ERROR_TYPE: u8 = 0;
 pub const ENUM_MAX_A_2F_ERROR_TYPE: u8 = 6;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_A_2F_ERROR_TYPE: [A2fErrorType; 6] = [
+pub const ENUM_VALUES_A_2F_ERROR_TYPE: [A2fErrorType; 7] = [
   A2fErrorType::ErrorUnspecified,
   A2fErrorType::ErrorInvalidData,
+  A2fErrorType::ErrorDecryptionFailed,
   A2fErrorType::ErrorPtyRead,
   A2fErrorType::ErrorPtyWrite,
   A2fErrorType::ErrorPtyResizeFailed,
@@ -31,6 +32,7 @@ pub struct A2fErrorType(pub u8);
 impl A2fErrorType {
   pub const ErrorUnspecified: Self = Self(0);
   pub const ErrorInvalidData: Self = Self(1);
+  pub const ErrorDecryptionFailed: Self = Self(2);
   pub const ErrorPtyRead: Self = Self(2);
   pub const ErrorPtyWrite: Self = Self(4);
   pub const ErrorPtyResizeFailed: Self = Self(5);
@@ -41,6 +43,7 @@ impl A2fErrorType {
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::ErrorUnspecified,
     Self::ErrorInvalidData,
+    Self::ErrorDecryptionFailed,
     Self::ErrorPtyRead,
     Self::ErrorPtyWrite,
     Self::ErrorPtyResizeFailed,
@@ -51,6 +54,7 @@ impl A2fErrorType {
     match self {
       Self::ErrorUnspecified => Some("ErrorUnspecified"),
       Self::ErrorInvalidData => Some("ErrorInvalidData"),
+      Self::ErrorDecryptionFailed => Some("ErrorDecryptionFailed"),
       Self::ErrorPtyRead => Some("ErrorPtyRead"),
       Self::ErrorPtyWrite => Some("ErrorPtyWrite"),
       Self::ErrorPtyResizeFailed => Some("ErrorPtyResizeFailed"),

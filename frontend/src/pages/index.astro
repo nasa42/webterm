@@ -3,7 +3,16 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Webterm Terminal">
-  <button id="wt-connect-button">Connect</button>
+  <form id="app-homepage-form">
+    <div class="mb-3">
+      <label for="server-id" class="form-label">Server ID</label>
+      <input type="text" class="form-control" id="app-server-id" name="server-id" placeholder="Enter Server ID" />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="app-password" name="password" placeholder="Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Connect</button>
+  </form>
+  <script src="../scripts/client/entry-points/homepage.ts"></script>
 </Layout>
-
-<script src="../scripts/client/homepage.ts"></script>

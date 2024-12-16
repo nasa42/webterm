@@ -1,7 +1,5 @@
 import * as flatbuffers from "flatbuffers";
 import {
-  Bits256,
-  Bits96,
   EmptyTable,
   F2aActivityInput,
   F2aEncryptedRoot,
@@ -16,6 +14,8 @@ import {
 import { type ActivityInputBlob, F2aRootBlob } from "../types/BinaryBlob.ts";
 import type { ActivityId } from "../types/BigIntLike.ts";
 import { VERSION } from "../config.ts";
+import { Cryptographer } from "../cryptography/Cryptographer.ts";
+import { type Bits96Array } from "../types/BitsArray.ts";
 
 interface BuilderState {}
 
@@ -51,13 +51,18 @@ export class F2aBuilder<State extends BuilderState> {
     return new F2aBuilder(this.builder, new PlainReady(), F2aPlainMessage.AuthRequestPreamble, null, offset);
   }
 
-  buildAuthRequestVerification(): F2aBuilder<PlainReady> {
-    const solutionOffset = Bits256.createBits256(this.builder, []);
-    const offset = F2aPlainAuthPresentVerification.createF2aPlainAuthPresentVerification(
-      this.builder,
-      solutionOffset,
-      0n,
-    );
+  buildAuthRequestVerification(
+    solution_iv: Bits96Array,
+    solution: Uint8Array,
+    resumeSessionId: bigint,
+  ): F2aBuilder<PlainReady> {
+    const solutionOffset = this.builder.createByteVector(solution);
+    F2aPlainAuthPresentVerification.startF2aPlainAuthPresentVerification(this.builder);
+    F2aPlainAuthPresentVerification.addChallengeIv(this.builder, solution_iv.toFbBits96(this.builder));
+    F2aPlainAuthPresentVerification.addChallengeAes256gcmSolution(this.builder, solutionOffset);
+    F2aPlainAuthPresentVerification.addResumeSessionId(this.builder, resumeSessionId);
+    const offset = F2aPlainAuthPresentVerification.endF2aPlainAuthPresentVerification(this.builder);
+
     return new F2aBuilder(this.builder, new PlainReady(), F2aPlainMessage.AuthPresentVerification, null, offset);
   }
 
@@ -83,7 +88,7 @@ export class F2aBuilder<State extends BuilderState> {
     return new F2aRootBlob(this.builder.asUint8Array());
   }
 
-  toFlatbuffersEncrypted(this: F2aBuilder<EncryptionReady>): F2aRootBlob {
+  async toFlatbuffersEncrypted(this: F2aBuilder<EncryptionReady>, cryptographer: Cryptographer): Promise<F2aRootBlob> {
     F2aEncryptedRoot.startF2aEncryptedRoot(this.builder);
     F2aEncryptedRoot.addMessageType(this.builder, this.encryptedMessageType || F2aMessage.NONE);
     F2aEncryptedRoot.addMessage(this.builder, this.payloadOffset);
@@ -91,16 +96,16 @@ export class F2aBuilder<State extends BuilderState> {
     this.builder.finish(payloadOffset);
     const payload = this.builder.asUint8Array();
 
-    // TODO: ADD ENCRYPTION
+    const { ciphertext, iv, compressed } = await cryptographer.encrypt(payload, true);
 
-    const encryptedPayload = payload;
+    const format = compressed ? F2aMessageFormat.Aes256GcmDeflateRaw : F2aMessageFormat.Aes256GcmUncompressed;
 
     const builder = new flatbuffers.Builder();
 
-    let encryptedPayloadOffset = builder.createByteVector(encryptedPayload);
+    let encryptedPayloadOffset = builder.createByteVector(ciphertext);
     F2aRoot.startF2aRoot(builder);
-    F2aRoot.addFormat(builder, F2aMessageFormat.AesGcm256DeflateRaw);
-    F2aRoot.addIv(builder, Bits96.createBits96(builder, [1, 2, 3, 4]));
+    F2aRoot.addFormat(builder, format);
+    F2aRoot.addIv(builder, iv.toFbBits96(builder));
     F2aRoot.addEncryptedPayload(builder, encryptedPayloadOffset);
     const rootOffset = F2aRoot.endF2aRoot(builder);
 

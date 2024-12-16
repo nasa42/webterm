@@ -1,20 +1,32 @@
 import { RelayConnection } from "./RelayConnection.ts";
 import { TerminalConnection } from "./TerminalConnection.ts";
-import { readR2fRoot } from "../functions/readR2fRoot.ts";
+import { readR2fRoot } from "../parsers/readR2fRoot.ts";
 import { SendPayload } from "./SendPayload.ts";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 import type { ActivityId } from "../types/BigIntLike.ts";
-import { processR2f } from "../functions/processR2f.ts";
+import { processR2f } from "../pipeline/processR2f.ts";
+import { Cryptographer } from "../cryptography/Cryptographer.ts";
+import type { Bits256Array } from "../types/BitsArray.ts";
 
 export class Runner {
   private readonly socket: WebSocket;
   private readonly relayConnection: RelayConnection;
   private readonly terminalConnection: TerminalConnection;
   private currentActivityId?: ActivityId;
+  private cryptographer_?: Cryptographer;
 
-  constructor(url: string, element: HTMLElement) {
+  constructor(
+    url: string,
+    element: HTMLElement,
+    private readonly serverId: string,
+    private readonly serverPassword: string,
+  ) {
     this.socket = new WebSocket(url);
-    this.relayConnection = new RelayConnection(this.socket, (event) => this.onWebsocketMessage(event));
+    this.relayConnection = new RelayConnection(
+      this,
+      this.socket,
+      async (event) => await this.onWebsocketMessage(event),
+    );
     this.terminalConnection = new TerminalConnection(element, (data) => this.onTerminalUserInput(data));
     window.addEventListener(
       "resize",
@@ -22,11 +34,16 @@ export class Runner {
     );
   }
 
-  private onWebsocketMessage(event: MessageEvent) {
+  private async onWebsocketMessage(event: MessageEvent) {
     const r2fRoot = readR2fRoot(new Uint8Array(event.data));
-    let send = new SendPayload();
+    let send = new SendPayload(this);
 
-    processR2f(r2fRoot, send);
+    try {
+      await processR2f(r2fRoot, send);
+    } catch (error) {
+      console.error(error);
+      return;
+    }
 
     if (send.toTerminal) {
       this.terminalConnection.write(send.toTerminal);
@@ -45,15 +62,35 @@ export class Runner {
     }
   }
 
-  private onTerminalUserInput(data: string) {
+  private async onTerminalUserInput(data: string) {
     if (!this.currentActivityId) {
       throw new Error("Did not expect ActivityId to be undefined");
     }
 
-    this.relayConnection.dispatchTerminalUserInput(this.currentActivityId, data);
+    await this.relayConnection.dispatchTerminalUserInput(this.currentActivityId, data);
   }
 
-  private onWindowResize() {
-    this.relayConnection.dispatchResize(this.terminalConnection.terminalCols(), this.terminalConnection.terminalRows());
+  private async onWindowResize() {
+    if (!this.currentActivityId) {
+      throw new Error("Did not expect ActivityId to be undefined");
+    }
+
+    await this.relayConnection.dispatchResize(
+      this.currentActivityId,
+      this.terminalConnection.terminalCols(),
+      this.terminalConnection.terminalRows(),
+    );
+  }
+
+  async initCryptographer({ iterations, salt }: { iterations: number; salt: Bits256Array }) {
+    const { cryptographer } = await Cryptographer.new({ iterations, salt, secretKey: this.serverPassword });
+    this.cryptographer_ = cryptographer;
+  }
+
+  cryptographer(): Cryptographer {
+    if (!this.cryptographer_) {
+      throw new Error("Cryptographer not initialised");
+    }
+    return this.cryptographer_;
   }
 }

@@ -5,6 +5,7 @@ enum R2fErrorType: uint8 {
 
 table R2fError {
   error_type: R2fErrorType;
+  error_message: string;
 }
 
 table R2fFromAgent {

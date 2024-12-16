@@ -17,8 +17,8 @@ pub const ENUM_MAX_F_2A_MESSAGE_FORMAT: u8 = 2;
 #[allow(non_camel_case_types)]
 pub const ENUM_VALUES_F_2A_MESSAGE_FORMAT: [F2aMessageFormat; 3] = [
   F2aMessageFormat::Plain,
-  F2aMessageFormat::AesGcm256Uncompressed,
-  F2aMessageFormat::AesGcm256DeflateRaw,
+  F2aMessageFormat::Aes256GcmUncompressed,
+  F2aMessageFormat::Aes256GcmDeflateRaw,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
@@ -27,22 +27,22 @@ pub struct F2aMessageFormat(pub u8);
 #[allow(non_upper_case_globals)]
 impl F2aMessageFormat {
   pub const Plain: Self = Self(0);
-  pub const AesGcm256Uncompressed: Self = Self(1);
-  pub const AesGcm256DeflateRaw: Self = Self(2);
+  pub const Aes256GcmUncompressed: Self = Self(1);
+  pub const Aes256GcmDeflateRaw: Self = Self(2);
 
   pub const ENUM_MIN: u8 = 0;
   pub const ENUM_MAX: u8 = 2;
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::Plain,
-    Self::AesGcm256Uncompressed,
-    Self::AesGcm256DeflateRaw,
+    Self::Aes256GcmUncompressed,
+    Self::Aes256GcmDeflateRaw,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
     match self {
       Self::Plain => Some("Plain"),
-      Self::AesGcm256Uncompressed => Some("AesGcm256Uncompressed"),
-      Self::AesGcm256DeflateRaw => Some("AesGcm256DeflateRaw"),
+      Self::Aes256GcmUncompressed => Some("Aes256GcmUncompressed"),
+      Self::Aes256GcmDeflateRaw => Some("Aes256GcmDeflateRaw"),
       _ => None,
     }
   }

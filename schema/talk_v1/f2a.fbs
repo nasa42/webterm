@@ -1,7 +1,7 @@
 enum F2aMessageFormat: uint8 {
   Plain = 0,
-  AesGcm256Uncompressed = 1,
-  AesGcm256DeflateRaw = 2,
+  Aes256GcmUncompressed = 1,
+  Aes256GcmDeflateRaw = 2,
 }
 
 enum F2aErrorType: uint8 {
@@ -10,6 +10,7 @@ enum F2aErrorType: uint8 {
 
 table F2aError {
   error_type: F2aErrorType;
+  error_message: string;
 }
 
 union F2aMessage {
@@ -33,7 +34,8 @@ table F2aPlainAuthRequestPreamble {
 }
 
 table F2aPlainAuthPresentVerification {
-  challenge_solution: Bits256;
+  challenge_iv: Bits96;
+  challenge_aes256gcm_solution: [uint8];
   resume_session_id: uint64; // if zero, create a new session
 }
 

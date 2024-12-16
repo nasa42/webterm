@@ -25,7 +25,13 @@ impl<'a> A2rBuilder<'a> {
     }
 
     pub fn root_payload_error(mut self, error_type: A2rErrorType) -> Self {
-        let error = A2rError::create(&mut self.builder, &A2rErrorArgs { error_type });
+        let error = A2rError::create(
+            &mut self.builder,
+            &A2rErrorArgs {
+                error_type,
+                error_message: None,
+            },
+        );
         self.root_payload_type = A2rRootPayload::Error;
         self.root_payload = Some(error.as_union_value());
         self

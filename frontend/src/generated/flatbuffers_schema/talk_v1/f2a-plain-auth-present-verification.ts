@@ -4,7 +4,7 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-import { Bits256 } from './bits256.js';
+import { Bits96 } from './bits96.js';
 
 
 export class F2aPlainAuthPresentVerification {
@@ -25,26 +25,57 @@ static getSizePrefixedRootAsF2aPlainAuthPresentVerification(bb:flatbuffers.ByteB
   return (obj || new F2aPlainAuthPresentVerification()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 }
 
-challengeSolution(obj?:Bits256):Bits256|null {
+challengeIv(obj?:Bits96):Bits96|null {
   const offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? (obj || new Bits256()).__init(this.bb_pos + offset, this.bb!) : null;
+  return offset ? (obj || new Bits96()).__init(this.bb_pos + offset, this.bb!) : null;
+}
+
+challengeAes256gcmSolution(index: number):number|null {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? this.bb!.readUint8(this.bb!.__vector(this.bb_pos + offset) + index) : 0;
+}
+
+challengeAes256gcmSolutionLength():number {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+}
+
+challengeAes256gcmSolutionArray():Uint8Array|null {
+  const offset = this.bb!.__offset(this.bb_pos, 6);
+  return offset ? new Uint8Array(this.bb!.bytes().buffer, this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset), this.bb!.__vector_len(this.bb_pos + offset)) : null;
 }
 
 resumeSessionId():bigint {
-  const offset = this.bb!.__offset(this.bb_pos, 6);
+  const offset = this.bb!.__offset(this.bb_pos, 8);
   return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
 }
 
 static startF2aPlainAuthPresentVerification(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 }
 
-static addChallengeSolution(builder:flatbuffers.Builder, challengeSolutionOffset:flatbuffers.Offset) {
-  builder.addFieldStruct(0, challengeSolutionOffset, 0);
+static addChallengeIv(builder:flatbuffers.Builder, challengeIvOffset:flatbuffers.Offset) {
+  builder.addFieldStruct(0, challengeIvOffset, 0);
+}
+
+static addChallengeAes256gcmSolution(builder:flatbuffers.Builder, challengeAes256gcmSolutionOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(1, challengeAes256gcmSolutionOffset, 0);
+}
+
+static createChallengeAes256gcmSolutionVector(builder:flatbuffers.Builder, data:number[]|Uint8Array):flatbuffers.Offset {
+  builder.startVector(1, data.length, 1);
+  for (let i = data.length - 1; i >= 0; i--) {
+    builder.addInt8(data[i]!);
+  }
+  return builder.endVector();
+}
+
+static startChallengeAes256gcmSolutionVector(builder:flatbuffers.Builder, numElems:number) {
+  builder.startVector(1, numElems, 1);
 }
 
 static addResumeSessionId(builder:flatbuffers.Builder, resumeSessionId:bigint) {
-  builder.addFieldInt64(1, resumeSessionId, BigInt('0'));
+  builder.addFieldInt64(2, resumeSessionId, BigInt('0'));
 }
 
 static endF2aPlainAuthPresentVerification(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -52,9 +83,10 @@ static endF2aPlainAuthPresentVerification(builder:flatbuffers.Builder):flatbuffe
   return offset;
 }
 
-static createF2aPlainAuthPresentVerification(builder:flatbuffers.Builder, challengeSolutionOffset:flatbuffers.Offset, resumeSessionId:bigint):flatbuffers.Offset {
+static createF2aPlainAuthPresentVerification(builder:flatbuffers.Builder, challengeIvOffset:flatbuffers.Offset, challengeAes256gcmSolutionOffset:flatbuffers.Offset, resumeSessionId:bigint):flatbuffers.Offset {
   F2aPlainAuthPresentVerification.startF2aPlainAuthPresentVerification(builder);
-  F2aPlainAuthPresentVerification.addChallengeSolution(builder, challengeSolutionOffset);
+  F2aPlainAuthPresentVerification.addChallengeIv(builder, challengeIvOffset);
+  F2aPlainAuthPresentVerification.addChallengeAes256gcmSolution(builder, challengeAes256gcmSolutionOffset);
   F2aPlainAuthPresentVerification.addResumeSessionId(builder, resumeSessionId);
   return F2aPlainAuthPresentVerification.endF2aPlainAuthPresentVerification(builder);
 }

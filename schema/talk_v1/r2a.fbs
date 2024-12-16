@@ -4,6 +4,7 @@ enum R2aErrorType: uint8 {
 
 table R2aError {
   error_type: R2aErrorType;
+  error_message: string;
 }
 
 table R2aFromFrontend {

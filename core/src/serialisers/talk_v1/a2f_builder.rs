@@ -6,7 +6,7 @@ use crate::generated::flatbuffers_schema::talk_v1::{
     A2fPlainAuthResult, A2fPlainAuthResultArgs, A2fPlainMessage, A2fRoot, A2fRootArgs, Version,
 };
 use crate::models::webterm_error::WebtermError;
-use crate::types::{ActivityId, Bits256, Bits96, SessionId};
+use crate::types::{ActivityId, Bits256, SessionId};
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
 
 pub struct A2fRootBlob(pub Vec<u8>);
@@ -42,7 +42,6 @@ impl<'a> A2fBuilder<'a, Initial> {
         agent_version: semver::Version,
         salt: Bits256,
         pbkdf2_iterations: u32,
-        challenge_iv: Bits96,
         challenge_nonce: Bits256,
     ) -> A2fBuilder<'a, PlainReady> {
         let version = Version::new(
@@ -50,15 +49,14 @@ impl<'a> A2fBuilder<'a, Initial> {
             agent_version.minor as u8,
             agent_version.patch as u8,
         );
+        let nonce_offset = self.builder.create_vector(&challenge_nonce.0);
         let preamble = A2fPlainAuthPreamble::create(
             &mut self.builder,
             &A2fPlainAuthPreambleArgs {
                 agent_version: Some(&version),
                 salt: Some(&salt.into()),
                 pbkdf2_iterations,
-                challenge_encryption_type: A2fMessageFormat::AesGcm256DeflateRaw,
-                challenge_iv: Some(&challenge_iv.into()),
-                challenge_nonce: Some(&challenge_nonce.into()),
+                challenge_nonce: Some(nonce_offset),
             },
         );
 
@@ -92,7 +90,13 @@ impl<'a> A2fBuilder<'a, Initial> {
     }
 
     pub fn build_error(mut self, error_type: A2fErrorType) -> A2fBuilder<'a, EncryptionReady> {
-        let error = A2fError::create(&mut self.builder, &A2fErrorArgs { error_type });
+        let error = A2fError::create(
+            &mut self.builder,
+            &A2fErrorArgs {
+                error_type,
+                error_message: None,
+            },
+        );
 
         A2fBuilder {
             builder: self.builder,
@@ -165,15 +169,21 @@ impl<'a> A2fBuilder<'a, EncryptionReady> {
 
         self.builder.finish(encrypted_root, None);
         let message_buffer = self.builder.finished_data();
-        let response = encryptor.encrypt(message_buffer)?;
+        let response = encryptor.encrypt(message_buffer, true)?;
 
         let mut builder = FlatBufferBuilder::new();
         let encrypted_payload_offset = builder.create_vector(&response.ciphertext);
 
+        let format = if response.compressed {
+            A2fMessageFormat::Aes256GcmDeflateRaw
+        } else {
+            A2fMessageFormat::Aes256GcmUncompressed
+        };
+
         let root = A2fRoot::create(
             &mut builder,
             &A2fRootArgs {
-                format: A2fMessageFormat::AesGcm256Uncompressed,
+                format,
                 iv: Some(&response.iv.into()),
                 plain_message_type: A2fPlainMessage::NONE,
                 plain_message: None,

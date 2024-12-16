@@ -9,35 +9,47 @@ import {
   A2fRoot,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
 import { F2aBuilder } from "../serialisers/F2aBuilder.ts";
-import { readA2fEncryptedRoot } from "./readA2fEncryptedRoot.ts";
-import { readTerminalOutput } from "./readTerminalOutput.ts";
+import { readA2fEncryptedRoot } from "../parsers/readA2fEncryptedRoot.ts";
+import { readTerminalOutput } from "../parsers/readTerminalOutput.ts";
 import { processTerminalOutput } from "./processTerminalOutput.ts";
 import { ActivityId } from "../types/BigIntLike.ts";
+import { Bits256Array, Bits96Array } from "../types/BitsArray.ts";
+import { activeNotification } from "../ui/ActiveNotificationManager.ts";
 
-export const processA2f = (agentRoot: A2fRoot, send: SendPayload) => {
+export const processA2f = async (agentRoot: A2fRoot, send: SendPayload) => {
   switch (agentRoot.format()) {
     case A2fMessageFormat.Plain:
-      processPlain(agentRoot, send);
+      await processPlain(agentRoot, send);
       return;
     default:
-      processEncrypted(agentRoot, send);
+      await processEncrypted(agentRoot, send);
       return;
   }
 };
 
-const processPlain = (payload: A2fRoot, send: SendPayload) => {
+const processPlain = async (payload: A2fRoot, send: SendPayload) => {
   switch (payload.plainMessageType()) {
     case A2fPlainMessage.AuthPreamble:
       let preamble = payload.plainMessage(new A2fPlainAuthPreamble()) as A2fPlainAuthPreamble | null;
-      if (!preamble) return;
+      const salt = preamble?.salt();
+      if (!preamble || !preamble.pbkdf2Iterations() || !salt) {
+        alert("Invalid preamble");
+        return;
+      }
       console.info("received preamble");
       let preambleResp = F2aBuilder.new();
-      send.toAgentPlain = preambleResp.buildAuthRequestVerification();
+      await send.runner.initCryptographer({
+        iterations: preamble.pbkdf2Iterations(),
+        salt: Bits256Array.fromFbBits256(salt),
+      });
+      const { ciphertext, iv } = await send.runner.cryptographer().encrypt(preamble.challengeNonceArray()!, false);
+      send.toAgentPlain = preambleResp.buildAuthRequestVerification(iv, ciphertext, 0n);
       return;
     case A2fPlainMessage.AuthResult:
       let result = payload.plainMessage(new A2fPlainAuthResult()) as A2fPlainAuthResult | null;
       if (!result) return;
-      console.info("received auth result");
+      console.info(`received auth result: ${result.successAuth()}`);
+      activeNotification.clear();
       let resp = F2aBuilder.new();
       send.toAgentEncrypted = resp.buildActivityCreateTerminal();
       return;
@@ -47,16 +59,27 @@ const processPlain = (payload: A2fRoot, send: SendPayload) => {
   }
 };
 
-const processEncrypted = (agentRoot: A2fRoot, send: SendPayload) => {
-  // TODO: DECRYPT MESSAGE HERE
-  const decrypted = agentRoot.encryptedPayloadArray();
+const processEncrypted = async (agentRoot: A2fRoot, send: SendPayload) => {
+  const ciphertext = agentRoot.encryptedPayloadArray();
+  const iv = agentRoot.iv();
 
-  if (!decrypted) {
+  if (!ciphertext || !iv) {
+    // TODO: Return an error to agent
+    console.error("No ciphertext or iv found in agent root");
+    return;
+  }
+
+  const compressed = agentRoot.format() === A2fMessageFormat.Aes256GcmDeflateRaw;
+
+  let plaintext = await send.runner.cryptographer().decrypt(ciphertext, Bits96Array.fromFbBits96(iv), compressed);
+
+  if (!plaintext) {
+    // TODO: Return an error to agent
     console.error("No decrypted payload");
     return;
   }
 
-  let message = readA2fEncryptedRoot(decrypted);
+  let message = readA2fEncryptedRoot(plaintext);
 
   switch (message.messageType()) {
     case A2fMessage.ActivityOutput:

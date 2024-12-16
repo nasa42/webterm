@@ -37,16 +37,16 @@ impl RelayConnection {
 
         let record_clone = record.clone();
         tokio::spawn(async move {
-            record_clone.connection_manager().await;
+            Self::connection_manager(record_clone).await;
         });
 
         record
     }
 
-    async fn connection_manager(&self) {
+    async fn connection_manager(self: Arc<Self>) {
         loop {
             let relay = self.config.random_relay();
-            match self.try_connect(relay.clone()).await {
+            match self.try_connect(relay.clone(), self.clone()).await {
                 Ok(_) => {
                     info!("Connected to relay: {}", relay.websocket_url());
                     self.connect_signal.notify_waiters();
@@ -67,7 +67,7 @@ impl RelayConnection {
         }
     }
 
-    async fn connect(&self, relay: Arc<Relay>) -> Result<(), AgentError> {
+    async fn connect(&self, relay: Arc<Relay>, self_arc: Arc<Self>) -> Result<(), AgentError> {
         debug!("Connecting to relay: {}", relay.websocket_url());
         let mut state = self.state.write().await;
 
@@ -77,18 +77,18 @@ impl RelayConnection {
 
         *state = Some(State {
             relay,
-            writer: SocketWriter::new(relay_writer),
-            reader: SocketReader::new(relay_reader),
+            writer: SocketWriter::new(relay_writer, self_arc.clone()),
+            reader: SocketReader::new(relay_reader, self_arc),
         });
 
         Ok(())
     }
 
-    async fn try_connect(&self, relay: Arc<Relay>) -> Result<(), AgentError> {
+    async fn try_connect(&self, relay: Arc<Relay>, self_arc: Arc<Self>) -> Result<(), AgentError> {
         if self.connected().await {
             return Ok(());
         }
-        self.connect(relay).await
+        self.connect(relay, self_arc).await
     }
 
     pub async fn connected(&self) -> bool {
