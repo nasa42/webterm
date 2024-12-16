@@ -11,6 +11,12 @@ import {
 import { VERSION } from "../config";
 import { ActivityInputBlob } from "../types/BinaryBlob";
 import { ActivityId } from "../types/BigIntLike";
+import { Cryptographer } from "../cryptography/Cryptographer.ts";
+
+const { cryptographer } = await Cryptographer.new({
+  iterations: 1,
+  secretKey: "a",
+});
 
 describe("F2aBuilder", () => {
   describe("new()", () => {
@@ -51,14 +57,14 @@ describe("F2aBuilder", () => {
   });
 
   describe("buildActivityCreateTerminal()", () => {
-    it("should create an ActivityCreateTerminal payload", () => {
+    it("should create an ActivityCreateTerminal payload", async () => {
       const builder = F2aBuilder.new().buildActivityCreateTerminal();
-      const blob = builder.toFlatbuffersEncrypted();
+      const blob = await builder.toFlatbuffersEncrypted(cryptographer);
 
       const buf = new flatbuffers.ByteBuffer(blob.data());
       const root = F2aRoot.getRootAsF2aRoot(buf);
 
-      expect(root.format()).toBe(F2aMessageFormat.AesGcm256DeflateRaw);
+      expect(root.format()).toBe(F2aMessageFormat.Aes256GcmDeflateRaw);
       // Note: Encrypted message verification would happen after decryption
     });
 
@@ -72,17 +78,17 @@ describe("F2aBuilder", () => {
   });
 
   describe("buildActivityInputMessage()", () => {
-    it("should create an ActivityInput payload", () => {
+    it("should create an ActivityInput payload", async () => {
       const testPayload = new ActivityInputBlob(new Uint8Array([1, 2, 3, 4]));
       const testActivityId = new ActivityId(42n);
 
       const builder = F2aBuilder.new().buildActivityInputMessage(testActivityId, testPayload);
-      const blob = builder.toFlatbuffersEncrypted();
+      const blob = await builder.toFlatbuffersEncrypted(cryptographer);
 
       const buf = new flatbuffers.ByteBuffer(blob.data());
       const root = F2aRoot.getRootAsF2aRoot(buf);
 
-      expect(root.format()).toBe(F2aMessageFormat.AesGcm256DeflateRaw);
+      expect(root.format()).toBe(F2aMessageFormat.Aes256GcmDeflateRaw);
       // Note: Activity input details would be verified after decryption
     });
 

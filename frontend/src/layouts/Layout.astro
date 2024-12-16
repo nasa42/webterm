@@ -6,25 +6,25 @@ interface Props {
   title?: string;
 }
 
-const {title = "Webterm"} = Astro.props;
+const { title = "Webterm" } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8"/>
-    <meta name="description" content="Access your cloud server's terminal from anywhere"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Access your cloud server's terminal from anywhere" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+    <script src="../scripts/client/entry-points/global-imports.ts"></script>
   </head>
   <body>
-    <MainNavRibbon/>
+    <MainNavRibbon />
 
     <main>
-      <slot/>
+      <slot />
     </main>
 
-    <script src="../scripts/client/global_imports.ts"></script>
   </body>
 </html>

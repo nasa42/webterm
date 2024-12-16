@@ -28,9 +28,7 @@ impl<'a> A2fPlainAuthPreamble<'a> {
   pub const VT_AGENT_VERSION: flatbuffers::VOffsetT = 4;
   pub const VT_SALT: flatbuffers::VOffsetT = 6;
   pub const VT_PBKDF2_ITERATIONS: flatbuffers::VOffsetT = 8;
-  pub const VT_CHALLENGE_ENCRYPTION_TYPE: flatbuffers::VOffsetT = 10;
-  pub const VT_CHALLENGE_IV: flatbuffers::VOffsetT = 12;
-  pub const VT_CHALLENGE_NONCE: flatbuffers::VOffsetT = 14;
+  pub const VT_CHALLENGE_NONCE: flatbuffers::VOffsetT = 10;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -43,11 +41,9 @@ impl<'a> A2fPlainAuthPreamble<'a> {
   ) -> flatbuffers::WIPOffset<A2fPlainAuthPreamble<'bldr>> {
     let mut builder = A2fPlainAuthPreambleBuilder::new(_fbb);
     if let Some(x) = args.challenge_nonce { builder.add_challenge_nonce(x); }
-    if let Some(x) = args.challenge_iv { builder.add_challenge_iv(x); }
     builder.add_pbkdf2_iterations(args.pbkdf2_iterations);
     if let Some(x) = args.salt { builder.add_salt(x); }
     if let Some(x) = args.agent_version { builder.add_agent_version(x); }
-    builder.add_challenge_encryption_type(args.challenge_encryption_type);
     builder.finish()
   }
 
@@ -74,25 +70,11 @@ impl<'a> A2fPlainAuthPreamble<'a> {
     unsafe { self._tab.get::<u32>(A2fPlainAuthPreamble::VT_PBKDF2_ITERATIONS, Some(0)).unwrap()}
   }
   #[inline]
-  pub fn challenge_encryption_type(&self) -> A2fMessageFormat {
+  pub fn challenge_nonce(&self) -> Option<flatbuffers::Vector<'a, u8>> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<A2fMessageFormat>(A2fPlainAuthPreamble::VT_CHALLENGE_ENCRYPTION_TYPE, Some(A2fMessageFormat::Plain)).unwrap()}
-  }
-  #[inline]
-  pub fn challenge_iv(&self) -> Option<&'a Bits96> {
-    // Safety:
-    // Created from valid Table for this object
-    // which contains a valid value in this slot
-    unsafe { self._tab.get::<Bits96>(A2fPlainAuthPreamble::VT_CHALLENGE_IV, None)}
-  }
-  #[inline]
-  pub fn challenge_nonce(&self) -> Option<&'a Bits256> {
-    // Safety:
-    // Created from valid Table for this object
-    // which contains a valid value in this slot
-    unsafe { self._tab.get::<Bits256>(A2fPlainAuthPreamble::VT_CHALLENGE_NONCE, None)}
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, u8>>>(A2fPlainAuthPreamble::VT_CHALLENGE_NONCE, None)}
   }
 }
 
@@ -106,9 +88,7 @@ impl flatbuffers::Verifiable for A2fPlainAuthPreamble<'_> {
      .visit_field::<Version>("agent_version", Self::VT_AGENT_VERSION, false)?
      .visit_field::<Bits256>("salt", Self::VT_SALT, false)?
      .visit_field::<u32>("pbkdf2_iterations", Self::VT_PBKDF2_ITERATIONS, false)?
-     .visit_field::<A2fMessageFormat>("challenge_encryption_type", Self::VT_CHALLENGE_ENCRYPTION_TYPE, false)?
-     .visit_field::<Bits96>("challenge_iv", Self::VT_CHALLENGE_IV, false)?
-     .visit_field::<Bits256>("challenge_nonce", Self::VT_CHALLENGE_NONCE, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, u8>>>("challenge_nonce", Self::VT_CHALLENGE_NONCE, false)?
      .finish();
     Ok(())
   }
@@ -117,9 +97,7 @@ pub struct A2fPlainAuthPreambleArgs<'a> {
     pub agent_version: Option<&'a Version>,
     pub salt: Option<&'a Bits256>,
     pub pbkdf2_iterations: u32,
-    pub challenge_encryption_type: A2fMessageFormat,
-    pub challenge_iv: Option<&'a Bits96>,
-    pub challenge_nonce: Option<&'a Bits256>,
+    pub challenge_nonce: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, u8>>>,
 }
 impl<'a> Default for A2fPlainAuthPreambleArgs<'a> {
   #[inline]
@@ -128,8 +106,6 @@ impl<'a> Default for A2fPlainAuthPreambleArgs<'a> {
       agent_version: None,
       salt: None,
       pbkdf2_iterations: 0,
-      challenge_encryption_type: A2fMessageFormat::Plain,
-      challenge_iv: None,
       challenge_nonce: None,
     }
   }
@@ -153,16 +129,8 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> A2fPlainAuthPreambleBuilder<'a,
     self.fbb_.push_slot::<u32>(A2fPlainAuthPreamble::VT_PBKDF2_ITERATIONS, pbkdf2_iterations, 0);
   }
   #[inline]
-  pub fn add_challenge_encryption_type(&mut self, challenge_encryption_type: A2fMessageFormat) {
-    self.fbb_.push_slot::<A2fMessageFormat>(A2fPlainAuthPreamble::VT_CHALLENGE_ENCRYPTION_TYPE, challenge_encryption_type, A2fMessageFormat::Plain);
-  }
-  #[inline]
-  pub fn add_challenge_iv(&mut self, challenge_iv: &Bits96) {
-    self.fbb_.push_slot_always::<&Bits96>(A2fPlainAuthPreamble::VT_CHALLENGE_IV, challenge_iv);
-  }
-  #[inline]
-  pub fn add_challenge_nonce(&mut self, challenge_nonce: &Bits256) {
-    self.fbb_.push_slot_always::<&Bits256>(A2fPlainAuthPreamble::VT_CHALLENGE_NONCE, challenge_nonce);
+  pub fn add_challenge_nonce(&mut self, challenge_nonce: flatbuffers::WIPOffset<flatbuffers::Vector<'b , u8>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(A2fPlainAuthPreamble::VT_CHALLENGE_NONCE, challenge_nonce);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> A2fPlainAuthPreambleBuilder<'a, 'b, A> {
@@ -185,8 +153,6 @@ impl core::fmt::Debug for A2fPlainAuthPreamble<'_> {
       ds.field("agent_version", &self.agent_version());
       ds.field("salt", &self.salt());
       ds.field("pbkdf2_iterations", &self.pbkdf2_iterations());
-      ds.field("challenge_encryption_type", &self.challenge_encryption_type());
-      ds.field("challenge_iv", &self.challenge_iv());
       ds.field("challenge_nonce", &self.challenge_nonce());
       ds.finish()
   }

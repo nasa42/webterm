@@ -32,8 +32,9 @@ export class F2rBuilder<State extends BuilderState> {
     return new F2rBuilder<Initial>(new flatbuffers.Builder(), new Initial(), F2rRootPayload.NONE, 0);
   }
 
-  buildError(errorType: F2rErrorType): F2rBuilder<Built> {
-    const errorOffset = F2rError.createF2rError(this.builder, errorType);
+  buildError(errorType: F2rErrorType, errorMessage?: string): F2rBuilder<Built> {
+    const errorMessageOffset = this.builder.createString(errorMessage || "");
+    const errorOffset = F2rError.createF2rError(this.builder, errorType, errorMessageOffset);
 
     return new F2rBuilder<Built>(this.builder, new Built(), F2rRootPayload.Error, errorOffset);
   }

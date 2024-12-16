@@ -5,6 +5,8 @@ use std::fmt;
 pub enum WebtermError {
     ReaderSocketError(ReaderSocketError),
     RuntimeError(String),
+    EncryptionError(String),
+    DecryptionError(String),
 }
 
 impl std::error::Error for WebtermError {}
@@ -14,6 +16,8 @@ impl fmt::Display for WebtermError {
         match self {
             WebtermError::ReaderSocketError(e) => write!(f, "Reader socket error: {}", e),
             WebtermError::RuntimeError(e) => write!(f, "Runtime Error: {}", e),
+            WebtermError::EncryptionError(e) => write!(f, "Encryption Error: {}", e),
+            WebtermError::DecryptionError(e) => write!(f, "Decryption Error: {}", e),
         }
     }
 }

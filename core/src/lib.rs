@@ -1,3 +1,4 @@
+mod compress;
 pub mod constants;
 pub mod cryptography;
 pub mod flatbuffers_helpers;

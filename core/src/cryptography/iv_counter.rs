@@ -1,17 +1,9 @@
 use crate::random::random_in_range;
 use crate::types::Bits96;
-use ring::aead::{Nonce, NonceSequence};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 pub struct IvCounter {
     counter: AtomicU64,
-}
-
-impl NonceSequence for IvCounter {
-    fn advance(&mut self) -> Result<Nonce, ring::error::Unspecified> {
-        let nonce = Nonce::assume_unique_for_key(self.next().0);
-        Ok(nonce)
-    }
 }
 
 impl IvCounter {
@@ -34,8 +26,6 @@ impl IvCounter {
 
     fn to_bits96(&self) -> Bits96 {
         let counter_value = self.counter.load(Ordering::SeqCst);
-        let mut bits = [0u8; 12];
-        bits[..8].copy_from_slice(&counter_value.to_le_bytes());
-        Bits96(bits)
+        Bits96::from(counter_value)
     }
 }

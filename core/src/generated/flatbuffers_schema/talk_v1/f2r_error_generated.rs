@@ -26,6 +26,7 @@ impl<'a> flatbuffers::Follow<'a> for F2rError<'a> {
 
 impl<'a> F2rError<'a> {
   pub const VT_ERROR_TYPE: flatbuffers::VOffsetT = 4;
+  pub const VT_ERROR_MESSAGE: flatbuffers::VOffsetT = 6;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -34,9 +35,10 @@ impl<'a> F2rError<'a> {
   #[allow(unused_mut)]
   pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
     _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
-    args: &'args F2rErrorArgs
+    args: &'args F2rErrorArgs<'args>
   ) -> flatbuffers::WIPOffset<F2rError<'bldr>> {
     let mut builder = F2rErrorBuilder::new(_fbb);
+    if let Some(x) = args.error_message { builder.add_error_message(x); }
     builder.add_error_type(args.error_type);
     builder.finish()
   }
@@ -49,6 +51,13 @@ impl<'a> F2rError<'a> {
     // which contains a valid value in this slot
     unsafe { self._tab.get::<F2rErrorType>(F2rError::VT_ERROR_TYPE, Some(F2rErrorType::ErrorUnspecified)).unwrap()}
   }
+  #[inline]
+  pub fn error_message(&self) -> Option<&'a str> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(F2rError::VT_ERROR_MESSAGE, None)}
+  }
 }
 
 impl flatbuffers::Verifiable for F2rError<'_> {
@@ -59,18 +68,21 @@ impl flatbuffers::Verifiable for F2rError<'_> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
      .visit_field::<F2rErrorType>("error_type", Self::VT_ERROR_TYPE, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<&str>>("error_message", Self::VT_ERROR_MESSAGE, false)?
      .finish();
     Ok(())
   }
 }
-pub struct F2rErrorArgs {
+pub struct F2rErrorArgs<'a> {
     pub error_type: F2rErrorType,
+    pub error_message: Option<flatbuffers::WIPOffset<&'a str>>,
 }
-impl<'a> Default for F2rErrorArgs {
+impl<'a> Default for F2rErrorArgs<'a> {
   #[inline]
   fn default() -> Self {
     F2rErrorArgs {
       error_type: F2rErrorType::ErrorUnspecified,
+      error_message: None,
     }
   }
 }
@@ -83,6 +95,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> F2rErrorBuilder<'a, 'b, A> {
   #[inline]
   pub fn add_error_type(&mut self, error_type: F2rErrorType) {
     self.fbb_.push_slot::<F2rErrorType>(F2rError::VT_ERROR_TYPE, error_type, F2rErrorType::ErrorUnspecified);
+  }
+  #[inline]
+  pub fn add_error_message(&mut self, error_message: flatbuffers::WIPOffset<&'b  str>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(F2rError::VT_ERROR_MESSAGE, error_message);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> F2rErrorBuilder<'a, 'b, A> {
@@ -103,6 +119,7 @@ impl core::fmt::Debug for F2rError<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     let mut ds = f.debug_struct("F2rError");
       ds.field("error_type", &self.error_type());
+      ds.field("error_message", &self.error_message());
       ds.finish()
   }
 }

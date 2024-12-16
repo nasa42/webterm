@@ -4,6 +4,6 @@
 
 export enum F2aMessageFormat {
   Plain = 0,
-  AesGcm256Uncompressed = 1,
-  AesGcm256DeflateRaw = 2
+  Aes256GcmUncompressed = 1,
+  Aes256GcmDeflateRaw = 2
 }

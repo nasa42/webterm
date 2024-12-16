@@ -1,7 +1,6 @@
 use crate::config::DEFAULT_PBKDF2_ITERATIONS;
 use crate::models::agent_error::AgentError;
 use crate::models::session::Session;
-use std::num::NonZeroU32;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use webterm_core::constants::{BITS256_ZERO, BITS96_ZERO};
@@ -15,7 +14,7 @@ pub struct Frontend {
     salt: Bits256,
     cryptographer: Option<Cryptographer>,
     pbkdf2_iterations: u32,
-    challenge_nonce: Option<(Bits96, Bits256)>,
+    challenge_nonce: Option<Bits256>,
 }
 
 impl Frontend {
@@ -36,7 +35,7 @@ impl Frontend {
             salt,
             cryptographer: None,
             pbkdf2_iterations: DEFAULT_PBKDF2_ITERATIONS,
-            challenge_nonce: Some((challenge_iv, challenge_nonce)),
+            challenge_nonce: Some(challenge_nonce),
         }
     }
 
@@ -57,9 +56,11 @@ impl Frontend {
     }
 
     pub fn init_cryptographer(&mut self, secret_key: &str) {
-        let iterations = NonZeroU32::new(self.pbkdf2_iterations).unwrap();
-
-        self.cryptographer = Some(Cryptographer::new(self.salt, secret_key, iterations))
+        self.cryptographer = Some(Cryptographer::new(
+            self.salt,
+            secret_key,
+            self.pbkdf2_iterations,
+        ))
     }
 
     pub fn cryptographer(&self) -> Result<&Cryptographer, AgentError> {
@@ -73,11 +74,11 @@ impl Frontend {
         encrypted_nonce: &Bits256,
         iv: &Bits96,
     ) -> Result<bool, AgentError> {
-        if let Some((_challenge_iv, challenge_nonce)) = (self.challenge_nonce) {
-            let decrypted_nonce = self
-                .cryptographer()?
-                .decrypt(encrypted_nonce.0.as_ref(), iv)?;
-            let result = challenge_nonce.0.as_ref() == &decrypted_nonce;
+        if let Some(challenge_nonce) = (self.challenge_nonce) {
+            let decrypted_nonce =
+                self.cryptographer()?
+                    .decrypt(encrypted_nonce.0.as_ref(), iv, false)?;
+            let result = challenge_nonce.0.to_vec() == decrypted_nonce;
             self.challenge_nonce = None;
             Ok(result)
         } else {
@@ -95,21 +96,9 @@ impl Frontend {
         self.pbkdf2_iterations
     }
 
-    pub fn challenge_iv(&self) -> Result<Bits96, AgentError> {
-        Ok(self
-            .challenge_nonce
-            .ok_or(AgentError::RuntimeError(
-                "Challenge nonce is not set".to_string(),
-            ))?
-            .0)
-    }
-
     pub fn challenge_nonce(&self) -> Result<Bits256, AgentError> {
-        Ok(self
-            .challenge_nonce
-            .ok_or(AgentError::RuntimeError(
-                "Challenge nonce is not set".to_string(),
-            ))?
-            .1)
+        Ok(self.challenge_nonce.ok_or(AgentError::RuntimeError(
+            "Challenge nonce is not set".to_string(),
+        ))?)
     }
 }

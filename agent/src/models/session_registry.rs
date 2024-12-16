@@ -9,6 +9,7 @@ use tracing::debug;
 use tracing_subscriber::registry;
 use webterm_core::types::{FrontendId, SessionId};
 
+// Start from 1. Frontend may send "0" session ID to request a new session
 static NEXT_SESSION_ID: AtomicU64 = AtomicU64::new(1);
 
 pub struct SessionRegistry {

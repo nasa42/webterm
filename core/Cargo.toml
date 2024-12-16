@@ -5,9 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+aes-gcm = "0.11.0-pre.2"
 flatbuffers = "24.3.25"
+pbkdf2 = { version = "0.13.0-pre.1", features = ["simple"] }
 rand = "0.8.5"
+semver = "1.0.23"
+sha2 = "0.11.0-pre.4"
 tokio = { version = "1.41.1", features = ["full"] }
 tracing = "0.1.40"
-ring = "0.17.8"
-semver = "1.0.23"
+flate2 = "1.0.35"

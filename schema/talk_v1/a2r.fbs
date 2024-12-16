@@ -5,6 +5,7 @@ enum A2rErrorType: uint8 {
 
 table A2rError {
   error_type: A2rErrorType;
+  error_message: string;
 }
 
 table A2rToFrontend {

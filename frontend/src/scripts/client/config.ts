@@ -7,6 +7,8 @@ export const VERSION = {
   patch: parseInt(import.meta.env.WEBTERM_VERSION_PATCH || "0"),
 };
 
+export const ELLIPSIS = "…";
+
 const defaultRelays = (): Relay[] => {
   const fromEnv: string | null | undefined = import.meta.env.PUBLIC_DEFAULT_RELAYS;
 

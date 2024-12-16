@@ -25,8 +25,9 @@ impl<'a> flatbuffers::Follow<'a> for F2aPlainAuthPresentVerification<'a> {
 }
 
 impl<'a> F2aPlainAuthPresentVerification<'a> {
-  pub const VT_CHALLENGE_SOLUTION: flatbuffers::VOffsetT = 4;
-  pub const VT_RESUME_SESSION_ID: flatbuffers::VOffsetT = 6;
+  pub const VT_CHALLENGE_IV: flatbuffers::VOffsetT = 4;
+  pub const VT_CHALLENGE_AES256GCM_SOLUTION: flatbuffers::VOffsetT = 6;
+  pub const VT_RESUME_SESSION_ID: flatbuffers::VOffsetT = 8;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -39,17 +40,25 @@ impl<'a> F2aPlainAuthPresentVerification<'a> {
   ) -> flatbuffers::WIPOffset<F2aPlainAuthPresentVerification<'bldr>> {
     let mut builder = F2aPlainAuthPresentVerificationBuilder::new(_fbb);
     builder.add_resume_session_id(args.resume_session_id);
-    if let Some(x) = args.challenge_solution { builder.add_challenge_solution(x); }
+    if let Some(x) = args.challenge_aes256gcm_solution { builder.add_challenge_aes256gcm_solution(x); }
+    if let Some(x) = args.challenge_iv { builder.add_challenge_iv(x); }
     builder.finish()
   }
 
 
   #[inline]
-  pub fn challenge_solution(&self) -> Option<&'a Bits256> {
+  pub fn challenge_iv(&self) -> Option<&'a Bits96> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<Bits256>(F2aPlainAuthPresentVerification::VT_CHALLENGE_SOLUTION, None)}
+    unsafe { self._tab.get::<Bits96>(F2aPlainAuthPresentVerification::VT_CHALLENGE_IV, None)}
+  }
+  #[inline]
+  pub fn challenge_aes256gcm_solution(&self) -> Option<flatbuffers::Vector<'a, u8>> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, u8>>>(F2aPlainAuthPresentVerification::VT_CHALLENGE_AES256GCM_SOLUTION, None)}
   }
   #[inline]
   pub fn resume_session_id(&self) -> u64 {
@@ -67,21 +76,24 @@ impl flatbuffers::Verifiable for F2aPlainAuthPresentVerification<'_> {
   ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
-     .visit_field::<Bits256>("challenge_solution", Self::VT_CHALLENGE_SOLUTION, false)?
+     .visit_field::<Bits96>("challenge_iv", Self::VT_CHALLENGE_IV, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, u8>>>("challenge_aes256gcm_solution", Self::VT_CHALLENGE_AES256GCM_SOLUTION, false)?
      .visit_field::<u64>("resume_session_id", Self::VT_RESUME_SESSION_ID, false)?
      .finish();
     Ok(())
   }
 }
 pub struct F2aPlainAuthPresentVerificationArgs<'a> {
-    pub challenge_solution: Option<&'a Bits256>,
+    pub challenge_iv: Option<&'a Bits96>,
+    pub challenge_aes256gcm_solution: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, u8>>>,
     pub resume_session_id: u64,
 }
 impl<'a> Default for F2aPlainAuthPresentVerificationArgs<'a> {
   #[inline]
   fn default() -> Self {
     F2aPlainAuthPresentVerificationArgs {
-      challenge_solution: None,
+      challenge_iv: None,
+      challenge_aes256gcm_solution: None,
       resume_session_id: 0,
     }
   }
@@ -93,8 +105,12 @@ pub struct F2aPlainAuthPresentVerificationBuilder<'a: 'b, 'b, A: flatbuffers::Al
 }
 impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> F2aPlainAuthPresentVerificationBuilder<'a, 'b, A> {
   #[inline]
-  pub fn add_challenge_solution(&mut self, challenge_solution: &Bits256) {
-    self.fbb_.push_slot_always::<&Bits256>(F2aPlainAuthPresentVerification::VT_CHALLENGE_SOLUTION, challenge_solution);
+  pub fn add_challenge_iv(&mut self, challenge_iv: &Bits96) {
+    self.fbb_.push_slot_always::<&Bits96>(F2aPlainAuthPresentVerification::VT_CHALLENGE_IV, challenge_iv);
+  }
+  #[inline]
+  pub fn add_challenge_aes256gcm_solution(&mut self, challenge_aes256gcm_solution: flatbuffers::WIPOffset<flatbuffers::Vector<'b , u8>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(F2aPlainAuthPresentVerification::VT_CHALLENGE_AES256GCM_SOLUTION, challenge_aes256gcm_solution);
   }
   #[inline]
   pub fn add_resume_session_id(&mut self, resume_session_id: u64) {
@@ -118,7 +134,8 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> F2aPlainAuthPresentVerification
 impl core::fmt::Debug for F2aPlainAuthPresentVerification<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     let mut ds = f.debug_struct("F2aPlainAuthPresentVerification");
-      ds.field("challenge_solution", &self.challenge_solution());
+      ds.field("challenge_iv", &self.challenge_iv());
+      ds.field("challenge_aes256gcm_solution", &self.challenge_aes256gcm_solution());
       ds.field("resume_session_id", &self.resume_session_id());
       ds.finish()
   }
