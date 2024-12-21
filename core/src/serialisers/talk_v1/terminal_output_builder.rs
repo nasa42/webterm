@@ -1,5 +1,5 @@
 use crate::generated::flatbuffers_schema::talk_v1::activity::{
-    TerminalOutput, TerminalOutputRoot, TerminalOutputRootArgs,
+    PtyOutput, PtyOutputRoot, PtyOutputRootArgs,
 };
 use crate::generated::flatbuffers_schema::talk_v1::{VectorTable, VectorTableArgs};
 use flatbuffers::{FlatBufferBuilder, WIPOffset};
@@ -9,7 +9,7 @@ pub struct ActivityOutputBlob(pub Vec<u8>);
 
 pub struct TerminalOutputBuilder<'a> {
     builder: FlatBufferBuilder<'a>,
-    payload_type: TerminalOutput,
+    payload_type: PtyOutput,
     payload: Option<WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
 
@@ -18,7 +18,7 @@ impl<'a> TerminalOutputBuilder<'a> {
         let builder = FlatBufferBuilder::new();
         Self {
             builder,
-            payload_type: TerminalOutput::NONE,
+            payload_type: PtyOutput::NONE,
             payload: None,
         }
     }
@@ -32,15 +32,15 @@ impl<'a> TerminalOutputBuilder<'a> {
             },
         );
 
-        self.payload_type = TerminalOutput::Output;
+        self.payload_type = PtyOutput::Output;
         self.payload = Some(vector_offset.as_union_value());
         self
     }
 
     pub fn to_flatbuffers(mut self) -> ActivityOutputBlob {
-        let root = TerminalOutputRoot::create(
+        let root = PtyOutputRoot::create(
             &mut self.builder,
-            &TerminalOutputRootArgs {
+            &PtyOutputRootArgs {
                 payload_type: self.payload_type,
                 payload: self.payload,
             },

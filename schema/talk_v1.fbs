@@ -10,4 +10,4 @@ include "./talk_v1/f2r.fbs";
 include "./talk_v1/r2a.fbs";
 include "./talk_v1/r2f.fbs";
 
-include "./talk_v1/activity/terminal.fbs";
+include "./talk_v1/activity/pty.fbs";

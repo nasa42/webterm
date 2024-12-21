@@ -1,24 +1,24 @@
 use crate::models::agent_error::AgentError;
-use crate::models::terminal_reader::TerminalReader;
+use crate::models::pty_activity_reader::PtyActivityReader;
 use pty_process::{Command, OwnedWritePty, Pty, Size};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Mutex;
 use webterm_core::types::ActivityId;
 
-pub struct Terminal {
-    terminal_reader: TerminalReader,
+pub struct PtyActivity {
+    terminal_reader: PtyActivityReader,
     pty_writer: Mutex<OwnedWritePty>,
 }
 
-impl Terminal {
+impl PtyActivity {
     pub async fn new(activity_id: ActivityId, command: &str) -> Result<Self, AgentError> {
         let pty = Pty::new()?;
         let mut command = Command::new(command);
         command.spawn(&pty.pts().unwrap())?;
         let (pty_reader, pty_writer) = pty.into_split();
         let pty_writer = Mutex::new(pty_writer);
-        Ok(Terminal {
-            terminal_reader: TerminalReader::new(activity_id, pty_reader),
+        Ok(PtyActivity {
+            terminal_reader: PtyActivityReader::new(activity_id, pty_reader),
             pty_writer,
         })
     }

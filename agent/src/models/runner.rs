@@ -3,13 +3,13 @@ use crate::messaging::process_r2a::process_r2a;
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
 use crate::models::panic_error::PanicError;
+use crate::models::pty_activity::PtyActivity;
+use crate::models::pty_activity_reader::{PtyActivityReader, TerminalSubscriber};
 use crate::models::relay_connection::RelayConnection;
 use crate::models::send_payload::SendPayload;
 use crate::models::session_registry::SessionRegistry;
 use crate::models::socket_reader::SocketSubscriber;
 use crate::models::socket_writer::SocketPublisher;
-use crate::models::terminal::Terminal;
-use crate::models::terminal_reader::{TerminalReader, TerminalSubscriber};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::broadcast;
@@ -110,7 +110,7 @@ impl Runner {
         relay_pub: SocketPublisher,
         rc: Arc<RelayConnection>,
     ) -> Result<(), AgentError> {
-        let receiver = TerminalReader::receiver();
+        let receiver = PtyActivityReader::receiver();
 
         loop {
             let output = receiver.lock().await.recv().await;
@@ -126,10 +126,7 @@ impl Runner {
                             let mut send = SendPayload::new();
                             let a2f = A2fBuilder::new();
                             let payload = a2f
-                                .build_activity_output(
-                                    output.activity_id,
-                                    &output.to_terminal_output().0,
-                                )
+                                .build_activity_output(output.activity_id, &output.to_fb_output().0)
                                 .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
                             send.prepare_for_frontend(frontend.frontend_id(), payload);
                             send.dispatch(&relay_pub).await?;

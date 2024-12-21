@@ -1,9 +1,9 @@
 use crate::models::activity::Activity;
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
+use crate::models::pty_activity::PtyActivity;
 use crate::models::session::Session;
 use crate::models::socket_writer::SocketPublisher;
-use crate::models::terminal::Terminal;
 use std::sync::Arc;
 use tracing::debug;
 use webterm_core::generated::flatbuffers_schema::talk_v1::{

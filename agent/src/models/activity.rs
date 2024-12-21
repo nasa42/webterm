@@ -1,27 +1,25 @@
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
+use crate::models::pty_activity::PtyActivity;
 use crate::models::session::Session;
 use crate::models::session_registry::SessionRegistry;
-use crate::models::terminal::Terminal;
 use std::fmt::Pointer;
 use std::io::Read;
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use webterm_core::generated::flatbuffers_schema::talk_v1::activity::{
-    TerminalInput, TerminalInputRoot,
-};
+use webterm_core::generated::flatbuffers_schema::talk_v1::activity::{PtyInput, PtyInputRoot};
 use webterm_core::serialisers::talk_v1::terminal_output_builder::ActivityInputBlob;
 use webterm_core::types::{ActivityId, SessionId};
 
 // in future, manage more activities like a "file browser"
 pub enum ActivityType {
-    Terminal,
+    Pty,
 }
 
 pub struct Activity {
     activity_id: ActivityId,
     activity_type: ActivityType,
-    terminal: Option<Terminal>,
+    terminal: Option<PtyActivity>,
     parent_session_id: SessionId,
 }
 
@@ -32,13 +30,13 @@ impl PartialEq for Activity {
 }
 
 impl Activity {
-    pub async fn create_terminal(session_id: SessionId) -> Result<Arc<Activity>, AgentError> {
+    pub async fn create_pty(session_id: SessionId) -> Result<Arc<Activity>, AgentError> {
         let activity_id = ActivityRegistry::next_activity_id();
-        let terminal = Terminal::new(activity_id, "/bin/bash").await?;
+        let terminal = PtyActivity::new(activity_id, "/bin/bash").await?;
         let record = Arc::new(Self {
             activity_id,
             terminal: Some(terminal),
-            activity_type: ActivityType::Terminal,
+            activity_type: ActivityType::Pty,
             parent_session_id: session_id,
         });
 
@@ -56,10 +54,10 @@ impl Activity {
 
     pub async fn receive_input(&self, payload: ActivityInputBlob) -> Result<(), AgentError> {
         match self.activity_type {
-            ActivityType::Terminal => {
-                let input = flatbuffers::root::<TerminalInputRoot>(&payload.0)?;
+            ActivityType::Pty => {
+                let input = flatbuffers::root::<PtyInputRoot>(&payload.0)?;
                 match input.payload_type() {
-                    TerminalInput::UserInput => {
+                    PtyInput::UserInput => {
                         self.terminal
                             .as_ref()
                             .ok_or(AgentError::RuntimeError(
@@ -80,7 +78,7 @@ impl Activity {
                             .await?;
                         Ok(())
                     }
-                    TerminalInput::Resize => {
+                    PtyInput::Resize => {
                         let resize_data = input
                             .payload_as_resize()
                             .ok_or(AgentError::FBParseError("Expected resize data".to_string()))?;

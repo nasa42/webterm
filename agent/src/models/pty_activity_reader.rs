@@ -14,38 +14,38 @@ use webterm_core::types::{ActivityId, SessionId};
 pub type TerminalSubscriber = broadcast::Receiver<Vec<u8>>;
 
 type ChannelType = (
-    mpsc::Sender<TerminalReaderPayload>,
-    Mutex<mpsc::Receiver<TerminalReaderPayload>>,
+    mpsc::Sender<PtyActivityReaderPayload>,
+    Mutex<mpsc::Receiver<PtyActivityReaderPayload>>,
 );
 
-pub struct TerminalReaderPayload {
+pub struct PtyActivityReaderPayload {
     pub(crate) activity_id: ActivityId,
     pub(crate) data: Vec<u8>,
 }
 
-impl TerminalReaderPayload {
-    pub fn to_terminal_output(&self) -> ActivityOutputBlob {
+impl PtyActivityReaderPayload {
+    pub fn to_fb_output(&self) -> ActivityOutputBlob {
         let builder = TerminalOutputBuilder::new();
         builder.build_output(&self.data).to_flatbuffers()
     }
 }
 
-pub struct TerminalReader {}
+pub struct PtyActivityReader {}
 
-impl TerminalReader {
+impl PtyActivityReader {
     pub fn channel() -> &'static ChannelType {
         static CHANNEL: OnceLock<ChannelType> = OnceLock::new();
         CHANNEL.get_or_init(|| {
-            let (tx, rx) = mpsc::channel::<TerminalReaderPayload>(1024);
+            let (tx, rx) = mpsc::channel::<PtyActivityReaderPayload>(1024);
             (tx, Mutex::new(rx))
         })
     }
 
-    pub fn sender() -> mpsc::Sender<TerminalReaderPayload> {
+    pub fn sender() -> mpsc::Sender<PtyActivityReaderPayload> {
         Self::channel().0.clone()
     }
 
-    pub fn receiver() -> &'static Mutex<mpsc::Receiver<TerminalReaderPayload>> {
+    pub fn receiver() -> &'static Mutex<mpsc::Receiver<PtyActivityReaderPayload>> {
         &Self::channel().1
     }
 
@@ -61,7 +61,7 @@ impl TerminalReader {
                         format_pty_output(&buf[..length])
                     );
                     sender
-                        .send(TerminalReaderPayload {
+                        .send(PtyActivityReaderPayload {
                             activity_id,
                             data: buf[..length].to_vec(),
                         })

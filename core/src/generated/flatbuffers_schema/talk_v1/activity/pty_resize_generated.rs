@@ -9,35 +9,35 @@ use core::mem;
 use core::cmp::Ordering;
 use self::flatbuffers::{EndianScalar, Follow};
 use super::*;
-pub enum TerminalResizeOffset {}
+pub enum PtyResizeOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
-pub struct TerminalResize<'a> {
+pub struct PtyResize<'a> {
   pub _tab: flatbuffers::Table<'a>,
 }
 
-impl<'a> flatbuffers::Follow<'a> for TerminalResize<'a> {
-  type Inner = TerminalResize<'a>;
+impl<'a> flatbuffers::Follow<'a> for PtyResize<'a> {
+  type Inner = PtyResize<'a>;
   #[inline]
   unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
     Self { _tab: flatbuffers::Table::new(buf, loc) }
   }
 }
 
-impl<'a> TerminalResize<'a> {
+impl<'a> PtyResize<'a> {
   pub const VT_COLS: flatbuffers::VOffsetT = 4;
   pub const VT_ROWS: flatbuffers::VOffsetT = 6;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
-    TerminalResize { _tab: table }
+    PtyResize { _tab: table }
   }
   #[allow(unused_mut)]
   pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
     _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
-    args: &'args TerminalResizeArgs
-  ) -> flatbuffers::WIPOffset<TerminalResize<'bldr>> {
-    let mut builder = TerminalResizeBuilder::new(_fbb);
+    args: &'args PtyResizeArgs
+  ) -> flatbuffers::WIPOffset<PtyResize<'bldr>> {
+    let mut builder = PtyResizeBuilder::new(_fbb);
     builder.add_rows(args.rows);
     builder.add_cols(args.cols);
     builder.finish()
@@ -49,18 +49,18 @@ impl<'a> TerminalResize<'a> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<u16>(TerminalResize::VT_COLS, Some(0)).unwrap()}
+    unsafe { self._tab.get::<u16>(PtyResize::VT_COLS, Some(0)).unwrap()}
   }
   #[inline]
   pub fn rows(&self) -> u16 {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<u16>(TerminalResize::VT_ROWS, Some(0)).unwrap()}
+    unsafe { self._tab.get::<u16>(PtyResize::VT_ROWS, Some(0)).unwrap()}
   }
 }
 
-impl flatbuffers::Verifiable for TerminalResize<'_> {
+impl flatbuffers::Verifiable for PtyResize<'_> {
   #[inline]
   fn run_verifier(
     v: &mut flatbuffers::Verifier, pos: usize
@@ -73,51 +73,51 @@ impl flatbuffers::Verifiable for TerminalResize<'_> {
     Ok(())
   }
 }
-pub struct TerminalResizeArgs {
+pub struct PtyResizeArgs {
     pub cols: u16,
     pub rows: u16,
 }
-impl<'a> Default for TerminalResizeArgs {
+impl<'a> Default for PtyResizeArgs {
   #[inline]
   fn default() -> Self {
-    TerminalResizeArgs {
+    PtyResizeArgs {
       cols: 0,
       rows: 0,
     }
   }
 }
 
-pub struct TerminalResizeBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+pub struct PtyResizeBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
   fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
   start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
 }
-impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> TerminalResizeBuilder<'a, 'b, A> {
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> PtyResizeBuilder<'a, 'b, A> {
   #[inline]
   pub fn add_cols(&mut self, cols: u16) {
-    self.fbb_.push_slot::<u16>(TerminalResize::VT_COLS, cols, 0);
+    self.fbb_.push_slot::<u16>(PtyResize::VT_COLS, cols, 0);
   }
   #[inline]
   pub fn add_rows(&mut self, rows: u16) {
-    self.fbb_.push_slot::<u16>(TerminalResize::VT_ROWS, rows, 0);
+    self.fbb_.push_slot::<u16>(PtyResize::VT_ROWS, rows, 0);
   }
   #[inline]
-  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> TerminalResizeBuilder<'a, 'b, A> {
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> PtyResizeBuilder<'a, 'b, A> {
     let start = _fbb.start_table();
-    TerminalResizeBuilder {
+    PtyResizeBuilder {
       fbb_: _fbb,
       start_: start,
     }
   }
   #[inline]
-  pub fn finish(self) -> flatbuffers::WIPOffset<TerminalResize<'a>> {
+  pub fn finish(self) -> flatbuffers::WIPOffset<PtyResize<'a>> {
     let o = self.fbb_.end_table(self.start_);
     flatbuffers::WIPOffset::new(o.value())
   }
 }
 
-impl core::fmt::Debug for TerminalResize<'_> {
+impl core::fmt::Debug for PtyResize<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-    let mut ds = f.debug_struct("TerminalResize");
+    let mut ds = f.debug_struct("PtyResize");
       ds.field("cols", &self.cols());
       ds.field("rows", &self.rows());
       ds.finish()

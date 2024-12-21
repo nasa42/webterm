@@ -61,7 +61,7 @@ impl Session {
     }
 
     pub async fn create_terminal_activity(&self) -> Result<Arc<Activity>, AgentError> {
-        let activity = Activity::create_terminal(self.session_id).await?;
+        let activity = Activity::create_pty(self.session_id).await?;
         self.add_activity(activity.clone()).await;
         Ok(activity)
     }
