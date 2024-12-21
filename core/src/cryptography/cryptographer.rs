@@ -56,7 +56,7 @@ impl Cryptographer {
         };
 
         if (compressed) {
-            println!("compressed payload is: {:?} ", payload);
+            // println!("compressed payload is: {:?} ", payload);
         }
 
         let ciphertext = cipher

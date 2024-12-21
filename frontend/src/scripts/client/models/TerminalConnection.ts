@@ -1,5 +1,7 @@
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { formatPtyOutput } from "../functions/formatPtyOutput.ts";
+import { ensureBinary } from "../functions/ensureBinary.ts";
 
 export class TerminalConnection {
   private readonly terminal: Terminal;
@@ -21,7 +23,14 @@ export class TerminalConnection {
   }
 
   write(data: BinaryLike) {
+    console.log(`writing: "${formatPtyOutput(ensureBinary(data))}"`);
+
     this.terminal.write(data);
+  }
+
+  resizeToFit() {
+    this.fitAddon.fit();
+    console.log(`Resized to ${this.terminal.cols}x${this.terminal.rows}`);
   }
 
   terminalCols(): number {

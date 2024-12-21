@@ -1,6 +1,5 @@
 ---
 import "../styles/main.scss";
-import MainNavRibbon from "../components/MainNavRibbon.astro";
 
 interface Props {
   title?: string;
@@ -20,11 +19,6 @@ const { title = "Webterm" } = Astro.props;
     <script src="../scripts/client/entry-points/global-imports.ts"></script>
   </head>
   <body>
-    <MainNavRibbon />
-
-    <main>
-      <slot />
-    </main>
-
+    <slot />
   </body>
 </html>

@@ -14,6 +14,7 @@ impl PtyActivity {
     pub async fn new(activity_id: ActivityId, command: &str) -> Result<Self, AgentError> {
         let pty = Pty::new()?;
         let mut command = Command::new(command);
+        command.env("TERM", "xterm-256color");
         command.spawn(&pty.pts().unwrap())?;
         let (pty_reader, pty_writer) = pty.into_split();
         let pty_writer = Mutex::new(pty_writer);

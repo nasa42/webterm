@@ -7,6 +7,7 @@ use std::fmt::Pointer;
 use std::io::Read;
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::info;
 use webterm_core::generated::flatbuffers_schema::talk_v1::activity::{PtyInput, PtyInputRoot};
 use webterm_core::serialisers::talk_v1::terminal_output_builder::ActivityInputBlob;
 use webterm_core::types::{ActivityId, SessionId};
@@ -79,6 +80,7 @@ impl Activity {
                         Ok(())
                     }
                     PtyInput::Resize => {
+                        info!("Received resize input: {:?}", input.payload_as_resize());
                         let resize_data = input
                             .payload_as_resize()
                             .ok_or(AgentError::FBParseError("Expected resize data".to_string()))?;

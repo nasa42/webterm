@@ -11,6 +11,8 @@ use webterm_core::serialisers::talk_v1::terminal_output_builder::{
 };
 use webterm_core::types::{ActivityId, SessionId};
 
+const BUFFER_SIZE: usize = 10240;
+
 pub type TerminalSubscriber = broadcast::Receiver<Vec<u8>>;
 
 type ChannelType = (
@@ -54,12 +56,12 @@ impl PtyActivityReader {
         tokio::spawn(async move {
             debug!("starting new terminal reader stream");
             loop {
-                let mut buf = [0u8; 1024];
+                let mut buf = [0u8; BUFFER_SIZE];
                 if let Ok(length) = reader_stream.read(&mut buf).await {
-                    debug!(
-                        "read from reader stream: {:?}",
-                        format_pty_output(&buf[..length])
-                    );
+                    // debug!(
+                    //     "read from reader stream: {:?}",
+                    //     format_pty_output(&buf[..length])
+                    // );
                     sender
                         .send(PtyActivityReaderPayload {
                             activity_id,

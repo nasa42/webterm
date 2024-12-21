@@ -34,7 +34,7 @@ impl SendPayload {
 
     pub async fn dispatch(self, relay_pub: &SocketPublisher) -> Result<(), AgentError> {
         if let Some(payload) = self.to_relay {
-            debug!("dispatching to relay");
+            // debug!("dispatching to relay");
             relay_pub.send(payload.0).await?;
         }
 
@@ -47,10 +47,10 @@ impl SendPayload {
     }
 
     pub fn prepare_for_frontend(&mut self, frontend_id: FrontendId, frontend_payload: A2fRootBlob) {
-        debug!(
-            "prepare_for_frontend: {:?}",
-            format_pty_output(&frontend_payload.0)
-        );
+        // debug!(
+        //     "prepare_for_frontend: {:?}",
+        //     format_pty_output(&frontend_payload.0)
+        // );
         let a2r = A2rBuilder::new();
         let payload = a2r
             .root_payload_to_frontend(frontend_id, frontend_payload)
