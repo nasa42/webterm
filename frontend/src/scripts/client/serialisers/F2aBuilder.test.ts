@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import * as flatbuffers from "flatbuffers";
 import { EncryptionReady, F2aBuilder, PlainReady } from "./F2aBuilder";
 import {
+  F2aEncryptedRoot,
+  F2aMessage,
   F2aMessageFormat,
   F2aPlainAuthRequestPreamble,
   F2aPlainMessage,
@@ -12,6 +14,7 @@ import { VERSION } from "../config";
 import { ActivityInputBlob } from "../types/BinaryBlob";
 import { ActivityId } from "../types/BigIntLike";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
+import { Bits96Array } from "../types/BitsArray.ts";
 
 const { cryptographer } = await Cryptographer.new({
   iterations: 1,
@@ -64,8 +67,17 @@ describe("F2aBuilder", () => {
       const buf = new flatbuffers.ByteBuffer(blob.data());
       const root = F2aRoot.getRootAsF2aRoot(buf);
 
-      expect(root.format()).toBe(F2aMessageFormat.Aes256GcmDeflateRaw);
-      // Note: Encrypted message verification would happen after decryption
+      // decrypt the payload and test the value
+      const decrypted = await cryptographer.decrypt(
+        root.encryptedPayloadArray()!,
+        Bits96Array.fromFbBits96(root.iv()!),
+        root.format() === F2aMessageFormat.Aes256GcmDeflateRaw,
+      );
+
+      const byteBuffer = new flatbuffers.ByteBuffer(decrypted);
+      const f2aEncryptedRoot = F2aEncryptedRoot.getRootAsF2aEncryptedRoot(byteBuffer);
+
+      expect(f2aEncryptedRoot.messageType()).toBe(F2aMessage.ActivityCreateTerminal);
     });
 
     it("should transition to EncryptionReady state", () => {
@@ -88,8 +100,17 @@ describe("F2aBuilder", () => {
       const buf = new flatbuffers.ByteBuffer(blob.data());
       const root = F2aRoot.getRootAsF2aRoot(buf);
 
-      expect(root.format()).toBe(F2aMessageFormat.Aes256GcmDeflateRaw);
-      // Note: Activity input details would be verified after decryption
+      // decrypt the payload and test the value
+      const decrypted = await cryptographer.decrypt(
+        root.encryptedPayloadArray()!,
+        Bits96Array.fromFbBits96(root.iv()!),
+        root.format() === F2aMessageFormat.Aes256GcmDeflateRaw,
+      );
+
+      const byteBuffer = new flatbuffers.ByteBuffer(decrypted);
+      const f2aEncryptedRoot = F2aEncryptedRoot.getRootAsF2aEncryptedRoot(byteBuffer);
+
+      expect(f2aEncryptedRoot.messageType()).toBe(F2aMessage.ActivityInput);
     });
 
     it("should transition to EncryptionReady state", () => {
