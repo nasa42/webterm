@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-clap = { version = "4.5.20", features = ["derive", "env"] }
+clap = { version = "4.5.23", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
 pty-process = { version = "0.4.0", features = ["async"] }
