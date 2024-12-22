@@ -17,6 +17,7 @@ pub enum RelayError {
     AgentNotFound,
     CacheError(CacheError),
     IOError(std::io::Error),
+    RuntimeError(String),
 }
 
 impl std::error::Error for RelayError {}
@@ -33,6 +34,7 @@ impl fmt::Display for RelayError {
             RelayError::AgentNotFound => write!(f, "Agent not found"),
             RelayError::CacheError(e) => write!(f, "Cache error: {}", e),
             RelayError::IOError(e) => write!(f, "IO error: {}", e),
+            RelayError::RuntimeError(e) => write!(f, "Runtime error: {}", e),
         }
     }
 }

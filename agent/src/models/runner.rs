@@ -3,21 +3,13 @@ use crate::messaging::process_r2a::process_r2a;
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
 use crate::models::panic_error::PanicError;
-use crate::models::pty_activity::PtyActivity;
-use crate::models::pty_activity_reader::{PtyActivityReader, TerminalSubscriber};
+use crate::models::pty_activity_reader::PtyActivityReader;
 use crate::models::relay_connection::RelayConnection;
 use crate::models::send_payload::SendPayload;
-use crate::models::session_registry::SessionRegistry;
 use crate::models::socket_reader::SocketSubscriber;
 use crate::models::socket_writer::SocketPublisher;
 use std::sync::Arc;
-use std::time::Duration;
-use tokio::sync::broadcast;
-use tokio::sync::Notify;
-use tokio::task::JoinHandle;
-use tokio::time::sleep;
 use tracing::{debug, error, info};
-use webterm_core::pty_output_formatter::format_pty_output;
 use webterm_core::serialisers::talk_v1::a2f_builder::A2fBuilder;
 
 pub struct Runner {}
@@ -39,7 +31,7 @@ impl Runner {
                     config.clone(),
                 ));
 
-                let a2r_task = tokio::spawn(Self::a2r_task(relay_pub.clone(), rc.clone()));
+                let a2r_task = tokio::spawn(Self::a2r_task(relay_pub.clone()));
 
                 tokio::select! {
                     result = r2a_task => {
@@ -106,10 +98,7 @@ impl Runner {
         }
     }
 
-    async fn a2r_task(
-        relay_pub: SocketPublisher,
-        rc: Arc<RelayConnection>,
-    ) -> Result<(), AgentError> {
+    async fn a2r_task(relay_pub: SocketPublisher) -> Result<(), AgentError> {
         let receiver = PtyActivityReader::receiver();
 
         loop {

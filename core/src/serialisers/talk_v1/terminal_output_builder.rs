@@ -13,7 +13,7 @@ pub struct TerminalOutputBuilder<'a> {
     payload: Option<WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
 
-impl<'a> TerminalOutputBuilder<'a> {
+impl TerminalOutputBuilder<'_> {
     pub fn new() -> Self {
         let builder = FlatBufferBuilder::new();
         Self {

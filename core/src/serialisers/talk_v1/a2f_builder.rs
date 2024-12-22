@@ -152,7 +152,7 @@ impl<'a> A2fBuilder<'a, Initial> {
     }
 }
 
-impl<'a> A2fBuilder<'a, EncryptionReady> {
+impl A2fBuilder<'_, EncryptionReady> {
     pub fn to_flatbuffers_encrypted(
         mut self,
         encryptor: &Cryptographer,
@@ -197,7 +197,7 @@ impl<'a> A2fBuilder<'a, EncryptionReady> {
     }
 }
 
-impl<'a> A2fBuilder<'a, PlainReady> {
+impl A2fBuilder<'_, PlainReady> {
     pub fn to_flatbuffers_plain(mut self) -> A2fRootBlob {
         let (payload_type, payload) = self.root_payload_state.plain_payload;
 

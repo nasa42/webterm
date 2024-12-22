@@ -3,8 +3,6 @@ use crate::models::agent_error::AgentError;
 use crate::models::pty_activity::PtyActivity;
 use crate::models::session::Session;
 use crate::models::session_registry::SessionRegistry;
-use std::fmt::Pointer;
-use std::io::Read;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::info;

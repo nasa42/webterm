@@ -1,4 +1,5 @@
 use crate::models::reader_socket_error::ReaderSocketError;
+use std::array::TryFromSliceError;
 use std::fmt;
 
 #[derive(Debug)]
@@ -7,6 +8,7 @@ pub enum WebtermError {
     RuntimeError(String),
     EncryptionError(String),
     DecryptionError(String),
+    TryFromSliceError(TryFromSliceError),
 }
 
 impl std::error::Error for WebtermError {}
@@ -18,6 +20,7 @@ impl fmt::Display for WebtermError {
             WebtermError::RuntimeError(e) => write!(f, "Runtime Error: {}", e),
             WebtermError::EncryptionError(e) => write!(f, "Encryption Error: {}", e),
             WebtermError::DecryptionError(e) => write!(f, "Decryption Error: {}", e),
+            WebtermError::TryFromSliceError(e) => write!(f, "TryFromSliceError: {}", e),
         }
     }
 }
@@ -25,5 +28,11 @@ impl fmt::Display for WebtermError {
 impl From<ReaderSocketError> for WebtermError {
     fn from(err: ReaderSocketError) -> Self {
         WebtermError::ReaderSocketError(err)
+    }
+}
+
+impl From<TryFromSliceError> for WebtermError {
+    fn from(err: TryFromSliceError) -> Self {
+        WebtermError::TryFromSliceError(err)
     }
 }

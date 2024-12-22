@@ -13,7 +13,6 @@ pub type SocketPublisher = mpsc::Sender<Vec<u8>>;
 
 pub struct SocketWriter {
     _tx: SocketPublisher,
-    rc: Arc<RelayConnection>,
 }
 
 impl SocketWriter {
@@ -53,7 +52,7 @@ impl SocketWriter {
                 }
             }
         });
-        Self { _tx, rc }
+        Self { _tx }
     }
 
     pub fn publisher(&self) -> SocketPublisher {

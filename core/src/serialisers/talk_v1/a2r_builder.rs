@@ -14,7 +14,7 @@ pub struct A2rBuilder<'a> {
     root_payload: Option<WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
 
-impl<'a> A2rBuilder<'a> {
+impl A2rBuilder<'_> {
     pub fn new() -> Self {
         let builder = FlatBufferBuilder::new();
         Self {

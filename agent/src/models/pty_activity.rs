@@ -6,7 +6,8 @@ use tokio::sync::Mutex;
 use webterm_core::types::ActivityId;
 
 pub struct PtyActivity {
-    terminal_reader: PtyActivityReader,
+    // required to keep the reader alive
+    _pty_reader: PtyActivityReader,
     pty_writer: Mutex<OwnedWritePty>,
 }
 
@@ -19,8 +20,8 @@ impl PtyActivity {
         let (pty_reader, pty_writer) = pty.into_split();
         let pty_writer = Mutex::new(pty_writer);
         Ok(PtyActivity {
-            terminal_reader: PtyActivityReader::new(activity_id, pty_reader),
             pty_writer,
+            _pty_reader: PtyActivityReader::new(activity_id, pty_reader),
         })
     }
 

@@ -14,7 +14,6 @@ pub type SocketSubscriber = broadcast::Receiver<Result<Option<Vec<u8>>, ReaderSo
 
 pub struct SocketReader {
     _tx: broadcast::Sender<Result<Option<Vec<u8>>, ReaderSocketError>>,
-    rc: Arc<RelayConnection>,
 }
 
 impl SocketReader {
@@ -72,7 +71,7 @@ impl SocketReader {
                 }
             }
         });
-        Self { _tx, rc }
+        Self { _tx }
     }
 
     pub fn subscriber(&self) -> SocketSubscriber {

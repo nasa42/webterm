@@ -1,12 +1,10 @@
 use crate::config::{Config, RELAY_RECONNECT_INTERVAL};
-use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
 use crate::models::relay::Relay;
 use crate::models::socket_reader::{SocketReader, SocketSubscriber};
 use crate::models::socket_writer::{SocketPublisher, SocketWriter};
 use futures::StreamExt;
 use std::sync::Arc;
-use std::time::Duration;
 use tokio::sync::Notify;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
@@ -21,6 +19,7 @@ pub struct RelayConnection {
 }
 
 struct State {
+    #[allow(dead_code)]
     relay: Arc<Relay>,
     writer: SocketWriter,
     reader: SocketReader,

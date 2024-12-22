@@ -1,21 +1,13 @@
 use crate::models::activity::Activity;
-use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
-use crate::models::pty_activity::PtyActivity;
-use crate::models::session::Session;
 use crate::models::socket_writer::SocketPublisher;
 use std::sync::Arc;
 use tracing::debug;
-use webterm_core::generated::flatbuffers_schema::talk_v1::{
-    A2fRootBuilder, A2rErrorType, A2rRootBuilder, A2rRootPayload,
-};
 use webterm_core::pty_output_formatter::format_pty_output;
-use webterm_core::serialisers::talk_v1::a2f_builder::{
-    A2fBuilder, A2fRootBlob, BuilderState, EncryptionReady, Initial, PlainReady,
-};
+use webterm_core::serialisers::talk_v1::a2f_builder::A2fRootBlob;
 use webterm_core::serialisers::talk_v1::a2r_builder::{A2rBuilder, A2rRootBlob};
 use webterm_core::serialisers::talk_v1::terminal_output_builder::ActivityInputBlob;
-use webterm_core::types::{ActivityId, FrontendId, SessionId};
+use webterm_core::types::FrontendId;
 
 pub struct SendPayload {
     to_relay: Option<A2rRootBlob>,
@@ -38,7 +30,7 @@ impl SendPayload {
             relay_pub.send(payload.0).await?;
         }
 
-        if let Some((activity, data)) = (self.to_activity) {
+        if let Some((activity, data)) = self.to_activity {
             debug!("dispatching to pty {:?}", format_pty_output(&data.0));
             activity.receive_input(data).await?;
         }

@@ -23,3 +23,6 @@ webterm-core = { path = "../core" }
 rand = "0.8.5"
 log = { version = "0.4.22", features = [] }
 semver = "1.0.23"
+
+[lints.clippy]
+new_without_default = "allow"

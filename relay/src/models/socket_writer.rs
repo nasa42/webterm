@@ -14,7 +14,7 @@ pub struct SocketWriter {
 }
 
 impl SocketWriter {
-    pub fn new(mut writer_stream: SplitSink<WebSocket, Message>) -> Self {
+    pub fn new(writer_stream: SplitSink<WebSocket, Message>) -> Self {
         let writer_stream = Arc::new(Mutex::new(writer_stream));
         let (_tx, mut rx) = mpsc::channel::<Vec<u8>>(16);
         let writer_stream_clone = writer_stream.clone();

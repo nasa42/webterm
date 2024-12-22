@@ -13,7 +13,7 @@ pub struct R2aBuilder<'a> {
     root_payload: Option<WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
 
-impl<'a> R2aBuilder<'a> {
+impl R2aBuilder<'_> {
     pub fn new() -> Self {
         let builder = FlatBufferBuilder::new();
         Self {

@@ -1,5 +1,4 @@
 use crate::models::agent_connection::AgentConnection;
-use crate::models::agent_registry::AgentRegistry;
 use crate::models::frontend_connection::FrontendConnection;
 use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
 use crate::models::relay_error::RelayError;
@@ -9,9 +8,7 @@ use crate::models::socket_writer::SocketPublisher;
 use crate::services::process_a2r::process_a2r;
 use crate::services::process_f2r::process_f2r;
 use axum::extract::ws::WebSocket;
-use futures::stream::{SplitSink, SplitStream};
 use std::sync::Arc;
-use tokio::sync::Mutex;
 use tracing::{debug, error, info};
 use webterm_core::pty_output_formatter::format_pty_output;
 use webterm_core::types::FrontendId;
@@ -65,8 +62,8 @@ impl Bridge {
 
         let frontend_id = self.frontend_id;
 
-        let mut frontend_sub = fc.subscriber();
-        let mut agent_sub = ac.subscriber();
+        let frontend_sub = fc.subscriber();
+        let agent_sub = ac.subscriber();
 
         let frontend_pub = fc.publisher();
         let agent_pub = ac.publisher();
@@ -131,7 +128,7 @@ impl Bridge {
             let data = frontend_sub.recv().await??;
 
             if let Some(data) = data {
-                let mut send = SendPayload::new();
+                let send = SendPayload::new();
                 let send = process_f2r(data, send, frontend_id).await?;
                 send.dispatch(&frontend_pub, &agent_pub).await?;
             } else {
@@ -150,7 +147,7 @@ impl Bridge {
         loop {
             let data = agent_sub.recv().await??;
 
-            let mut send = SendPayload::new();
+            let send = SendPayload::new();
 
             if let Some(data) = data {
                 debug!("received from agent: {:?}", format_pty_output(&data));

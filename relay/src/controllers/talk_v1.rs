@@ -2,13 +2,10 @@ use crate::config::TEST_SERVER_ID;
 use crate::models::agent_connection::AgentConnection;
 use crate::models::agent_registry::AgentRegistry;
 use crate::models::bridge::Bridge;
-use crate::models::frontend_connection::FrontendConnection;
-use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
 use axum::extract::ws::WebSocket;
 use axum::extract::Query;
 use axum::{extract::WebSocketUpgrade, response::IntoResponse};
 use std::sync::Arc;
-use tokio::sync::Mutex;
 use tracing::{error, info};
 
 #[derive(serde::Deserialize)]
@@ -27,7 +24,7 @@ pub async fn frontend_handler(ws: WebSocketUpgrade, params: Query<Params>) -> im
 pub async fn agent_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
     ws.write_buffer_size(crate::config::WEBSOCKET_BUFFER_SIZE)
         .max_write_buffer_size(crate::config::WEBSOCKET_MAX_BUFFER_SIZE)
-        .on_upgrade(|socket| on_upgrade_agent(socket))
+        .on_upgrade(on_upgrade_agent)
 }
 
 async fn on_upgrade_frontend(socket: WebSocket, handshake_nonce: String) {

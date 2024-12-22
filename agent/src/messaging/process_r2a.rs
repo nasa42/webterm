@@ -10,7 +10,7 @@ use webterm_core::types::FrontendId;
 
 pub async fn process_r2a(
     message: &[u8],
-    mut send: SendPayload,
+    send: SendPayload,
     config: &Config,
 ) -> Result<SendPayload, AgentError> {
     let message = read_message::<R2aRoot>(message)?;

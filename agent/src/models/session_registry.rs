@@ -1,13 +1,11 @@
 use crate::models::agent_error::AgentError;
-use crate::models::frontend::Frontend;
 use crate::models::session::Session;
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
 use tokio::sync::{Mutex, RwLock};
 use tracing::debug;
-use tracing_subscriber::registry;
-use webterm_core::types::{FrontendId, SessionId};
+use webterm_core::types::SessionId;
 
 // Start from 1. Frontend may send "0" session ID to request a new session
 static NEXT_SESSION_ID: AtomicU64 = AtomicU64::new(1);

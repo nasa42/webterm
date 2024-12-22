@@ -1,15 +1,13 @@
-use crate::models::activity::Activity;
 use pty_process::OwnedReadPty;
-use std::sync::{Arc, OnceLock};
+use std::sync::OnceLock;
 use tokio::io::AsyncReadExt;
 use tokio::sync::{broadcast, mpsc, Mutex};
 use tracing::debug;
 use tracing::info;
-use webterm_core::pty_output_formatter::format_pty_output;
 use webterm_core::serialisers::talk_v1::terminal_output_builder::{
     ActivityOutputBlob, TerminalOutputBuilder,
 };
-use webterm_core::types::{ActivityId, SessionId};
+use webterm_core::types::ActivityId;
 
 const BUFFER_SIZE: usize = 10240;
 

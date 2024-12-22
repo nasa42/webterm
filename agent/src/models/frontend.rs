@@ -74,7 +74,7 @@ impl Frontend {
         encrypted_nonce: &Bits256,
         iv: &Bits96,
     ) -> Result<bool, AgentError> {
-        if let Some(challenge_nonce) = (self.challenge_nonce) {
+        if let Some(challenge_nonce) = self.challenge_nonce {
             let decrypted_nonce =
                 self.cryptographer()?
                     .decrypt(encrypted_nonce.0.as_ref(), iv, false)?;
@@ -82,9 +82,9 @@ impl Frontend {
             self.challenge_nonce = None;
             Ok(result)
         } else {
-            return Err(AgentError::RuntimeError(
+            Err(AgentError::RuntimeError(
                 "Challenge nonce is not set".to_string(),
-            ));
+            ))
         }
     }
 
@@ -97,8 +97,8 @@ impl Frontend {
     }
 
     pub fn challenge_nonce(&self) -> Result<Bits256, AgentError> {
-        Ok(self.challenge_nonce.ok_or(AgentError::RuntimeError(
+        self.challenge_nonce.ok_or(AgentError::RuntimeError(
             "Challenge nonce is not set".to_string(),
-        ))?)
+        ))
     }
 }

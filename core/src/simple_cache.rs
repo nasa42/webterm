@@ -2,8 +2,8 @@ use crate::random::random_in_range;
 use std::collections::HashMap;
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
-use std::sync::{Arc, PoisonError};
-use tokio::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 use tokio::task::JoinHandle;
 use tokio::time;
 use tokio::time::{Duration, Instant};
@@ -65,6 +65,10 @@ where
 
     pub async fn len(&self) -> Result<usize, CacheError> {
         Ok(self.map.read().await.len())
+    }
+
+    pub async fn is_empty(&self) -> Result<bool, CacheError> {
+        Ok(self.map.read().await.is_empty())
     }
 
     pub async fn insert(&self, key: K, value: V, duration: Duration) -> Result<(), CacheError> {
