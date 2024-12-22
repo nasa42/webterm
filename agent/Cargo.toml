@@ -9,14 +9,12 @@ clap = { version = "4.5.20", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
 pty-process = { version = "0.4.0", features = ["async"] }
-rand = "0.8.5"
 tokio = "1.41.1"
 tokio-tungstenite = "0.24.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 webterm-core = { path = "../core" }
 url = "2.5.3"
-ring = "0.17.8"
 semver = "1.0.23"
 
 [lints.clippy]

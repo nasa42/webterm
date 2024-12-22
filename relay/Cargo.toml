@@ -11,18 +11,12 @@ axum = { version = "0.7.7", features = ["macros", "ws", "http2"] }
 clap = { version = "4.5.20", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
-hyper = { version = "1.5.0", features = ["full"] }
 serde = { version = "1.0.215", features = ["derive"] }
-serde_json = "1.0.132"
 tokio = { version = "1.41.1", features = ["full"] }
-tokio-tungstenite = "0.24.0"
 tower-http = { version = "0.6.1", features = ["trace"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 webterm-core = { path = "../core" }
-rand = "0.8.5"
-log = { version = "0.4.22", features = [] }
-semver = "1.0.23"
 
 [lints.clippy]
 new_without_default = "allow"
