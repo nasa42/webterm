@@ -1,6 +1,5 @@
 use crate::args::Args;
 use crate::models::relay::Relay;
-use std::num::NonZeroU32;
 use std::sync::Arc;
 use std::time::Duration;
 use tracing::error;
@@ -46,14 +45,13 @@ impl Config {
                     .split(',')
                     .map(|s| s.trim().to_string())
                     .filter(|s| !s.is_empty())
-                    .map(|s| match Relay::new(&s) {
+                    .filter_map(|s| match Relay::new(&s) {
                         Ok(relay) => Some(Arc::new(relay)),
                         Err(e) => {
                             error!("Failed to create relay for {}: {}", s, e);
                             None
                         }
                     })
-                    .filter_map(|relay| relay)
                     .collect()
             })
             .unwrap_or_default();

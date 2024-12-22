@@ -27,6 +27,7 @@ impl HandshakeNonceRegistry {
         })
     }
 
+    #[allow(dead_code)]
     pub async fn singleton_agent() -> &'static Arc<HandshakeNonceRegistry> {
         let (agent, _) = Self::singleton().await;
         agent

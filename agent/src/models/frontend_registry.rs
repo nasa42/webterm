@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::sync::{Arc, OnceLock};
 use tokio::sync::{Mutex, RwLock};
 use tracing::debug;
-use tracing_subscriber::registry;
 use webterm_core::types::FrontendId;
 
 // Frontend -> (has one) Session -> (has many) Activities

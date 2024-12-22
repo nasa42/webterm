@@ -47,7 +47,7 @@ impl Cryptographer {
         })?;
 
         let iv = self.iv_counter.next();
-        let nonce = Nonce::from_slice(iv.0.as_ref());
+        let nonce = Nonce::try_from(iv.0.as_ref())?;
 
         let (payload, compressed) = if may_compress && plaintext.len() > COMPRESSION_THRESHOLD {
             (compress(plaintext)?, true)
@@ -55,12 +55,12 @@ impl Cryptographer {
             (plaintext.to_vec(), false)
         };
 
-        if (compressed) {
-            println!("compressed payload is: {:?} ", payload);
+        if compressed {
+            // println!("compressed payload is: {:?} ", payload);
         }
 
         let ciphertext = cipher
-            .encrypt(nonce, payload.as_ref())
+            .encrypt(&nonce, payload.as_ref())
             .map_err(|_| WebtermError::EncryptionError("Encryption failed".to_string()))?;
 
         Ok(EncryptedPayload {
@@ -80,10 +80,10 @@ impl Cryptographer {
             WebtermError::RuntimeError("Failed to create decryption key".to_string())
         })?;
 
-        let nonce = Nonce::from_slice(iv.0.as_ref());
+        let nonce = Nonce::try_from(iv.0.as_ref())?;
 
         let decrypted = cipher
-            .decrypt(nonce, ciphertext)
+            .decrypt(&nonce, ciphertext)
             .map_err(|_| WebtermError::DecryptionError("Decryption failed".to_string()))?;
 
         if compressed {

@@ -6,11 +6,11 @@ use tracing::info;
 
 pub type TerminalPublisher = mpsc::Sender<Vec<u8>>;
 
-pub struct TerminalWriter {
+pub struct PtyActivityWriter {
     _tx: TerminalPublisher,
 }
 
-impl TerminalWriter {
+impl PtyActivityWriter {
     pub fn new(writer_stream: Arc<Mutex<OwnedWritePty>>) -> Self {
         let (_tx, mut rx) = mpsc::channel::<Vec<u8>>(16);
         tokio::spawn(async move {

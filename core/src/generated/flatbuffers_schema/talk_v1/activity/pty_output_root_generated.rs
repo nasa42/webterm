@@ -9,35 +9,35 @@ use core::mem;
 use core::cmp::Ordering;
 use self::flatbuffers::{EndianScalar, Follow};
 use super::*;
-pub enum TerminalInputRootOffset {}
+pub enum PtyOutputRootOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
-pub struct TerminalInputRoot<'a> {
+pub struct PtyOutputRoot<'a> {
   pub _tab: flatbuffers::Table<'a>,
 }
 
-impl<'a> flatbuffers::Follow<'a> for TerminalInputRoot<'a> {
-  type Inner = TerminalInputRoot<'a>;
+impl<'a> flatbuffers::Follow<'a> for PtyOutputRoot<'a> {
+  type Inner = PtyOutputRoot<'a>;
   #[inline]
   unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
     Self { _tab: flatbuffers::Table::new(buf, loc) }
   }
 }
 
-impl<'a> TerminalInputRoot<'a> {
+impl<'a> PtyOutputRoot<'a> {
   pub const VT_PAYLOAD_TYPE: flatbuffers::VOffsetT = 4;
   pub const VT_PAYLOAD: flatbuffers::VOffsetT = 6;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
-    TerminalInputRoot { _tab: table }
+    PtyOutputRoot { _tab: table }
   }
   #[allow(unused_mut)]
   pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
     _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
-    args: &'args TerminalInputRootArgs
-  ) -> flatbuffers::WIPOffset<TerminalInputRoot<'bldr>> {
-    let mut builder = TerminalInputRootBuilder::new(_fbb);
+    args: &'args PtyOutputRootArgs
+  ) -> flatbuffers::WIPOffset<PtyOutputRoot<'bldr>> {
+    let mut builder = PtyOutputRootBuilder::new(_fbb);
     if let Some(x) = args.payload { builder.add_payload(x); }
     builder.add_payload_type(args.payload_type);
     builder.finish()
@@ -45,23 +45,23 @@ impl<'a> TerminalInputRoot<'a> {
 
 
   #[inline]
-  pub fn payload_type(&self) -> TerminalInput {
+  pub fn payload_type(&self) -> PtyOutput {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<TerminalInput>(TerminalInputRoot::VT_PAYLOAD_TYPE, Some(TerminalInput::NONE)).unwrap()}
+    unsafe { self._tab.get::<PtyOutput>(PtyOutputRoot::VT_PAYLOAD_TYPE, Some(PtyOutput::NONE)).unwrap()}
   }
   #[inline]
   pub fn payload(&self) -> Option<flatbuffers::Table<'a>> {
     // Safety:
     // Created from valid Table for this object
     // which contains a valid value in this slot
-    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Table<'a>>>(TerminalInputRoot::VT_PAYLOAD, None)}
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Table<'a>>>(PtyOutputRoot::VT_PAYLOAD, None)}
   }
   #[inline]
   #[allow(non_snake_case)]
-  pub fn payload_as_user_input(&self) -> Option<super::VectorTable<'a>> {
-    if self.payload_type() == TerminalInput::UserInput {
+  pub fn payload_as_output(&self) -> Option<super::VectorTable<'a>> {
+    if self.payload_type() == PtyOutput::Output {
       self.payload().map(|t| {
        // Safety:
        // Created from a valid Table for this object
@@ -73,34 +73,18 @@ impl<'a> TerminalInputRoot<'a> {
     }
   }
 
-  #[inline]
-  #[allow(non_snake_case)]
-  pub fn payload_as_resize(&self) -> Option<TerminalResize<'a>> {
-    if self.payload_type() == TerminalInput::Resize {
-      self.payload().map(|t| {
-       // Safety:
-       // Created from a valid Table for this object
-       // Which contains a valid union in this slot
-       unsafe { TerminalResize::init_from_table(t) }
-     })
-    } else {
-      None
-    }
-  }
-
 }
 
-impl flatbuffers::Verifiable for TerminalInputRoot<'_> {
+impl flatbuffers::Verifiable for PtyOutputRoot<'_> {
   #[inline]
   fn run_verifier(
     v: &mut flatbuffers::Verifier, pos: usize
   ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
     use self::flatbuffers::Verifiable;
     v.visit_table(pos)?
-     .visit_union::<TerminalInput, _>("payload_type", Self::VT_PAYLOAD_TYPE, "payload", Self::VT_PAYLOAD, false, |key, v, pos| {
+     .visit_union::<PtyOutput, _>("payload_type", Self::VT_PAYLOAD_TYPE, "payload", Self::VT_PAYLOAD, false, |key, v, pos| {
         match key {
-          TerminalInput::UserInput => v.verify_union_variant::<flatbuffers::ForwardsUOffset<super::VectorTable>>("TerminalInput::UserInput", pos),
-          TerminalInput::Resize => v.verify_union_variant::<flatbuffers::ForwardsUOffset<TerminalResize>>("TerminalInput::Resize", pos),
+          PtyOutput::Output => v.verify_union_variant::<flatbuffers::ForwardsUOffset<super::VectorTable>>("PtyOutput::Output", pos),
           _ => Ok(()),
         }
      })?
@@ -108,62 +92,55 @@ impl flatbuffers::Verifiable for TerminalInputRoot<'_> {
     Ok(())
   }
 }
-pub struct TerminalInputRootArgs {
-    pub payload_type: TerminalInput,
+pub struct PtyOutputRootArgs {
+    pub payload_type: PtyOutput,
     pub payload: Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>>,
 }
-impl<'a> Default for TerminalInputRootArgs {
+impl<'a> Default for PtyOutputRootArgs {
   #[inline]
   fn default() -> Self {
-    TerminalInputRootArgs {
-      payload_type: TerminalInput::NONE,
+    PtyOutputRootArgs {
+      payload_type: PtyOutput::NONE,
       payload: None,
     }
   }
 }
 
-pub struct TerminalInputRootBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+pub struct PtyOutputRootBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
   fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
   start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
 }
-impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> TerminalInputRootBuilder<'a, 'b, A> {
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> PtyOutputRootBuilder<'a, 'b, A> {
   #[inline]
-  pub fn add_payload_type(&mut self, payload_type: TerminalInput) {
-    self.fbb_.push_slot::<TerminalInput>(TerminalInputRoot::VT_PAYLOAD_TYPE, payload_type, TerminalInput::NONE);
+  pub fn add_payload_type(&mut self, payload_type: PtyOutput) {
+    self.fbb_.push_slot::<PtyOutput>(PtyOutputRoot::VT_PAYLOAD_TYPE, payload_type, PtyOutput::NONE);
   }
   #[inline]
   pub fn add_payload(&mut self, payload: flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(TerminalInputRoot::VT_PAYLOAD, payload);
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(PtyOutputRoot::VT_PAYLOAD, payload);
   }
   #[inline]
-  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> TerminalInputRootBuilder<'a, 'b, A> {
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> PtyOutputRootBuilder<'a, 'b, A> {
     let start = _fbb.start_table();
-    TerminalInputRootBuilder {
+    PtyOutputRootBuilder {
       fbb_: _fbb,
       start_: start,
     }
   }
   #[inline]
-  pub fn finish(self) -> flatbuffers::WIPOffset<TerminalInputRoot<'a>> {
+  pub fn finish(self) -> flatbuffers::WIPOffset<PtyOutputRoot<'a>> {
     let o = self.fbb_.end_table(self.start_);
     flatbuffers::WIPOffset::new(o.value())
   }
 }
 
-impl core::fmt::Debug for TerminalInputRoot<'_> {
+impl core::fmt::Debug for PtyOutputRoot<'_> {
   fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-    let mut ds = f.debug_struct("TerminalInputRoot");
+    let mut ds = f.debug_struct("PtyOutputRoot");
       ds.field("payload_type", &self.payload_type());
       match self.payload_type() {
-        TerminalInput::UserInput => {
-          if let Some(x) = self.payload_as_user_input() {
-            ds.field("payload", &x)
-          } else {
-            ds.field("payload", &"InvalidFlatbuffer: Union discriminant does not match value.")
-          }
-        },
-        TerminalInput::Resize => {
-          if let Some(x) = self.payload_as_resize() {
+        PtyOutput::Output => {
+          if let Some(x) = self.payload_as_output() {
             ds.field("payload", &x)
           } else {
             ds.field("payload", &"InvalidFlatbuffer: Union discriminant does not match value.")

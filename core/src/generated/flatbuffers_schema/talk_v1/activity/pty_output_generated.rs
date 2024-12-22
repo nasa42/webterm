@@ -10,44 +10,40 @@ use core::cmp::Ordering;
 use self::flatbuffers::{EndianScalar, Follow};
 use super::*;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MIN_TERMINAL_INPUT: u8 = 0;
+pub const ENUM_MIN_PTY_OUTPUT: u8 = 0;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
-pub const ENUM_MAX_TERMINAL_INPUT: u8 = 2;
+pub const ENUM_MAX_PTY_OUTPUT: u8 = 1;
 #[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
 #[allow(non_camel_case_types)]
-pub const ENUM_VALUES_TERMINAL_INPUT: [TerminalInput; 3] = [
-  TerminalInput::NONE,
-  TerminalInput::UserInput,
-  TerminalInput::Resize,
+pub const ENUM_VALUES_PTY_OUTPUT: [PtyOutput; 2] = [
+  PtyOutput::NONE,
+  PtyOutput::Output,
 ];
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 #[repr(transparent)]
-pub struct TerminalInput(pub u8);
+pub struct PtyOutput(pub u8);
 #[allow(non_upper_case_globals)]
-impl TerminalInput {
+impl PtyOutput {
   pub const NONE: Self = Self(0);
-  pub const UserInput: Self = Self(1);
-  pub const Resize: Self = Self(2);
+  pub const Output: Self = Self(1);
 
   pub const ENUM_MIN: u8 = 0;
-  pub const ENUM_MAX: u8 = 2;
+  pub const ENUM_MAX: u8 = 1;
   pub const ENUM_VALUES: &'static [Self] = &[
     Self::NONE,
-    Self::UserInput,
-    Self::Resize,
+    Self::Output,
   ];
   /// Returns the variant's name or "" if unknown.
   pub fn variant_name(self) -> Option<&'static str> {
     match self {
       Self::NONE => Some("NONE"),
-      Self::UserInput => Some("UserInput"),
-      Self::Resize => Some("Resize"),
+      Self::Output => Some("Output"),
       _ => None,
     }
   }
 }
-impl core::fmt::Debug for TerminalInput {
+impl core::fmt::Debug for PtyOutput {
   fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
     if let Some(name) = self.variant_name() {
       f.write_str(name)
@@ -56,7 +52,7 @@ impl core::fmt::Debug for TerminalInput {
     }
   }
 }
-impl<'a> flatbuffers::Follow<'a> for TerminalInput {
+impl<'a> flatbuffers::Follow<'a> for PtyOutput {
   type Inner = Self;
   #[inline]
   unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
@@ -65,15 +61,15 @@ impl<'a> flatbuffers::Follow<'a> for TerminalInput {
   }
 }
 
-impl flatbuffers::Push for TerminalInput {
-    type Output = TerminalInput;
+impl flatbuffers::Push for PtyOutput {
+    type Output = PtyOutput;
     #[inline]
     unsafe fn push(&self, dst: &mut [u8], _written_len: usize) {
         flatbuffers::emplace_scalar::<u8>(dst, self.0);
     }
 }
 
-impl flatbuffers::EndianScalar for TerminalInput {
+impl flatbuffers::EndianScalar for PtyOutput {
   type Scalar = u8;
   #[inline]
   fn to_little_endian(self) -> u8 {
@@ -87,7 +83,7 @@ impl flatbuffers::EndianScalar for TerminalInput {
   }
 }
 
-impl<'a> flatbuffers::Verifiable for TerminalInput {
+impl<'a> flatbuffers::Verifiable for PtyOutput {
   #[inline]
   fn run_verifier(
     v: &mut flatbuffers::Verifier, pos: usize
@@ -97,6 +93,6 @@ impl<'a> flatbuffers::Verifiable for TerminalInput {
   }
 }
 
-impl flatbuffers::SimpleToVerifyInSlice for TerminalInput {}
-pub struct TerminalInputUnionTableOffset {}
+impl flatbuffers::SimpleToVerifyInSlice for PtyOutput {}
+pub struct PtyOutputUnionTableOffset {}
 

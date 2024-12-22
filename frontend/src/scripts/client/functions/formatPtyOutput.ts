@@ -24,7 +24,7 @@ function processString(input: string): string {
     .join("");
 }
 
-function formatPtyOutput(bytes: Uint8Array): string {
+export function formatPtyOutput(bytes: Uint8Array): string {
   let result = "";
 
   let i = 0;

@@ -1,12 +1,10 @@
 use crate::config::MAX_AGENTS;
 use crate::models::agent_connection::AgentConnection;
 use crate::models::relay_error::RelayError;
-use axum::routing::get;
 use std::collections::HashMap;
 use std::sync::{Arc, OnceLock};
 use tokio::sync::RwLock;
 use tracing::debug;
-use webterm_core::simple_cache::SimpleCache;
 
 pub struct AgentRegistry {
     agents: Arc<RwLock<HashMap<String, Arc<AgentConnection>>>>,
@@ -37,6 +35,11 @@ impl AgentRegistry {
 
     pub async fn register(agent: Arc<AgentConnection>) -> Result<(), RelayError> {
         let registry = Self::singleton().await;
+        if registry.agents.read().await.len() >= MAX_AGENTS {
+            return Err(RelayError::RuntimeError(
+                "Agent registry is full".to_string(),
+            ));
+        }
         debug!("Registering agent {}", agent.server_id);
         registry
             .agents
@@ -47,6 +50,7 @@ impl AgentRegistry {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn remove(server_id: &str) -> Result<Arc<AgentConnection>, RelayError> {
         let registry = Self::singleton().await;
         registry

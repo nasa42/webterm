@@ -1,10 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import MainNavRibbon from "../components/MainNavRibbon.astro";
 ---
 
 <Layout>
-  <div class="container-fluid p-0 m-0">
-    <div id="app-terminal" class="w-100 h-100"></div>
+  <div class="container-fluid min-vh-100 d-flex flex-column g-0">
+    <div class="row gx-2">
+      <MainNavRibbon />
+    </div>
+    <div id="app-terminal" class="row flex-grow-1"></div>
   </div>
   <script src="../scripts/client/entry-points/terminal.ts"></script>
 </Layout>

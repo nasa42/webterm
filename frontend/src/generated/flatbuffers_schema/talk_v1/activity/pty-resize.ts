@@ -4,22 +4,22 @@
 
 import * as flatbuffers from 'flatbuffers';
 
-export class TerminalResize {
+export class PtyResize {
   bb: flatbuffers.ByteBuffer|null = null;
   bb_pos = 0;
-  __init(i:number, bb:flatbuffers.ByteBuffer):TerminalResize {
+  __init(i:number, bb:flatbuffers.ByteBuffer):PtyResize {
   this.bb_pos = i;
   this.bb = bb;
   return this;
 }
 
-static getRootAsTerminalResize(bb:flatbuffers.ByteBuffer, obj?:TerminalResize):TerminalResize {
-  return (obj || new TerminalResize()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+static getRootAsPtyResize(bb:flatbuffers.ByteBuffer, obj?:PtyResize):PtyResize {
+  return (obj || new PtyResize()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 }
 
-static getSizePrefixedRootAsTerminalResize(bb:flatbuffers.ByteBuffer, obj?:TerminalResize):TerminalResize {
+static getSizePrefixedRootAsPtyResize(bb:flatbuffers.ByteBuffer, obj?:PtyResize):PtyResize {
   bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
-  return (obj || new TerminalResize()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+  return (obj || new PtyResize()).__init(bb.readInt32(bb.position()) + bb.position(), bb);
 }
 
 cols():number {
@@ -32,7 +32,7 @@ rows():number {
   return offset ? this.bb!.readUint16(this.bb_pos + offset) : 0;
 }
 
-static startTerminalResize(builder:flatbuffers.Builder) {
+static startPtyResize(builder:flatbuffers.Builder) {
   builder.startObject(2);
 }
 
@@ -44,15 +44,15 @@ static addRows(builder:flatbuffers.Builder, rows:number) {
   builder.addFieldInt16(1, rows, 0);
 }
 
-static endTerminalResize(builder:flatbuffers.Builder):flatbuffers.Offset {
+static endPtyResize(builder:flatbuffers.Builder):flatbuffers.Offset {
   const offset = builder.endObject();
   return offset;
 }
 
-static createTerminalResize(builder:flatbuffers.Builder, cols:number, rows:number):flatbuffers.Offset {
-  TerminalResize.startTerminalResize(builder);
-  TerminalResize.addCols(builder, cols);
-  TerminalResize.addRows(builder, rows);
-  return TerminalResize.endTerminalResize(builder);
+static createPtyResize(builder:flatbuffers.Builder, cols:number, rows:number):flatbuffers.Offset {
+  PtyResize.startPtyResize(builder);
+  PtyResize.addCols(builder, cols);
+  PtyResize.addRows(builder, rows);
+  return PtyResize.endPtyResize(builder);
 }
 }

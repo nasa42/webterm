@@ -118,7 +118,7 @@ export class Cryptographer {
       throw new Error("Key not initialised");
     }
 
-    const decrypted = new Uint8Array(
+    let decrypted = new Uint8Array(
       await crypto.subtle.decrypt(
         {
           name: "AES-GCM",
@@ -130,16 +130,11 @@ export class Cryptographer {
     );
 
     if (compressed) {
-      console.info("need to decompress");
-      console.log(decrypted);
       try {
-        const decompressed = await deflateRawDecompress(decrypted);
-        console.info("decompressed");
-        return decompressed;
+        decrypted = await deflateRawDecompress(decrypted);
       } catch (error) {
         console.error("failed to decompress");
-        console.error(error);
-        return decrypted;
+        throw error;
       }
     }
 

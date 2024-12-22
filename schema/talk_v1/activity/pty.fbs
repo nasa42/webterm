@@ -1,0 +1,23 @@
+namespace Activity;
+
+table PtyResize {
+  cols: uint16;
+  rows: uint16;
+}
+
+union PtyInput {
+  UserInput: VectorTable = 1,
+  Resize: PtyResize = 2,
+}
+
+union PtyOutput {
+  Output: VectorTable = 1,
+}
+
+table PtyInputRoot {
+  payload: PtyInput;
+}
+
+table PtyOutputRoot {
+  payload: PtyOutput;
+}

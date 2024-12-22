@@ -5,28 +5,28 @@
 import { VectorTable } from '../vector-table.js';
 
 
-export enum TerminalOutput {
+export enum PtyOutput {
   NONE = 0,
   Output = 1
 }
 
-export function unionToTerminalOutput(
-  type: TerminalOutput,
+export function unionToPtyOutput(
+  type: PtyOutput,
   accessor: (obj:VectorTable) => VectorTable|null
 ): VectorTable|null {
-  switch(TerminalOutput[type]) {
+  switch(PtyOutput[type]) {
     case 'NONE': return null; 
     case 'Output': return accessor(new VectorTable())! as VectorTable;
     default: return null;
   }
 }
 
-export function unionListToTerminalOutput(
-  type: TerminalOutput, 
+export function unionListToPtyOutput(
+  type: PtyOutput, 
   accessor: (index: number, obj:VectorTable) => VectorTable|null, 
   index: number
 ): VectorTable|null {
-  switch(TerminalOutput[type]) {
+  switch(PtyOutput[type]) {
     case 'NONE': return null; 
     case 'Output': return accessor(index, new VectorTable())! as VectorTable;
     default: return null;

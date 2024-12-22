@@ -2,16 +2,16 @@
 // @generated
 pub mod activity {
   use super::*;
-  mod terminal_input_generated;
-  pub use self::terminal_input_generated::*;
-  mod terminal_output_generated;
-  pub use self::terminal_output_generated::*;
-  mod terminal_resize_generated;
-  pub use self::terminal_resize_generated::*;
-  mod terminal_input_root_generated;
-  pub use self::terminal_input_root_generated::*;
-  mod terminal_output_root_generated;
-  pub use self::terminal_output_root_generated::*;
+  mod pty_input_generated;
+  pub use self::pty_input_generated::*;
+  mod pty_output_generated;
+  pub use self::pty_output_generated::*;
+  mod pty_resize_generated;
+  pub use self::pty_resize_generated::*;
+  mod pty_input_root_generated;
+  pub use self::pty_input_root_generated::*;
+  mod pty_output_root_generated;
+  pub use self::pty_output_root_generated::*;
 } // activity
 mod a2f_message_format_generated;
 pub use self::a2f_message_format_generated::*;

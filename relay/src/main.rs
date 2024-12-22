@@ -9,7 +9,6 @@ use crate::models::relay_error::RelayError;
 use crate::router::app_router;
 use clap::Parser;
 use tracing::{info, Level};
-use tracing_subscriber::EnvFilter;
 
 #[derive(Parser, Debug)]
 #[command(version,  long_about = None)]

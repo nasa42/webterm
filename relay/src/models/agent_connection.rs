@@ -1,4 +1,3 @@
-use crate::models::agent_registry::AgentRegistry;
 use crate::models::socket_reader::{SocketReader, SocketSubscriber};
 use crate::models::socket_writer::{SocketPublisher, SocketWriter};
 use axum::extract::ws::WebSocket;
@@ -32,11 +31,6 @@ impl AgentConnection {
 
     pub async fn wait_until_closed(&self) {
         self.close_notifier.notified().await;
-    }
-
-    pub async fn close(&self) {
-        self.close_notifier.notify_waiters();
-        let _ = AgentRegistry::remove(&self.server_id).await;
     }
 
     pub fn publisher(&self) -> SocketPublisher {

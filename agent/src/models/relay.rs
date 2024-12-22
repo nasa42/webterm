@@ -1,4 +1,3 @@
-use crate::config::Config;
 use crate::models::agent_error::AgentError;
 use tracing::{debug, info};
 use url::Url;

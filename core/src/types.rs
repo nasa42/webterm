@@ -16,9 +16,9 @@ pub struct Bits96(pub [u8; 12]);
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Bits256(pub [u8; 32]);
 
-impl Into<FbBits96> for Bits96 {
-    fn into(self) -> FbBits96 {
-        FbBits96::new(&self.0)
+impl From<Bits96> for FbBits96 {
+    fn from(val: Bits96) -> Self {
+        FbBits96::new(&val.0)
     }
 }
 
@@ -28,9 +28,9 @@ impl From<&FbBits96> for Bits96 {
     }
 }
 
-impl Into<FbBits256> for Bits256 {
-    fn into(self) -> FbBits256 {
-        FbBits256::new(&self.0)
+impl From<Bits256> for FbBits256 {
+    fn from(val: Bits256) -> Self {
+        FbBits256::new(&val.0)
     }
 }
 
@@ -71,8 +71,8 @@ mod tests {
     #[test]
     fn test_bits256_conversion() {
         let mut data = [0u8; 32];
-        for i in 0..32 {
-            data[i] = i as u8;
+        for (i, element) in data.iter_mut().enumerate() {
+            *element = i as u8;
         }
         let original = Bits256(data);
         let fb: FbBits256 = original.into();

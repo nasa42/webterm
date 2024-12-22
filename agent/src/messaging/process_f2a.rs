@@ -15,7 +15,7 @@ use webterm_core::types::{ActivityId, Bits96, FrontendId, SessionId};
 pub async fn process_f2a(
     frontend_id: FrontendId,
     message: &[u8],
-    mut send: SendPayload,
+    send: SendPayload,
     config: &Config,
 ) -> Result<SendPayload, AgentError> {
     let root = read_message::<F2aRoot>(message)?;
@@ -63,19 +63,19 @@ async fn process_plain(
             frontend.init_cryptographer(config.secret_key());
 
             let decrypted = frontend.cryptographer()?.decrypt(
-                &message
+                message
                     .challenge_aes256gcm_solution()
                     .ok_or(AgentError::FBParseError(
                     "Expected challenge aes256gcm solution for auth present verification, got None"
                         .to_string(),
-                ))?.bytes().to_vec(),
+                ))?.bytes(),
                 &Bits96::from(message.challenge_iv().ok_or(AgentError::FBParseError(
                     "Expected challenge iv for auth present verification, got None".to_string(),
                 ))?),
                 false,
             )?;
 
-            if (decrypted == frontend.challenge_nonce()?.0.to_vec()) {
+            if decrypted == frontend.challenge_nonce()?.0.to_vec() {
                 success = true;
             }
 
@@ -113,10 +113,7 @@ async fn process_encrypted(
     frontend_id: FrontendId,
     mut send: SendPayload,
 ) -> Result<SendPayload, AgentError> {
-    let compressed = match root.format() {
-        F2aMessageFormat::Aes256GcmDeflateRaw => true,
-        _ => false,
-    };
+    let compressed = root.format() == F2aMessageFormat::Aes256GcmDeflateRaw;
 
     let frontend = FrontendRegistry::find(frontend_id).await?;
     let frontend = frontend.lock().await;

@@ -50,7 +50,10 @@ export class Runner {
     }
 
     if (send.receivedActivityId) {
-      this.currentActivityId = send.receivedActivityId;
+      if (this.currentActivityId?.int() != send.receivedActivityId.int()) {
+        this.currentActivityId = send.receivedActivityId;
+        await this.onActivityInit();
+      }
     }
 
     if (send.toAgentPlain) {
@@ -58,7 +61,7 @@ export class Runner {
     }
 
     if (send.toAgentEncrypted) {
-      this.relayConnection.dispatchToAgentEncrypted(send.toAgentEncrypted);
+      await this.relayConnection.dispatchToAgentEncrypted(send.toAgentEncrypted);
     }
   }
 
@@ -75,11 +78,18 @@ export class Runner {
       throw new Error("Did not expect ActivityId to be undefined");
     }
 
+    this.terminalConnection.resizeToFit();
+
     await this.relayConnection.dispatchResize(
       this.currentActivityId,
       this.terminalConnection.terminalCols(),
       this.terminalConnection.terminalRows(),
     );
+  }
+
+  private async onActivityInit() {
+    console.log(`Initialising activity ${this.currentActivityId}...`);
+    await this.onWindowResize();
   }
 
   async initCryptographer({ iterations, salt }: { iterations: number; salt: Bits256Array }) {
