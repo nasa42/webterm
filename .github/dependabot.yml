@@ -4,7 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 4
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 4
