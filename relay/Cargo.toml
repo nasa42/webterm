@@ -11,7 +11,7 @@ axum = { version = "0.7.9", features = ["macros", "ws", "http2"] }
 clap = { version = "4.5.23", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
-serde = { version = "1.0.215", features = ["derive"] }
+serde = { version = "1.0.216", features = ["derive"] }
 tokio = { version = "1.42.0", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["trace"] }
 tracing = "0.1.41"
