@@ -7,7 +7,7 @@ rust-version.workspace = true
 [dependencies]
 askama = "0.12.1"
 askama_axum = "0.4.0"
-axum = { version = "0.7.7", features = ["macros", "ws", "http2"] }
+axum = { version = "0.7.9", features = ["macros", "ws", "http2"] }
 clap = { version = "4.5.23", features = ["derive", "env"] }
 flatbuffers = "24.3.25"
 futures = "0.3.31"
