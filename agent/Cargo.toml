@@ -12,7 +12,7 @@ pty-process = { version = "0.4.0", features = ["async"] }
 rand = "0.8.5"
 tokio = "1.41.1"
 tokio-tungstenite = "0.24.0"
-tracing = "0.1.40"
+tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 webterm-core = { path = "../core" }
 url = "2.5.3"
