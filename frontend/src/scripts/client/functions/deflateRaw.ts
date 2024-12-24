@@ -8,7 +8,7 @@ export async function deflateRawCompress(data: Uint8Array): Promise<Uint8Array> 
   return new Uint8Array(buffer);
 }
 
-export async function deflateRawDecompress(data: Uint8Array): Promise<Uint8Array> {
+export async function deflateRawDecompress(data: Uint8Array): Promise<Uint8Array<ArrayBuffer>> {
   const inputStream = new ReadableStream({
     start(controller) {
       controller.enqueue(data);
