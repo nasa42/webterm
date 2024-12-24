@@ -1,1 +1,1 @@
-type BinaryLike = string | Uint8Array;
+export type BinaryLike = string | Uint8Array;

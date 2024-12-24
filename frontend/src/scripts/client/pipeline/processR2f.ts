@@ -7,10 +7,10 @@ import { readA2fRoot } from "../parsers/readA2fRoot.ts";
 export const processR2f = async (relayRoot: R2fRoot, send: SendPayload) => {
   switch (relayRoot.rootPayloadType()) {
     case R2fRootPayload.FromAgent:
-      let fromAgent = relayRoot.rootPayload(new R2fFromAgent()) as R2fFromAgent | null;
-      let data = fromAgent?.payloadArray();
+      const fromAgent = relayRoot.rootPayload(new R2fFromAgent()) as R2fFromAgent | null;
+      const data = fromAgent?.payloadArray();
       if (!data) return;
-      let payload = readA2fRoot(data);
+      const payload = readA2fRoot(data);
       await processA2f(payload, send);
       return;
     default:

@@ -7,7 +7,7 @@ describe("JSON Utils", () => {
 
     testCases.forEach((testCase) => {
       const serialised = jsonStringify(testCase);
-      const deserialised = jsonParse(serialised);
+      const deserialised: typeof testCase = jsonParse(serialised);
       expect(deserialised).toEqual(testCase);
     });
   });
@@ -15,7 +15,7 @@ describe("JSON Utils", () => {
   it("should handle Uint8Array", () => {
     const original = new Uint8Array([1, 2, 3, 4, 5]);
     const serialised = jsonStringify(original);
-    const deserialised = jsonParse(serialised);
+    const deserialised: typeof original = jsonParse(serialised);
 
     expect(deserialised).toBeInstanceOf(Uint8Array);
     expect(Array.from(deserialised)).toEqual(Array.from(original));
@@ -31,7 +31,7 @@ describe("JSON Utils", () => {
     };
 
     const serialised = jsonStringify(original);
-    const deserialised = jsonParse(serialised);
+    const deserialised: typeof original = jsonParse(serialised);
 
     expect(deserialised.data).toBeInstanceOf(Uint8Array);
     expect(deserialised.nested.buffer).toBeInstanceOf(Uint8Array);
@@ -43,7 +43,7 @@ describe("JSON Utils", () => {
     const original = [new Uint8Array([1, 2]), new Uint8Array([3, 4]), new Uint8Array([5, 6])];
 
     const serialised = jsonStringify(original);
-    const deserialised = jsonParse(serialised);
+    const deserialised: typeof original = jsonParse(serialised);
 
     deserialised.forEach((arr: Uint8Array, index: number) => {
       expect(arr).toBeInstanceOf(Uint8Array);
@@ -54,7 +54,7 @@ describe("JSON Utils", () => {
   it("should handle empty Uint8Array", () => {
     const original = new Uint8Array();
     const serialised = jsonStringify(original);
-    const deserialised = jsonParse(serialised);
+    const deserialised: typeof original = jsonParse(serialised);
 
     expect(deserialised).toBeInstanceOf(Uint8Array);
     expect(deserialised.length).toBe(0);

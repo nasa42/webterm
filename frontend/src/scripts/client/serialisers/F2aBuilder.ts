@@ -17,6 +17,7 @@ import { VERSION } from "../config.ts";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
 import { type Bits96Array } from "../types/BitsArray.ts";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}
 
 class Initial implements BuilderState {
@@ -102,7 +103,7 @@ export class F2aBuilder<State extends BuilderState> {
 
     const builder = new flatbuffers.Builder();
 
-    let encryptedPayloadOffset = builder.createByteVector(ciphertext);
+    const encryptedPayloadOffset = builder.createByteVector(ciphertext);
     F2aRoot.startF2aRoot(builder);
     F2aRoot.addFormat(builder, format);
     F2aRoot.addIv(builder, iv.toFbBits96(builder));

@@ -6,7 +6,7 @@ import { Bits256Array, Bits96Array } from "../types/BitsArray.ts";
 
 export class StoredCredential {
   static async store(serverId: string, serverPassword: string): Promise<{ index: number; secretKey: string }> {
-    let secretKey = crypto.randomUUID();
+    const secretKey = crypto.randomUUID();
 
     const encrypted = await Cryptographer.quickEncrypt({
       secretKey,
@@ -36,7 +36,7 @@ export class StoredCredential {
       ciphertext,
     });
 
-    const { serverId, serverPassword } = jsonParse(decrypted);
+    const { serverId, serverPassword } = jsonParse(decrypted) as { serverId: string; serverPassword: string };
 
     return new StoredCredential(serverId, serverPassword);
   }

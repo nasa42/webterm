@@ -2,6 +2,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { formatPtyOutput } from "../functions/formatPtyOutput.ts";
 import { ensureBinary } from "../functions/ensureBinary.ts";
+import type { BinaryLike } from "../types/BinaryLike.ts";
 
 export class TerminalConnection {
   private readonly terminal: Terminal;

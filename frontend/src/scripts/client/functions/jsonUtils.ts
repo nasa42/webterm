@@ -4,7 +4,7 @@ const TYPES = {
   // Add more special types here as needed
 };
 
-function customReplacer(_key: string, value: any): any {
+function customReplacer(_key: string, value: unknown): unknown {
   if (value instanceof Uint8Array) {
     return {
       [TYPE_IDENTIFIER]: TYPES.UINT8ARRAY,
@@ -14,6 +14,7 @@ function customReplacer(_key: string, value: any): any {
   return value;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function customReviver(_key: string, value: any): any {
   if (value && typeof value === "object" && value[TYPE_IDENTIFIER]) {
     switch (value[TYPE_IDENTIFIER]) {
@@ -26,10 +27,10 @@ function customReviver(_key: string, value: any): any {
   return value;
 }
 
-export function jsonStringify(obj: any): string {
+export function jsonStringify(obj: unknown): string {
   return JSON.stringify(obj, customReplacer);
 }
 
-export function jsonParse<T = any>(text: string): T {
+export function jsonParse<T = unknown>(text: string): T {
   return JSON.parse(text, customReviver);
 }
