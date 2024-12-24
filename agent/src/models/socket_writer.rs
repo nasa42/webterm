@@ -5,11 +5,11 @@ use futures::SinkExt;
 use std::sync::Arc;
 use tokio::net::TcpStream;
 use tokio::sync::mpsc;
-use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::tungstenite::{Bytes, Message};
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use tracing::info;
 
-pub type SocketPublisher = mpsc::Sender<Vec<u8>>;
+pub type SocketPublisher = mpsc::Sender<Bytes>;
 
 pub struct SocketWriter {
     _tx: SocketPublisher,
@@ -20,7 +20,7 @@ impl SocketWriter {
         mut writer_stream: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
         rc: Arc<RelayConnection>,
     ) -> Self {
-        let (_tx, mut rx) = mpsc::channel::<Vec<u8>>(16);
+        let (_tx, mut rx) = mpsc::channel::<Bytes>(16);
         let rc_clone = rc.clone();
 
         tokio::spawn(async move {

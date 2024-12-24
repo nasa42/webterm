@@ -5,15 +5,15 @@ use futures::StreamExt;
 use std::sync::Arc;
 use tokio::net::TcpStream;
 use tokio::sync::broadcast;
-use tokio_tungstenite::tungstenite::Message;
+use tokio_tungstenite::tungstenite::{Bytes, Message};
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use tracing::{error, info};
 use webterm_core::models::reader_socket_error::ReaderSocketError;
 
-pub type SocketSubscriber = broadcast::Receiver<Result<Option<Vec<u8>>, ReaderSocketError>>;
+pub type SocketSubscriber = broadcast::Receiver<Result<Option<Bytes>, ReaderSocketError>>;
 
 pub struct SocketReader {
-    _tx: broadcast::Sender<Result<Option<Vec<u8>>, ReaderSocketError>>,
+    _tx: broadcast::Sender<Result<Option<Bytes>, ReaderSocketError>>,
 }
 
 impl SocketReader {
@@ -21,7 +21,7 @@ impl SocketReader {
         mut reader_stream: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
         rc: Arc<RelayConnection>,
     ) -> Self {
-        let (_tx, _rx) = broadcast::channel::<Result<Option<Vec<u8>>, ReaderSocketError>>(16);
+        let (_tx, _rx) = broadcast::channel::<Result<Option<Bytes>, ReaderSocketError>>(16);
         let tx = _tx.clone();
         let rc_clone = rc.clone();
 
