@@ -30,14 +30,14 @@ export const processA2f = async (agentRoot: A2fRoot, send: SendPayload) => {
 const processPlain = async (payload: A2fRoot, send: SendPayload) => {
   switch (payload.plainMessageType()) {
     case A2fPlainMessage.AuthPreamble:
-      let preamble = payload.plainMessage(new A2fPlainAuthPreamble()) as A2fPlainAuthPreamble | null;
+      const preamble = payload.plainMessage(new A2fPlainAuthPreamble()) as A2fPlainAuthPreamble | null;
       const salt = preamble?.salt();
       if (!preamble || !preamble.pbkdf2Iterations() || !salt) {
         alert("Invalid preamble");
         return;
       }
       console.info("received preamble");
-      let preambleResp = F2aBuilder.new();
+      const preambleResp = F2aBuilder.new();
       await send.runner.initCryptographer({
         iterations: preamble.pbkdf2Iterations(),
         salt: Bits256Array.fromFbBits256(salt),
@@ -46,11 +46,11 @@ const processPlain = async (payload: A2fRoot, send: SendPayload) => {
       send.toAgentPlain = preambleResp.buildAuthRequestVerification(iv, ciphertext, 0n);
       return;
     case A2fPlainMessage.AuthResult:
-      let result = payload.plainMessage(new A2fPlainAuthResult()) as A2fPlainAuthResult | null;
+      const result = payload.plainMessage(new A2fPlainAuthResult()) as A2fPlainAuthResult | null;
       if (!result) return;
       console.info(`received auth result: ${result.successAuth()}`);
       activeNotification.clear();
-      let resp = F2aBuilder.new();
+      const resp = F2aBuilder.new();
       send.toAgentEncrypted = resp.buildActivityCreateTerminal();
       return;
     default:
@@ -71,7 +71,7 @@ const processEncrypted = async (agentRoot: A2fRoot, send: SendPayload) => {
 
   const compressed = agentRoot.format() === A2fMessageFormat.Aes256GcmDeflateRaw;
 
-  let plaintext = await send.runner.cryptographer().decrypt(ciphertext, Bits96Array.fromFbBits96(iv), compressed);
+  const plaintext = await send.runner.cryptographer().decrypt(ciphertext, Bits96Array.fromFbBits96(iv), compressed);
 
   if (!plaintext) {
     // TODO: Return an error to agent
@@ -79,7 +79,7 @@ const processEncrypted = async (agentRoot: A2fRoot, send: SendPayload) => {
     return;
   }
 
-  let message = readA2fEncryptedRoot(plaintext);
+  const message = readA2fEncryptedRoot(plaintext);
 
   switch (message.messageType()) {
     case A2fMessage.ActivityOutput:

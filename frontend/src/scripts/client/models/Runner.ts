@@ -36,7 +36,7 @@ export class Runner {
 
   private async onWebsocketMessage(event: MessageEvent) {
     const r2fRoot = readR2fRoot(new Uint8Array(event.data));
-    let send = new SendPayload(this);
+    const send = new SendPayload(this);
 
     try {
       await processR2f(r2fRoot, send);

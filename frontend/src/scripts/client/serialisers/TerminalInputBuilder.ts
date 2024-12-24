@@ -3,6 +3,7 @@ import { VectorTable } from "../../../generated/flatbuffers_schema/talk_v1/talk_
 import { ActivityInputBlob } from "../types/BinaryBlob.ts";
 import { PtyInput, PtyInputRoot, PtyResize } from "../../../generated/flatbuffers_schema/talk_v1/activity.ts";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}
 
 class Initial implements BuilderState {

@@ -8,6 +8,7 @@ import {
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
 import { type F2aRootBlob, F2rRootBlob } from "../types/BinaryBlob.ts";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}
 
 class Initial implements BuilderState {

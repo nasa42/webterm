@@ -5,7 +5,7 @@ import { VectorTable } from "../../../generated/flatbuffers_schema/talk_v1/vecto
 export const processTerminalOutput = (root: PtyOutputRoot, send: SendPayload) => {
   switch (root.payloadType()) {
     case PtyOutput.Output:
-      let payload = root.payload(new VectorTable()) as VectorTable | null;
+      const payload = root.payload(new VectorTable()) as VectorTable | null;
       if (!payload) return;
       send.toTerminal = payload.dataArray();
       return;
