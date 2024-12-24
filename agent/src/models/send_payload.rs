@@ -27,7 +27,7 @@ impl SendPayload {
     pub async fn dispatch(self, relay_pub: &SocketPublisher) -> Result<(), AgentError> {
         if let Some(payload) = self.to_relay {
             // debug!("dispatching to relay");
-            relay_pub.send(payload.0).await?;
+            relay_pub.send(payload.0.into()).await?;
         }
 
         if let Some((activity, data)) = self.to_activity {

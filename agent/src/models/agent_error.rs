@@ -3,6 +3,7 @@ use std::fmt;
 use tokio::sync::broadcast::error::RecvError;
 use tokio::sync::mpsc::error::SendError;
 use tokio_tungstenite::tungstenite;
+use tokio_tungstenite::tungstenite::Bytes;
 use webterm_core::models::reader_socket_error::ReaderSocketError;
 use webterm_core::models::webterm_error::WebtermError;
 use webterm_core::types::{ActivityId, FrontendId, SessionId};
@@ -14,7 +15,7 @@ pub enum AgentError {
     FBParseError(String),
     SocketError(tungstenite::Error),
     SocketClosed,
-    SocketSendError(SendError<Vec<u8>>),
+    SocketSendError(SendError<Bytes>),
     SocketRecvError(RecvError),
     SocketReadError(ReaderSocketError),
     PtyProcessError(pty_process::Error),
@@ -56,8 +57,8 @@ impl From<InvalidFlatbuffer> for AgentError {
     }
 }
 
-impl From<SendError<Vec<u8>>> for AgentError {
-    fn from(err: SendError<Vec<u8>>) -> Self {
+impl From<SendError<Bytes>> for AgentError {
+    fn from(err: SendError<Bytes>) -> Self {
         AgentError::SocketSendError(err)
     }
 }
