@@ -27,4 +27,5 @@ jobs:
         with:
           workdir: ./frontend
           reporter: github-pr-check
-          fail_on_error: true
+          fail_level: any
+          filter_mode: nofilter
