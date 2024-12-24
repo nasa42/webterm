@@ -22,7 +22,7 @@
     "bootstrap": "^5.3.3",
     "flatbuffers": "^24.3.25",
     "lodash-es": "^4.17.21",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.10",
