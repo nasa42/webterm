@@ -7,6 +7,7 @@ mod services;
 
 use crate::models::relay_error::RelayError;
 use crate::router::app_router;
+use askama::filters::format;
 use clap::Parser;
 use tracing::{info, Level};
 
@@ -17,7 +18,7 @@ struct Args {
     #[arg(long, env = "WT_RELAY_BIND_HOST", default_value = "localhost")]
     pub bind_host: String,
 
-    #[arg(long, env = "WT_RELAY_BIND_PORT", default_value = "3000")]
+    #[arg(long, env = "WT_RELAY_BIND_PORT", default_value = "4200")]
     pub bind_port: String,
 }
 
@@ -32,7 +33,7 @@ async fn main() -> Result<(), RelayError> {
 
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", args.bind_host, args.bind_port))
         .await
-        .expect("failed to bind to port 3000");
+        .expect(format!("failed to bind to port {}", args.bind_port).as_str());
     info!("listening on {}", listener.local_addr()?);
     axum::serve(listener, app_router()).await?;
 
