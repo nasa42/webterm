@@ -32,7 +32,7 @@ async fn main() -> Result<(), RelayError> {
 
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", args.bind_host, args.bind_port))
         .await
-        .expect(format!("failed to bind to port {}", args.bind_port).as_str());
+        .unwrap_or_else(|_| panic!("failed to bind to port {}", args.bind_port));
     info!("listening on {}", listener.local_addr()?);
     axum::serve(listener, app_router()).await?;
 
