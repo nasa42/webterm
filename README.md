@@ -51,10 +51,7 @@ TODO
 
 ```mermaid
 flowchart LR
-    A[Browser Frontend] <--"WebSocket"--> B[Relay] <--"WebSocket"--> C[Agent]
-    style A fill:#f5f5f5
-    style B fill:#e3f2fd
-    style C fill:#f5f5f5
+    A[Frontend (Browser)] <--"WebSocket"--> B[Relay] <--"WebSocket"--> C[Agent (Device)]
 ```
 
 Webterm is made of 3 components:
@@ -99,14 +96,17 @@ may not be feasible:
 ## FAQs
 
 * **Q**: _How to install the agent if I need terminal access in the first place?_
+
   **A**: Webterm can be installed via SSH, CI/CD pipelines, system provisioning, cloud-init scripts, container scripts,
   or configuration
   management tools - once installed, it eliminates the need for future SSH access.
 
 * **Q**: _What platforms does Webterm support?_
+
   **A**: At present, only Linux bases systems are supported.
 
 * **Q**: _Can I run my own Relay?_
+
   **A**: Yes, both the frontend and relay can be hosted on-premise or on your private cloud for complete control.
 
 ## Roadmap / Future Ideas
@@ -119,4 +119,5 @@ may not be feasible:
 
 Licenced under the [MIT Licence](./LICENCE.md).
 
-_(Default relays are hosted on webterm.run and maintained by [@nasa42](https://github.com/nasa42))._
+_(Default relays are hosted on [webterm.run](https://webterm.run) and maintained
+by [@nasa42](https://github.com/nasa42))._
