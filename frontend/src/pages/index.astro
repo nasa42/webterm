@@ -3,16 +3,135 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Webterm Terminal">
-  <form id="app-homepage-form">
-    <div class="mb-3">
-      <label for="server-id" class="form-label">Server ID</label>
-      <input type="text" class="form-control" id="app-server-id" name="server-id" placeholder="Enter Server ID" />
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg shadow-sm">
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold" href="/">
+        <span class="h4 mb-0">Webterm</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="https://github.com/nasa42/webterm#quickstart">Install</a></li>
+          <li class="nav-item"><a class="nav-link" href="https://github.com/nasa42/webterm">GitHub</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="app-password" name="password" placeholder="Password" />
+  </nav>
+
+  <div>
+    <div class="container py-5">
+      <div class="text-center mb-5 py-4">
+        <h1 class="display-3 fw-bold mb-4 lh-sm">Securely access your server's<br />terminal from anywhere</h1>
+        <p class="lead mb-0 text-secondary mx-auto" style="max-width: 600px;">
+          Even when they are behind by a firewall, inaccessible from the Internet, have restricted incoming ports,
+          reside on a private network, or use dynamic IP addresses.
+        </p>
+      </div>
+
+      <div class="row flex-column-reverse flex-lg-row g-4 pb-5">
+        <div class="col-lg-7">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4">
+              <h2 class="h4 mb-4">Quick Installation</h2>
+              <p class="text-secondary">
+                Install the free and open-source agent, built with Rust for high efficiency and extremely light resource
+                usage.
+              </p>
+              <div class="bg-light p-3 rounded mb-4">
+                <code>
+                  # Install the agent <br />
+                  cargo install webterm-agent <br />
+                  <br />
+                  # Run the agent <br />
+                  webterm-agent --server-id &lt;server-id&gt; --secret-key &lt;secret-key&gt;
+                </code>
+              </div>
+              <div class="mt-3">
+                <a href="https://github.com/nasa42/webterm#quickstart" class="btn btn-outline-primary me-3"
+                  >Installation Instructions</a
+                >
+                <a href="https://github.com/nasa42/webterm#how-it-works" class="btn btn-link text-primary"
+                  >How does it Work?</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Form -->
+        <div class="col-lg-5">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <form id="app-homepage-form">
+                <div class="mb-4">
+                  <label for="app-server-id" class="form-label fw-medium">Server ID</label>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    id="app-server-id"
+                    name="server-id"
+                    placeholder="Server ID"
+                  />
+                </div>
+                <div class="mb-4">
+                  <label for="app-secret-key" class="form-label fw-medium">Secret Key</label>
+                  <input
+                    type="password"
+                    class="form-control form-control-lg"
+                    id="app-secret-key"
+                    name="secret-key"
+                    placeholder="Secret Key"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100">Connect</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Connect</button>
-  </form>
-  <script src="../scripts/client/entry-points/homepage.ts"></script>
+
+    <!-- Footer -->
+    <footer class="border-top py-5">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-5">
+            <h5 class="mb-3">Webterm</h5>
+            <p class="text-secondary mb-0">An open source project for secure terminal access.</p>
+          </div>
+          <div class="col-lg-3">
+            <h6 class="mb-3">Documentation</h6>
+            <ul class="list-unstyled">
+              <li>
+                <a href="https://github.com/nasa42/webterm" class="text-secondary text-decoration-none">Readme</a>
+              </li>
+              <li>
+                <a href="https://github.com/nasa42/webterm#how-it-works" class="text-secondary text-decoration-none"
+                  >How it Works</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <h6 class="mb-3">Community</h6>
+            <ul class="list-unstyled">
+              <li>
+                <a href="https://github.com/nasa42/webterm" class="text-secondary text-decoration-none">GitHub</a>
+              </li>
+              <li>
+                <a href="https://github.com/nasa42/webterm/issues" class="text-secondary text-decoration-none"
+                  >Report an Issue</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="../scripts/client/entry-points/homepage.ts"></script>
+  </div>
 </Layout>

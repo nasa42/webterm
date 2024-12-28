@@ -1,5 +1,13 @@
 # Webterm
 
+> [!CAUTION]
+>
+> **🐉 Here be dragons!**
+>
+> This project is in early development phase and not intended for production use. Features are incomplete and may
+> undergo significant changes. Please treat this all experimental and expect nothing to work.
+
+
 **Webterm** (short for "web terminal") is a lightweight and efficient tool for providing secure, browser-based access to
 remote terminals. It is designed for environments where devices, servers, or containers cannot be accessed directly over
 the public network — such as those behind firewalls, on private networks, or with blocked inbound ports. It is also
