@@ -11,13 +11,13 @@ const init = async () => {
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const $serverId = $form.querySelector("input[name='server-id']") as HTMLInputElement;
-    const $password = $form.querySelector("input[name='password']") as HTMLInputElement;
+    const $secretKey = $form.querySelector("input[name='secret-key']") as HTMLInputElement;
     const serverId = $serverId.value;
-    const serverPassword = $password.value;
+    const secretKey = $secretKey.value;
 
-    const { index, secretKey } = await StoredCredential.store(serverId, serverPassword);
+    const { index, storeKey } = await StoredCredential.store(serverId, secretKey);
 
-    window.location.href = `/terminal?store_index=${index}&store_key=${secretKey}`;
+    window.location.href = `/terminal?store_index=${index}&store_key=${storeKey}`;
   });
 };
 

@@ -5,11 +5,11 @@ import { sessionStore } from "./SessionStore.ts";
 import { Bits256Array, Bits96Array } from "../types/BitsArray.ts";
 
 export class StoredCredential {
-  static async store(serverId: string, serverPassword: string): Promise<{ index: number; secretKey: string }> {
-    const secretKey = crypto.randomUUID();
+  static async store(serverId: string, serverPassword: string): Promise<{ index: number; storeKey: string }> {
+    const storeKey = crypto.randomUUID();
 
     const encrypted = await Cryptographer.quickEncrypt({
-      secretKey,
+      secretKey: storeKey,
       plaintext: ensureBinary(jsonStringify({ serverId, serverPassword })),
     });
     const payload = jsonStringify({
@@ -19,10 +19,10 @@ export class StoredCredential {
     });
 
     const index = sessionStore.pushToList("auth", payload);
-    return { index, secretKey };
+    return { index, storeKey };
   }
 
-  static async retrieve(index: number, secretKey: string): Promise<StoredCredential> {
+  static async retrieve(index: number, storeKey: string): Promise<StoredCredential> {
     const payload = sessionStore.getFromList("auth", index);
     if (!payload) {
       throw new Error(`No stored credentials for index ${index}`);
@@ -30,7 +30,7 @@ export class StoredCredential {
 
     const { ciphertext, salt, iv }: { ciphertext: Uint8Array; salt: Uint8Array; iv: Uint8Array } = jsonParse(payload);
     const decrypted = await Cryptographer.quickDecrypt({
-      secretKey,
+      secretKey: storeKey,
       salt: new Bits256Array(salt),
       iv: new Bits96Array(iv),
       ciphertext,
