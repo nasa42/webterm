@@ -9,7 +9,7 @@ import { StoredCredential } from "../models/StoredCredential.ts";
 const init = async (elementID: string) => {
   const relay = CONFIG.defaultRelays[0];
   if (!relay) {
-    console.error("Webterm: No relay found");
+    console.error("Webterm: Define default relays with environment variable PUBLIC_DEFAULT_RELAYS in .env");
     return;
   }
 
