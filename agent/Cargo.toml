@@ -1,8 +1,10 @@
 [package]
 name = "webterm-agent"
+description = "Lightweight agent component for Webterm that enables secure browser-based terminal access"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+license.workspace = true
 
 [dependencies]
 clap = { version = "4.5.23", features = ["derive", "env"] }
