@@ -51,7 +51,7 @@ TODO
 
 ```mermaid
 flowchart LR
-    A[Frontend (Browser)] <--"WebSocket"--> B[Relay] <--"WebSocket"--> C[Agent (Device)]
+    A["Frontend (Browser)"] <--"WebSocket"--> B[Relay] <--"WebSocket"--> C["Agent (Device)"]
 ```
 
 Webterm is made of 3 components:
