@@ -7,7 +7,6 @@ mod services;
 
 use crate::models::relay_error::RelayError;
 use crate::router::app_router;
-use askama::filters::format;
 use clap::Parser;
 use tracing::{info, Level};
 
