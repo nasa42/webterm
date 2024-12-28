@@ -14,7 +14,7 @@ tokio-tungstenite = "0.26.1"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 webterm-core = { path = "../core" }
-url = "2.5.3"
+url = "2.5.4"
 semver = "1.0.24"
 
 [lints.clippy]
