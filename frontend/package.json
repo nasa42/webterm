@@ -18,7 +18,7 @@
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
     "astro": "^5.1.1",
-    "astro-icon": "^1.1.4",
+    "astro-icon": "^1.1.5",
     "bootstrap": "^5.3.3",
     "flatbuffers": "^24.3.25",
     "lodash-es": "^4.17.21",
