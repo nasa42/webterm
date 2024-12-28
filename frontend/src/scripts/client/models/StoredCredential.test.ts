@@ -12,9 +12,9 @@ describe("StoredCredential", () => {
 
   describe("store and retrieve", () => {
     it("should store and retrieve credentials correctly", async () => {
-      const { index, secretKey } = await StoredCredential.store(testServerId, testPassword);
+      const { index, storedKey } = await StoredCredential.store(testServerId, testPassword);
 
-      const credential = await StoredCredential.retrieve(index, secretKey);
+      const credential = await StoredCredential.retrieve(index, storedKey);
 
       expect(credential.serverId).toBe(testServerId);
       expect(credential.serverPassword).toBe(testPassword);
