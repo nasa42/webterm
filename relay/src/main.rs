@@ -17,7 +17,7 @@ struct Args {
     #[arg(long, env = "WT_RELAY_BIND_HOST", default_value = "localhost")]
     pub bind_host: String,
 
-    #[arg(long, env = "WT_RELAY_BIND_PORT", default_value = "3000")]
+    #[arg(long, env = "WT_RELAY_BIND_PORT", default_value = "4200")]
     pub bind_port: String,
 }
 
@@ -32,7 +32,7 @@ async fn main() -> Result<(), RelayError> {
 
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", args.bind_host, args.bind_port))
         .await
-        .expect("failed to bind to port 3000");
+        .unwrap_or_else(|_| panic!("failed to bind to port {}", args.bind_port));
     info!("listening on {}", listener.local_addr()?);
     axum::serve(listener, app_router()).await?;
 
