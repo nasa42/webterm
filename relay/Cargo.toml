@@ -1,8 +1,10 @@
 [package]
 name = "webterm-relay"
+description = "Relay component for Webterm that enables secure browser-based terminal access"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+license.workspace = true
 
 [dependencies]
 askama = "0.12.1"
