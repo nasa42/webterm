@@ -10,7 +10,7 @@ import {
   F2aRoot,
   Version,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
-import { VERSION } from "../config";
+import { CONFIG } from "../config";
 import { ActivityInputBlob } from "../types/BinaryBlob";
 import { ActivityId } from "../types/BigIntLike";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
@@ -45,9 +45,9 @@ describe("F2aBuilder", () => {
       const preamble = root.plainMessage(new F2aPlainAuthRequestPreamble()) as F2aPlainAuthRequestPreamble;
       const version = preamble.frontendVersion(new Version());
 
-      expect(version?.major()).toBe(VERSION.major);
-      expect(version?.minor()).toBe(VERSION.minor);
-      expect(version?.patch()).toBe(VERSION.patch);
+      expect(version?.major()).toBe(CONFIG.version.major);
+      expect(version?.minor()).toBe(CONFIG.version.minor);
+      expect(version?.patch()).toBe(CONFIG.version.patch);
     });
 
     it("should transition to PlainReady state", () => {

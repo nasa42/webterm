@@ -1,7 +1,14 @@
 import { Relay } from "./models/Relay.ts";
 
-export const TEST_SERVER_ID = "test";
-export const VERSION = {
+// should be same as in agent/src/config.rs
+const DEFAULT_RELAYS = [
+  "r1.relays.webterm.run",
+  "r2.relays.webterm.run",
+  "r4.relays.webterm.run",
+  "r5.relays.webterm.run",
+];
+
+const VERSION = {
   major: parseInt(import.meta.env.WEBTERM_VERSION_MAJOR || "0"),
   minor: parseInt(import.meta.env.WEBTERM_VERSION_MINOR || "0"),
   patch: parseInt(import.meta.env.WEBTERM_VERSION_PATCH || "0"),
@@ -11,18 +18,23 @@ export const ELLIPSIS = "…";
 
 const defaultRelays = (): Relay[] => {
   const fromEnv: string | null | undefined = import.meta.env.PUBLIC_DEFAULT_RELAYS;
+  let relayStrings: string[] = [];
 
-  if (!fromEnv || fromEnv === "") {
-    return [];
+  if (fromEnv) {
+    relayStrings = fromEnv
+      .split(",")
+      .map((relay) => relay.trim())
+      .filter((relay) => relay !== "");
   }
 
-  return fromEnv
-    .split(",")
-    .map((relay) => relay.trim())
-    .filter((relay) => relay !== "")
-    .map((relay) => new Relay(relay));
+  if (relayStrings.length === 0) {
+    relayStrings = DEFAULT_RELAYS;
+  }
+
+  return relayStrings.map((relay) => new Relay(relay));
 };
 
 export const CONFIG = {
   defaultRelays: defaultRelays(),
+  version: VERSION,
 };

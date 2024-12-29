@@ -5,6 +5,7 @@ use std::time::Duration;
 use tracing::error;
 use webterm_core::random::random_in_range;
 
+// should be same as in frontend/src/scripts/client/config.ts
 const DEFAULT_RELAYS: [&str; 4] = [
     "r1.relays.webterm.run",
     "r2.relays.webterm.run",

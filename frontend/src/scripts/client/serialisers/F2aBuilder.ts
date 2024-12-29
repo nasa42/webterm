@@ -13,7 +13,7 @@ import {
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
 import { type ActivityInputBlob, F2aRootBlob } from "../types/BinaryBlob.ts";
 import type { ActivityId } from "../types/BigIntLike.ts";
-import { VERSION } from "../config.ts";
+import { CONFIG } from "../config.ts";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
 import { type Bits96Array } from "../types/BitsArray.ts";
 
@@ -46,7 +46,12 @@ export class F2aBuilder<State extends BuilderState> {
   }
 
   buildAuthRequestPreamble(): F2aBuilder<PlainReady> {
-    const versionOffset = Version.createVersion(this.builder, VERSION.major, VERSION.minor, VERSION.patch);
+    const versionOffset = Version.createVersion(
+      this.builder,
+      CONFIG.version.major,
+      CONFIG.version.minor,
+      CONFIG.version.patch,
+    );
     const offset = F2aPlainAuthRequestPreamble.createF2aPlainAuthRequestPreamble(this.builder, versionOffset);
 
     return new F2aBuilder(this.builder, new PlainReady(), F2aPlainMessage.AuthRequestPreamble, null, offset);
