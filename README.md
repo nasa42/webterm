@@ -31,7 +31,7 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 ## Use Cases
 
 * **Remote Access**: Connect to servers and devices securely using a browser.
-* **Containers**: Manage Docker or Kubernetes instances without opening network ports.
+* **Containers**: Manage Docker instances without opening network ports.
 * **Embedded & IoT**: Run on Raspberry Pi and other Linux-based low-power systems.
 * **Personal Devices**: Enable secure remote access to your home server or laptop.
 
