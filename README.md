@@ -21,7 +21,7 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 - 🪶 **Extremely Lightweight**: Uses less than 10 MB of memory when idle.
 - 🌍 **Works Anywhere**: Operates behind firewalls and NATs without open inbound ports.
 - 🌐 **Browser-Based Terminal**: Access terminals securely via your web browser.
-- 🔒 **Secure by Design**: Uses end-to-end encryption and a stateless relay that only passes through encrypted data.
+- 🔒 **Secure by Design**: Uses end-to-end encryption and a stateless relay that only passes encrypted data through.
 - ⚡ **Optimised Communication**: Utilises [FlatBuffers](https://en.wikipedia.org/wiki/FlatBuffers) for high-performance,
   efficient data transmission.
 - 🔄 **Persistent Sessions**: Leave a session open and reconnect days or weeks later, even if the server's IP address
