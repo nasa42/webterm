@@ -4,7 +4,7 @@
 >
 > **🐉 Here be dragons!**
 >
-> This project is in early development phase and not intended for production use yet. Features are incomplete and may
+> This project is in early development phase and not yet ready for production use. Features are incomplete and may
 > undergo significant changes. Please treat this as experimental and expect nothing to work.
 
 
