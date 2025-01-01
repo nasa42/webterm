@@ -121,8 +121,10 @@ may not be feasible:
 ## Roadmap / Future Ideas
 
 * **SSO Sign-In**: Integrate single sign-on and authorisation.
-* **File Browser**: Manage files on remote servers.
+* **File Browser**: Browse & manage server files in the browser.
 * **Auditing**: Add support for logging all stdin and stdout.
+* **Metrics**: Show live server metrics (CPU, Memory etc) as well as historical metrics up to N days (user configurable).
+* **Custom Plugins**: Add support for custom plugins.
 
 ## Licence
 
