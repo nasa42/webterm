@@ -4,8 +4,8 @@
 >
 > **🐉 Here be dragons!**
 >
-> This project is in early development phase and not intended for production use. Features are incomplete and may
-> undergo significant changes. Please treat this all experimental and expect nothing to work.
+> This project is in early development phase and not yet ready for production use. Features are incomplete and may
+> undergo significant changes. Please treat this as experimental and expect nothing to work.
 
 
 **Webterm** (short for "web terminal") is a lightweight and efficient tool for providing secure, browser-based access to
@@ -21,7 +21,7 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 - 🪶 **Extremely Lightweight**: Uses less than 10 MB of memory when idle.
 - 🌍 **Works Anywhere**: Operates behind firewalls and NATs without open inbound ports.
 - 🌐 **Browser-Based Terminal**: Access terminals securely via your web browser.
-- 🔒 **Secure by Design**: Uses end-to-end encryption and a stateless relay that only passes through encrypted data.
+- 🔒 **Secure by Design**: Uses end-to-end encryption and a stateless relay that only passes encrypted data through.
 - ⚡ **Optimised Communication**: Utilises [FlatBuffers](https://en.wikipedia.org/wiki/FlatBuffers) for high-performance,
   efficient data transmission.
 - 🔄 **Persistent Sessions**: Leave a session open and reconnect days or weeks later, even if the server's IP address
@@ -31,7 +31,7 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 ## Use Cases
 
 * **Remote Access**: Connect to servers and devices securely using a browser.
-* **Containers**: Manage Docker or Kubernetes instances without opening network ports.
+* **Containers**: Manage Docker instances without opening network ports.
 * **Embedded & IoT**: Run on Raspberry Pi and other Linux-based low-power systems.
 * **Personal Devices**: Enable secure remote access to your home server or laptop.
 
@@ -72,7 +72,7 @@ When `webterm-agent` runs on a device, it registers itself to a Relay with the s
 persistent WebSocket connection open. Whenever a Frontend requests to connect a _Server ID_, the Relay
 requests a connection to the Agent, which verifies the Frontend using
 [zero-knowledge proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof). Upon successful verification, an encrypted
-session is established using a key derived via [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2). This original _Secret
+session is established using a key derived via [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2). The original _Secret
 Key_ is never transmitted.
 
 ## Advantages over SSH
