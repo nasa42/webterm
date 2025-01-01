@@ -53,7 +53,8 @@ _(Binary distributions and detailed installation instructions for more platforms
 
 ## Screenshots
 
-TODO
+![image](https://github.com/user-attachments/assets/06240ef7-e51d-4176-a957-87948688f8a6)
+
 
 ## How It Works
 
