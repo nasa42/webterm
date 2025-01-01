@@ -125,6 +125,7 @@ may not be feasible:
 * **Auditing**: Add support for logging all stdin and stdout.
 * **Metrics**: Show live server metrics (CPU, Memory etc) as well as historical metrics up to N days (user configurable).
 * **Custom Plugins**: Add support for custom plugins.
+* **Relay failover**: High-availibility, load balancing, and automaic failover for relays with near-zero interruptions to live sessions.
 
 ## Licence
 
