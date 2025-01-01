@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1](https://github.com/nasa42/webterm/compare/webterm-relay-v0.1.0...webterm-relay-v0.1.1) - 2025-01-01
+
+### Other
+
+- release v0.1.0 (#48)
+
 ## [0.1.0](https://github.com/nasa42/webterm/releases/tag/webterm-relay-v0.1.0) - 2024-12-28
 
 ### Other
