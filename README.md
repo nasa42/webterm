@@ -97,7 +97,7 @@ may not be feasible:
   the wire and the key for communication is derived using [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2).
 * **End-to-end encryption**: All communication is encrypted
   using [AES256-GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode).
-* **Zero-trust Relay**: The relay only forwards encrypted messages and cannot intercept them.
+* **Zero-trust Relay**: The relay only forwards encrypted messages and cannot read them.
 * **Static frontend**: The entire frontend code is within browser, making it easier to audit.
 * **On-premise hosting**: Both frontend and relay can be hosted on your own infrastructure and agents can be configured
   to only connect to these relays for complete control.
