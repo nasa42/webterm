@@ -20,7 +20,7 @@
     "astro": "^5.1.1",
     "astro-icon": "^1.1.5",
     "bootstrap": "^5.3.3",
-    "flatbuffers": "^24.3.25",
+    "flatbuffers": "^24.12.23",
     "lodash-es": "^4.17.21",
     "typescript": "^5.7.2"
   },
