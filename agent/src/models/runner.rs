@@ -116,8 +116,16 @@ impl Runner {
                             let a2f = A2fBuilder::new();
                             let payload = a2f
                                 .build_activity_output(output.activity_id, &output.to_fb_output().0)
-                                .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
-                            send.prepare_for_frontend(frontend.frontend_id(), payload);
+                                .to_flatbuffers_encrypted(
+                                    frontend.cryptographer()?,
+                                    output.output_id,
+                                )?;
+                            send.prepare_for_frontend(
+                                frontend.frontend_id(),
+                                payload,
+                                output.output_id,
+                            );
+                            debug!("Sending output id: {:?}", output.output_id);
                             send.dispatch(&relay_pub).await?;
                         } else {
                             debug!(

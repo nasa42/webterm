@@ -67,4 +67,5 @@ table A2fRoot {
   iv: Bits96;
   plain_message: A2fPlainMessage;
   encrypted_payload: [uint8]; // A2fEncryptedRoot
+  message_id: uint64;
 }

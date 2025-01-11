@@ -20,4 +20,5 @@ union R2fRootPayload {
 
 table R2fRoot {
   root_payload: R2fRootPayload;
+  message_id: uint64;
 }

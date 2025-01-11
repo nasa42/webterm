@@ -20,4 +20,5 @@ table PtyInputRoot {
 
 table PtyOutputRoot {
   payload: PtyOutput;
+  output_id: uint64;
 }

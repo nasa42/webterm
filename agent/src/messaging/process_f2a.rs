@@ -47,9 +47,9 @@ async fn process_plain(
                     frontend.pbkdf2_iterations(),
                     frontend.challenge_nonce()?,
                 )
-                .to_flatbuffers_plain();
+                .to_flatbuffers_plain(0);
 
-            send.prepare_for_frontend(frontend.frontend_id(), payload)
+            send.prepare_for_frontend(frontend.frontend_id(), payload, 0)
         }
 
         F2aPlainMessage::AuthPresentVerification => {
@@ -92,9 +92,9 @@ async fn process_plain(
             frontend.register_session(session_arc.clone());
             let payload = a2f
                 .build_auth_result(success, session.session_id())
-                .to_flatbuffers_plain();
+                .to_flatbuffers_plain(0);
 
-            send.prepare_for_frontend(frontend.frontend_id(), payload)
+            send.prepare_for_frontend(frontend.frontend_id(), payload, 0)
         }
 
         _ => {
@@ -141,8 +141,8 @@ async fn process_encrypted(
                         let a2f = A2fBuilder::new();
                         let error_payload = a2f
                             .build_error(A2fErrorType::ErrorDecryptionFailed)
-                            .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
-                        send.prepare_for_frontend(frontend.frontend_id(), error_payload);
+                            .to_flatbuffers_encrypted(frontend.cryptographer()?, 0)?;
+                        send.prepare_for_frontend(frontend.frontend_id(), error_payload, 0);
                         Ok(send)
                     }
                     _ => Err(e.into()),
@@ -180,8 +180,8 @@ async fn process_encrypted(
 
             let payload = a2f
                 .build_activity_create_terminal(activity.activity_id())
-                .to_flatbuffers_encrypted(frontend.cryptographer()?)?;
-            send.prepare_for_frontend(frontend.frontend_id(), payload);
+                .to_flatbuffers_encrypted(frontend.cryptographer()?, 0)?;
+            send.prepare_for_frontend(frontend.frontend_id(), payload, 0);
         }
 
         _ => {

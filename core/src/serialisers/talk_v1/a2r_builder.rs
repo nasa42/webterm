@@ -55,10 +55,11 @@ impl A2rBuilder<'_> {
         self
     }
 
-    pub fn to_flatbuffers(mut self) -> A2rRootBlob {
+    pub fn to_flatbuffers(mut self, message_id: u64) -> A2rRootBlob {
         let a2r_root = A2rRoot::create(
             &mut self.builder,
             &A2rRootArgs {
+                message_id,
                 root_payload_type: self.root_payload_type,
                 root_payload: self.root_payload,
             },

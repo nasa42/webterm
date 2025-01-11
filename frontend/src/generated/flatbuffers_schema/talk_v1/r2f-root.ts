@@ -35,8 +35,13 @@ rootPayload<T extends flatbuffers.Table>(obj:any):any|null {
   return offset ? this.bb!.__union(obj, this.bb_pos + offset) : null;
 }
 
+messageId():bigint {
+  const offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
+}
+
 static startR2fRoot(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 }
 
 static addRootPayloadType(builder:flatbuffers.Builder, rootPayloadType:R2fRootPayload) {
@@ -47,15 +52,20 @@ static addRootPayload(builder:flatbuffers.Builder, rootPayloadOffset:flatbuffers
   builder.addFieldOffset(1, rootPayloadOffset, 0);
 }
 
+static addMessageId(builder:flatbuffers.Builder, messageId:bigint) {
+  builder.addFieldInt64(2, messageId, BigInt('0'));
+}
+
 static endR2fRoot(builder:flatbuffers.Builder):flatbuffers.Offset {
   const offset = builder.endObject();
   return offset;
 }
 
-static createR2fRoot(builder:flatbuffers.Builder, rootPayloadType:R2fRootPayload, rootPayloadOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createR2fRoot(builder:flatbuffers.Builder, rootPayloadType:R2fRootPayload, rootPayloadOffset:flatbuffers.Offset, messageId:bigint):flatbuffers.Offset {
   R2fRoot.startR2fRoot(builder);
   R2fRoot.addRootPayloadType(builder, rootPayloadType);
   R2fRoot.addRootPayload(builder, rootPayloadOffset);
+  R2fRoot.addMessageId(builder, messageId);
   return R2fRoot.endR2fRoot(builder);
 }
 }

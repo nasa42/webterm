@@ -35,8 +35,13 @@ payload<T extends flatbuffers.Table>(obj:any):any|null {
   return offset ? this.bb!.__union(obj, this.bb_pos + offset) : null;
 }
 
+outputId():bigint {
+  const offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
+}
+
 static startPtyOutputRoot(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 }
 
 static addPayloadType(builder:flatbuffers.Builder, payloadType:PtyOutput) {
@@ -47,15 +52,20 @@ static addPayload(builder:flatbuffers.Builder, payloadOffset:flatbuffers.Offset)
   builder.addFieldOffset(1, payloadOffset, 0);
 }
 
+static addOutputId(builder:flatbuffers.Builder, outputId:bigint) {
+  builder.addFieldInt64(2, outputId, BigInt('0'));
+}
+
 static endPtyOutputRoot(builder:flatbuffers.Builder):flatbuffers.Offset {
   const offset = builder.endObject();
   return offset;
 }
 
-static createPtyOutputRoot(builder:flatbuffers.Builder, payloadType:PtyOutput, payloadOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createPtyOutputRoot(builder:flatbuffers.Builder, payloadType:PtyOutput, payloadOffset:flatbuffers.Offset, outputId:bigint):flatbuffers.Offset {
   PtyOutputRoot.startPtyOutputRoot(builder);
   PtyOutputRoot.addPayloadType(builder, payloadType);
   PtyOutputRoot.addPayload(builder, payloadOffset);
+  PtyOutputRoot.addOutputId(builder, outputId);
   return PtyOutputRoot.endPtyOutputRoot(builder);
 }
 }

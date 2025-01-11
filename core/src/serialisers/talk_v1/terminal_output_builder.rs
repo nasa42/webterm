@@ -37,10 +37,11 @@ impl TerminalOutputBuilder<'_> {
         self
     }
 
-    pub fn to_flatbuffers(mut self) -> ActivityOutputBlob {
+    pub fn to_flatbuffers(mut self, output_id: u64) -> ActivityOutputBlob {
         let root = PtyOutputRoot::create(
             &mut self.builder,
             &PtyOutputRootArgs {
+                output_id,
                 payload_type: self.payload_type,
                 payload: self.payload,
             },

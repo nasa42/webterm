@@ -55,10 +55,11 @@ impl R2fBuilder<'_> {
         self
     }
 
-    pub fn to_flatbuffers(mut self) -> R2fRootBlob {
+    pub fn to_flatbuffers(mut self, message_id: u64) -> R2fRootBlob {
         let r2f_root = R2fRoot::create(
             &mut self.builder,
             &R2fRootArgs {
+                message_id,
                 root_payload_type: self.root_payload_type,
                 root_payload: self.root_payload,
             },

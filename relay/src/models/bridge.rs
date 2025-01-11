@@ -150,7 +150,7 @@ impl Bridge {
             let send = SendPayload::new();
 
             if let Some(data) = data {
-                debug!("received from agent: {:?}", format_pty_output(&data));
+                // debug!("received from agent: {:?}", format_pty_output(&data));
                 // TODO: avoid processing same a2r message for each frontend. It should be processed only once.
                 let send = process_a2r(data, send).await?;
                 let send_frontend_id = send.to_frontend_id();

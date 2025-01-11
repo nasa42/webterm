@@ -1,4 +1,5 @@
 use pty_process::OwnedReadPty;
+use std::sync::atomic::AtomicU64;
 use std::sync::OnceLock;
 use tokio::io::AsyncReadExt;
 use tokio::sync::{broadcast, mpsc, Mutex};
@@ -21,12 +22,15 @@ type ChannelType = (
 pub struct PtyActivityReaderPayload {
     pub(crate) activity_id: ActivityId,
     pub(crate) data: Vec<u8>,
+    pub output_id: u64,
 }
 
 impl PtyActivityReaderPayload {
     pub fn to_fb_output(&self) -> ActivityOutputBlob {
         let builder = TerminalOutputBuilder::new();
-        builder.build_output(&self.data).to_flatbuffers()
+        builder
+            .build_output(&self.data)
+            .to_flatbuffers(self.output_id)
     }
 }
 
@@ -53,6 +57,7 @@ impl PtyActivityReader {
         let sender = Self::sender();
         tokio::spawn(async move {
             debug!("starting new terminal reader stream");
+            let counter = AtomicU64::new(0);
             loop {
                 let mut buf = [0u8; BUFFER_SIZE];
                 if let Ok(length) = reader_stream.read(&mut buf).await {
@@ -64,6 +69,7 @@ impl PtyActivityReader {
                         .send(PtyActivityReaderPayload {
                             activity_id,
                             data: buf[..length].to_vec(),
+                            output_id: counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
                         })
                         .await
                         .expect("this shouldn't fail");

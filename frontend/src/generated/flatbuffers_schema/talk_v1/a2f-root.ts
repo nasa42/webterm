@@ -62,8 +62,13 @@ encryptedPayloadArray():Uint8Array|null {
   return offset ? new Uint8Array(this.bb!.bytes().buffer, this.bb!.bytes().byteOffset + this.bb!.__vector(this.bb_pos + offset), this.bb!.__vector_len(this.bb_pos + offset)) : null;
 }
 
+messageId():bigint {
+  const offset = this.bb!.__offset(this.bb_pos, 14);
+  return offset ? this.bb!.readUint64(this.bb_pos + offset) : BigInt('0');
+}
+
 static startA2fRoot(builder:flatbuffers.Builder) {
-  builder.startObject(5);
+  builder.startObject(6);
 }
 
 static addFormat(builder:flatbuffers.Builder, format:A2fMessageFormat) {
@@ -96,6 +101,10 @@ static createEncryptedPayloadVector(builder:flatbuffers.Builder, data:number[]|U
 
 static startEncryptedPayloadVector(builder:flatbuffers.Builder, numElems:number) {
   builder.startVector(1, numElems, 1);
+}
+
+static addMessageId(builder:flatbuffers.Builder, messageId:bigint) {
+  builder.addFieldInt64(5, messageId, BigInt('0'));
 }
 
 static endA2fRoot(builder:flatbuffers.Builder):flatbuffers.Offset {

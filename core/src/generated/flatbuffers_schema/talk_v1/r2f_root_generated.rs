@@ -27,6 +27,7 @@ impl<'a> flatbuffers::Follow<'a> for R2fRoot<'a> {
 impl<'a> R2fRoot<'a> {
   pub const VT_ROOT_PAYLOAD_TYPE: flatbuffers::VOffsetT = 4;
   pub const VT_ROOT_PAYLOAD: flatbuffers::VOffsetT = 6;
+  pub const VT_MESSAGE_ID: flatbuffers::VOffsetT = 8;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -38,6 +39,7 @@ impl<'a> R2fRoot<'a> {
     args: &'args R2fRootArgs
   ) -> flatbuffers::WIPOffset<R2fRoot<'bldr>> {
     let mut builder = R2fRootBuilder::new(_fbb);
+    builder.add_message_id(args.message_id);
     if let Some(x) = args.root_payload { builder.add_root_payload(x); }
     builder.add_root_payload_type(args.root_payload_type);
     builder.finish()
@@ -57,6 +59,13 @@ impl<'a> R2fRoot<'a> {
     // Created from valid Table for this object
     // which contains a valid value in this slot
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Table<'a>>>(R2fRoot::VT_ROOT_PAYLOAD, None)}
+  }
+  #[inline]
+  pub fn message_id(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(R2fRoot::VT_MESSAGE_ID, Some(0)).unwrap()}
   }
   #[inline]
   #[allow(non_snake_case)]
@@ -120,6 +129,7 @@ impl flatbuffers::Verifiable for R2fRoot<'_> {
           _ => Ok(()),
         }
      })?
+     .visit_field::<u64>("message_id", Self::VT_MESSAGE_ID, false)?
      .finish();
     Ok(())
   }
@@ -127,6 +137,7 @@ impl flatbuffers::Verifiable for R2fRoot<'_> {
 pub struct R2fRootArgs {
     pub root_payload_type: R2fRootPayload,
     pub root_payload: Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>>,
+    pub message_id: u64,
 }
 impl<'a> Default for R2fRootArgs {
   #[inline]
@@ -134,6 +145,7 @@ impl<'a> Default for R2fRootArgs {
     R2fRootArgs {
       root_payload_type: R2fRootPayload::NONE,
       root_payload: None,
+      message_id: 0,
     }
   }
 }
@@ -150,6 +162,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> R2fRootBuilder<'a, 'b, A> {
   #[inline]
   pub fn add_root_payload(&mut self, root_payload: flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(R2fRoot::VT_ROOT_PAYLOAD, root_payload);
+  }
+  #[inline]
+  pub fn add_message_id(&mut self, message_id: u64) {
+    self.fbb_.push_slot::<u64>(R2fRoot::VT_MESSAGE_ID, message_id, 0);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> R2fRootBuilder<'a, 'b, A> {
@@ -197,6 +213,7 @@ impl core::fmt::Debug for R2fRoot<'_> {
           ds.field("root_payload", &x)
         },
       };
+      ds.field("message_id", &self.message_id());
       ds.finish()
   }
 }

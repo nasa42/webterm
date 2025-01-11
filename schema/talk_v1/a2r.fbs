@@ -20,4 +20,5 @@ union A2rRootPayload {
 
 table A2rRoot {
   root_payload: A2rRootPayload;
+  message_id: uint64;
 }

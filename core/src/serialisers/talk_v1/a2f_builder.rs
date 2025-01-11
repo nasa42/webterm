@@ -156,6 +156,7 @@ impl A2fBuilder<'_, EncryptionReady> {
     pub fn to_flatbuffers_encrypted(
         mut self,
         encryptor: &Cryptographer,
+        message_id: u64,
     ) -> Result<A2fRootBlob, WebtermError> {
         let (message_type, encrypted_message_offset) = self.root_payload_state.encrypted_payload;
 
@@ -184,6 +185,7 @@ impl A2fBuilder<'_, EncryptionReady> {
             &mut builder,
             &A2fRootArgs {
                 format,
+                message_id,
                 iv: Some(&response.iv.into()),
                 plain_message_type: A2fPlainMessage::NONE,
                 plain_message: None,
@@ -198,12 +200,13 @@ impl A2fBuilder<'_, EncryptionReady> {
 }
 
 impl A2fBuilder<'_, PlainReady> {
-    pub fn to_flatbuffers_plain(mut self) -> A2fRootBlob {
+    pub fn to_flatbuffers_plain(mut self, message_id: u64) -> A2fRootBlob {
         let (payload_type, payload) = self.root_payload_state.plain_payload;
 
         let root = A2fRoot::create(
             &mut self.builder,
             &A2fRootArgs {
+                message_id,
                 format: A2fMessageFormat::Plain,
                 iv: None,
                 plain_message_type: payload_type,

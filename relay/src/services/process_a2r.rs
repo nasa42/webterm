@@ -1,5 +1,6 @@
 use crate::models::relay_error::RelayError;
 use crate::models::send_payload::SendPayload;
+use tracing::debug;
 use webterm_core::flatbuffers_helpers::read_message;
 use webterm_core::generated::flatbuffers_schema::talk_v1::{A2rRoot, A2rRootPayload};
 use webterm_core::serialisers::talk_v1::r2f_builder::R2fBuilder;
@@ -7,6 +8,10 @@ use webterm_core::types::FrontendId;
 
 pub async fn process_a2r(data: Vec<u8>, mut send: SendPayload) -> Result<SendPayload, RelayError> {
     let root = read_message::<A2rRoot>(&data)?;
+
+    debug!("message id from agent: {:?}", root.message_id());
+
+    send.message_id = root.message_id();
 
     match root.root_payload_type() {
         A2rRootPayload::ToFrontend => {
@@ -26,7 +31,7 @@ pub async fn process_a2r(data: Vec<u8>, mut send: SendPayload) -> Result<SendPay
                         ))?
                         .bytes(),
                 )
-                .to_flatbuffers();
+                .to_flatbuffers(root.message_id());
 
             send.prepare_for_frontend(FrontendId(message.frontend_id()), payload);
         }

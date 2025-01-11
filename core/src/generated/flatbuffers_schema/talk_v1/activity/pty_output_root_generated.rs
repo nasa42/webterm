@@ -27,6 +27,7 @@ impl<'a> flatbuffers::Follow<'a> for PtyOutputRoot<'a> {
 impl<'a> PtyOutputRoot<'a> {
   pub const VT_PAYLOAD_TYPE: flatbuffers::VOffsetT = 4;
   pub const VT_PAYLOAD: flatbuffers::VOffsetT = 6;
+  pub const VT_OUTPUT_ID: flatbuffers::VOffsetT = 8;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -38,6 +39,7 @@ impl<'a> PtyOutputRoot<'a> {
     args: &'args PtyOutputRootArgs
   ) -> flatbuffers::WIPOffset<PtyOutputRoot<'bldr>> {
     let mut builder = PtyOutputRootBuilder::new(_fbb);
+    builder.add_output_id(args.output_id);
     if let Some(x) = args.payload { builder.add_payload(x); }
     builder.add_payload_type(args.payload_type);
     builder.finish()
@@ -57,6 +59,13 @@ impl<'a> PtyOutputRoot<'a> {
     // Created from valid Table for this object
     // which contains a valid value in this slot
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Table<'a>>>(PtyOutputRoot::VT_PAYLOAD, None)}
+  }
+  #[inline]
+  pub fn output_id(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(PtyOutputRoot::VT_OUTPUT_ID, Some(0)).unwrap()}
   }
   #[inline]
   #[allow(non_snake_case)]
@@ -88,6 +97,7 @@ impl flatbuffers::Verifiable for PtyOutputRoot<'_> {
           _ => Ok(()),
         }
      })?
+     .visit_field::<u64>("output_id", Self::VT_OUTPUT_ID, false)?
      .finish();
     Ok(())
   }
@@ -95,6 +105,7 @@ impl flatbuffers::Verifiable for PtyOutputRoot<'_> {
 pub struct PtyOutputRootArgs {
     pub payload_type: PtyOutput,
     pub payload: Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>>,
+    pub output_id: u64,
 }
 impl<'a> Default for PtyOutputRootArgs {
   #[inline]
@@ -102,6 +113,7 @@ impl<'a> Default for PtyOutputRootArgs {
     PtyOutputRootArgs {
       payload_type: PtyOutput::NONE,
       payload: None,
+      output_id: 0,
     }
   }
 }
@@ -118,6 +130,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> PtyOutputRootBuilder<'a, 'b, A>
   #[inline]
   pub fn add_payload(&mut self, payload: flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(PtyOutputRoot::VT_PAYLOAD, payload);
+  }
+  #[inline]
+  pub fn add_output_id(&mut self, output_id: u64) {
+    self.fbb_.push_slot::<u64>(PtyOutputRoot::VT_OUTPUT_ID, output_id, 0);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> PtyOutputRootBuilder<'a, 'b, A> {
@@ -151,6 +167,7 @@ impl core::fmt::Debug for PtyOutputRoot<'_> {
           ds.field("payload", &x)
         },
       };
+      ds.field("output_id", &self.output_id());
       ds.finish()
   }
 }

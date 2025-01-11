@@ -1,7 +1,5 @@
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
-import { formatPtyOutput } from "../functions/formatPtyOutput.ts";
-import { ensureBinary } from "../functions/ensureBinary.ts";
 import type { BinaryLike } from "../types/BinaryLike.ts";
 
 export class TerminalConnection {
@@ -24,7 +22,7 @@ export class TerminalConnection {
   }
 
   write(data: BinaryLike) {
-    console.log(`writing: "${formatPtyOutput(ensureBinary(data))}"`);
+    // console.log(`writing: "${formatPtyOutput(ensureBinary(data))}"`);
 
     this.terminal.write(data);
   }

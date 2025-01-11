@@ -30,6 +30,7 @@ impl<'a> A2fRoot<'a> {
   pub const VT_PLAIN_MESSAGE_TYPE: flatbuffers::VOffsetT = 8;
   pub const VT_PLAIN_MESSAGE: flatbuffers::VOffsetT = 10;
   pub const VT_ENCRYPTED_PAYLOAD: flatbuffers::VOffsetT = 12;
+  pub const VT_MESSAGE_ID: flatbuffers::VOffsetT = 14;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -41,6 +42,7 @@ impl<'a> A2fRoot<'a> {
     args: &'args A2fRootArgs<'args>
   ) -> flatbuffers::WIPOffset<A2fRoot<'bldr>> {
     let mut builder = A2fRootBuilder::new(_fbb);
+    builder.add_message_id(args.message_id);
     if let Some(x) = args.encrypted_payload { builder.add_encrypted_payload(x); }
     if let Some(x) = args.plain_message { builder.add_plain_message(x); }
     if let Some(x) = args.iv { builder.add_iv(x); }
@@ -84,6 +86,13 @@ impl<'a> A2fRoot<'a> {
     // Created from valid Table for this object
     // which contains a valid value in this slot
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, u8>>>(A2fRoot::VT_ENCRYPTED_PAYLOAD, None)}
+  }
+  #[inline]
+  pub fn message_id(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(A2fRoot::VT_MESSAGE_ID, Some(0)).unwrap()}
   }
   #[inline]
   #[allow(non_snake_case)]
@@ -134,6 +143,7 @@ impl flatbuffers::Verifiable for A2fRoot<'_> {
         }
      })?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, u8>>>("encrypted_payload", Self::VT_ENCRYPTED_PAYLOAD, false)?
+     .visit_field::<u64>("message_id", Self::VT_MESSAGE_ID, false)?
      .finish();
     Ok(())
   }
@@ -144,6 +154,7 @@ pub struct A2fRootArgs<'a> {
     pub plain_message_type: A2fPlainMessage,
     pub plain_message: Option<flatbuffers::WIPOffset<flatbuffers::UnionWIPOffset>>,
     pub encrypted_payload: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, u8>>>,
+    pub message_id: u64,
 }
 impl<'a> Default for A2fRootArgs<'a> {
   #[inline]
@@ -154,6 +165,7 @@ impl<'a> Default for A2fRootArgs<'a> {
       plain_message_type: A2fPlainMessage::NONE,
       plain_message: None,
       encrypted_payload: None,
+      message_id: 0,
     }
   }
 }
@@ -182,6 +194,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> A2fRootBuilder<'a, 'b, A> {
   #[inline]
   pub fn add_encrypted_payload(&mut self, encrypted_payload: flatbuffers::WIPOffset<flatbuffers::Vector<'b , u8>>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(A2fRoot::VT_ENCRYPTED_PAYLOAD, encrypted_payload);
+  }
+  #[inline]
+  pub fn add_message_id(&mut self, message_id: u64) {
+    self.fbb_.push_slot::<u64>(A2fRoot::VT_MESSAGE_ID, message_id, 0);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> A2fRootBuilder<'a, 'b, A> {
@@ -225,6 +241,7 @@ impl core::fmt::Debug for A2fRoot<'_> {
         },
       };
       ds.field("encrypted_payload", &self.encrypted_payload());
+      ds.field("message_id", &self.message_id());
       ds.finish()
   }
 }
