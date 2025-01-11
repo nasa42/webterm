@@ -7,6 +7,10 @@ import type { Runner } from "./Runner.ts";
 import type { BinaryLike } from "../types/BinaryLike.ts";
 
 export class RelayConnection {
+  // manage a queue of messages to ensure that they're processed sequentially in the order they arrive
+  private messageQueue: MessageEvent[] = [];
+  private processingQueue = false;
+
   constructor(
     private readonly runner: Runner,
     private readonly socket: WebSocket,
@@ -19,9 +23,26 @@ export class RelayConnection {
 
   private registerEventListeners() {
     this.socket.addEventListener("open", (event) => this.onOpen(event));
-    this.socket.addEventListener("message", async (event) => await this.onMessage(event));
+    this.socket.addEventListener("message", (event) => {
+      this.messageQueue.push(event);
+      this.processMessageQueue();
+    });
     this.socket.addEventListener("close", (event) => this.onClose(event));
     this.socket.addEventListener("error", (error) => this.onError(error));
+  }
+
+  private async processMessageQueue() {
+    if (this.processingQueue) return;
+
+    try {
+      this.processingQueue = true;
+      while (this.messageQueue.length > 0) {
+        const event = this.messageQueue.shift()!;
+        await this.onMessage(event);
+      }
+    } finally {
+      this.processingQueue = false;
+    }
   }
 
   private onOpen(_event: Event) {
