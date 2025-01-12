@@ -38,19 +38,19 @@ impl HandshakeNonceRegistry {
         frontend
     }
 
-    pub async fn create_nonce(&self, server_id: String) -> Result<String, RelayError> {
+    pub async fn create_nonce(&self, device_name: String) -> Result<String, RelayError> {
         let nonce = random_string(64);
 
         self.map
-            .insert(nonce.clone(), server_id, HANDSHAKE_NONCE_EXPIRE_IN)
+            .insert(nonce.clone(), device_name, HANDSHAKE_NONCE_EXPIRE_IN)
             .await?;
 
         Ok(nonce)
     }
 
     pub async fn consume_nonce(&self, nonce: &str) -> Result<Arc<AgentConnection>, RelayError> {
-        let server_id = self.map.remove(&nonce.to_string()).await?;
-        let agent_connection = AgentRegistry::find(&server_id).await?;
+        let device_name = self.map.remove(&nonce.to_string()).await?;
+        let agent_connection = AgentRegistry::find(&device_name).await?;
 
         Ok(agent_connection)
     }

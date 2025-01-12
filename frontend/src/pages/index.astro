@@ -46,7 +46,7 @@ import Layout from "../layouts/Layout.astro";
                   cargo install webterm-agent <br />
                   <br />
                   # Run the agent <br />
-                  webterm-agent --server-id &lt;server-id&gt; --secret-key &lt;secret-key&gt;
+                  webterm-agent --device-name &lt;DEVICE_NAME&gt; --secret-key &lt;SECRET_KEY&gt;
                 </code>
               </div>
               <div class="mt-3">
@@ -67,8 +67,8 @@ import Layout from "../layouts/Layout.astro";
             <div class="card-body p-4">
               <form id="app-homepage-form">
                 <div class="mb-4">
-                  <label for="app-server-id" class="form-label fw-medium">Server ID</label>
-                  <input type="text" class="form-control form-control-lg" id="app-server-id" name="server-id" />
+                  <label for="app-device-name" class="form-label fw-medium">Server ID</label>
+                  <input type="text" class="form-control form-control-lg" id="app-device-name" name="device-name" />
                 </div>
                 <div class="mb-4">
                   <label for="app-secret-key" class="form-label fw-medium">Secret Key</label>

@@ -1,4 +1,4 @@
 table F2rHandshake {
   frontend_version: Version;
-  server_id: string;
+  device_name: string;
 }

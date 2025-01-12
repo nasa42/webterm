@@ -29,8 +29,8 @@ impl Config {
         }
     }
 
-    pub fn server_id(&self) -> &String {
-        &self.args.server_id
+    pub fn device_name(&self) -> &String {
+        &self.args.device_name
     }
 
     pub fn secret_key(&self) -> &String {

@@ -10,7 +10,7 @@ const init = async () => {
 
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const $serverId = $form.querySelector("input[name='server-id']") as HTMLInputElement;
+    const $serverId = $form.querySelector("input[name='device-name']") as HTMLInputElement;
     const $secretKey = $form.querySelector("input[name='secret-key']") as HTMLInputElement;
     const serverId = $serverId.value;
     const secretKey = $secretKey.value;

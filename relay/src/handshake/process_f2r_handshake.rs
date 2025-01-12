@@ -6,16 +6,16 @@ use webterm_core::generated::flatbuffers_schema::handshake_v1::F2rHandshake;
 use webterm_core::handshake_v1_helpers::create_r2f_handshake;
 
 pub async fn process_f2r_handshake(message: F2rHandshake<'_>) -> Vec<u8> {
-    let req_server_id = message.server_id();
+    let req_device_name = message.device_name();
 
-    match req_server_id {
+    match req_device_name {
         None => {
-            error!("No server_id in F2rHandshake");
+            error!("No device_name in F2rHandshake");
             r2f_success_false_message()
         }
-        Some(server_id) => {
-            debug!("Processing F2rHandshake for server_id: {}", server_id);
-            let agent = AgentRegistry::find(server_id).await;
+        Some(device_name) => {
+            debug!("Processing F2rHandshake for device_name: {}", device_name);
+            let agent = AgentRegistry::find(device_name).await;
             debug!("finished finding agent");
             match agent {
                 Err(_) => {
@@ -23,10 +23,10 @@ pub async fn process_f2r_handshake(message: F2rHandshake<'_>) -> Vec<u8> {
                     r2f_success_false_message()
                 }
                 Ok(agent) => {
-                    info!("Found agent: {}", agent.server_id);
+                    info!("Found agent: {}", agent.device_name);
                     let auth_nonce = HandshakeNonceRegistry::singleton_frontend()
                         .await
-                        .create_nonce(agent.server_id.clone())
+                        .create_nonce(agent.device_name.clone())
                         .await;
 
                     match auth_nonce {

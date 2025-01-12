@@ -7,7 +7,7 @@ use tokio::sync::Notify;
 use webterm_core::types::FrontendId;
 
 pub struct AgentConnection {
-    pub server_id: String,
+    pub device_name: String,
     agent_writer: SocketWriter,
     agent_reader: SocketReader,
     close_notifier: Notify,
@@ -15,13 +15,13 @@ pub struct AgentConnection {
 }
 
 impl AgentConnection {
-    pub async fn new(server_id: String, socket: WebSocket) -> Self {
+    pub async fn new(device_name: String, socket: WebSocket) -> Self {
         let (agent_writer, agent_reader) = socket.split();
         let agent_reader = SocketReader::new(agent_reader);
         let agent_writer = SocketWriter::new(agent_writer);
 
         Self {
-            server_id,
+            device_name,
             agent_writer,
             agent_reader,
             close_notifier: Notify::new(),

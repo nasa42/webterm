@@ -20,15 +20,15 @@ impl AgentRegistry {
         })
     }
 
-    pub async fn find(server_id: &str) -> Result<Arc<AgentConnection>, RelayError> {
-        debug!("finding agent {}", server_id);
+    pub async fn find(device_name: &str) -> Result<Arc<AgentConnection>, RelayError> {
+        debug!("finding agent {}", device_name);
         let registry = Self::singleton().await;
         debug!("registry acquired");
         Ok(registry
             .agents
             .read()
             .await
-            .get(&server_id.to_string())
+            .get(&device_name.to_string())
             .ok_or(RelayError::AgentNotFound)?
             .clone())
     }
@@ -40,24 +40,24 @@ impl AgentRegistry {
                 "Agent registry is full".to_string(),
             ));
         }
-        debug!("Registering agent {}", agent.server_id);
+        debug!("Registering agent {}", agent.device_name);
         registry
             .agents
             .write()
             .await
-            .insert(agent.server_id.clone(), agent);
+            .insert(agent.device_name.clone(), agent);
 
         Ok(())
     }
 
     #[allow(dead_code)]
-    pub async fn remove(server_id: &str) -> Result<Arc<AgentConnection>, RelayError> {
+    pub async fn remove(device_name: &str) -> Result<Arc<AgentConnection>, RelayError> {
         let registry = Self::singleton().await;
         registry
             .agents
             .write()
             .await
-            .remove(&server_id.to_string())
+            .remove(&device_name.to_string())
             .ok_or(RelayError::AgentNotFound)
     }
 }

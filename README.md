@@ -44,7 +44,7 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 
 2. Start the Webterm agent:
    ```bash
-   webterm-agent --server-id <SERVER_ID> --secret-key <SECRET_KEY>
+   webterm-agent --device-name <DEVICE_NAME> --secret-key <SECRET_KEY>
    ```
 
 3. Access the terminal on [https://webterm.run](https://webterm.run) using the same credentials.
@@ -54,7 +54,6 @@ _(Binary distributions and detailed installation instructions for more platforms
 ## Screenshots
 
 ![image](https://github.com/user-attachments/assets/06240ef7-e51d-4176-a957-87948688f8a6)
-
 
 ## How It Works
 
