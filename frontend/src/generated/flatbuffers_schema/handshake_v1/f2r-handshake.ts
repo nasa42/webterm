@@ -30,9 +30,9 @@ frontendVersion(obj?:Version):Version|null {
   return offset ? (obj || new Version()).__init(this.bb_pos + offset, this.bb!) : null;
 }
 
-serverId():string|null
-serverId(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
-serverId(optionalEncoding?:any):string|Uint8Array|null {
+deviceName():string|null
+deviceName(optionalEncoding:flatbuffers.Encoding):string|Uint8Array|null
+deviceName(optionalEncoding?:any):string|Uint8Array|null {
   const offset = this.bb!.__offset(this.bb_pos, 6);
   return offset ? this.bb!.__string(this.bb_pos + offset, optionalEncoding) : null;
 }
@@ -45,8 +45,8 @@ static addFrontendVersion(builder:flatbuffers.Builder, frontendVersionOffset:fla
   builder.addFieldStruct(0, frontendVersionOffset, 0);
 }
 
-static addServerId(builder:flatbuffers.Builder, serverIdOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(1, serverIdOffset, 0);
+static addDeviceName(builder:flatbuffers.Builder, deviceNameOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(1, deviceNameOffset, 0);
 }
 
 static endF2rHandshake(builder:flatbuffers.Builder):flatbuffers.Offset {
@@ -54,10 +54,10 @@ static endF2rHandshake(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 }
 
-static createF2rHandshake(builder:flatbuffers.Builder, frontendVersionOffset:flatbuffers.Offset, serverIdOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createF2rHandshake(builder:flatbuffers.Builder, frontendVersionOffset:flatbuffers.Offset, deviceNameOffset:flatbuffers.Offset):flatbuffers.Offset {
   F2rHandshake.startF2rHandshake(builder);
   F2rHandshake.addFrontendVersion(builder, frontendVersionOffset);
-  F2rHandshake.addServerId(builder, serverIdOffset);
+  F2rHandshake.addDeviceName(builder, deviceNameOffset);
   return F2rHandshake.endF2rHandshake(builder);
 }
 }

@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 // TODO: remove me once handshake is implemented
-pub const TEST_SERVER_ID: &str = "test";
+pub const TEST_DEVICE_NAME: &str = "test";
 
 pub const WEBSOCKET_BUFFER_SIZE: usize = 1024 * 16;
 pub const WEBSOCKET_MAX_BUFFER_SIZE: usize = 1024 * 64;
