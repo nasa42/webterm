@@ -14,6 +14,8 @@ const VERSION = {
   patch: parseInt(import.meta.env.WEBTERM_VERSION_PATCH || "0"),
 };
 
+const repoURL = "https://github.com/nasa42/webterm";
+
 export const ELLIPSIS = "…";
 
 const defaultRelays = (): Relay[] => {
@@ -34,7 +36,11 @@ const defaultRelays = (): Relay[] => {
   return relayStrings.map((relay) => new Relay(relay));
 };
 
+const gitCommit = import.meta.env.CF_PAGES_COMMIT_SHA;
+
 export const CONFIG = {
   defaultRelays: defaultRelays(),
   version: VERSION,
+  gitCommit,
+  deploymentCommitURL: () => `${repoURL}/commit/${gitCommit}`,
 };
