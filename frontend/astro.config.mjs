@@ -8,6 +8,9 @@ import icon from "astro-icon";
 export default defineConfig({
   vite: {
     plugins: [webtermVersionPlugin()],
+    build: {
+      minify: import.meta.env.APP_ENABLE_MINIFY === "true",
+    },
   },
 
   integrations: [icon()],

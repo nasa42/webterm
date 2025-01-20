@@ -97,7 +97,7 @@ may not be feasible:
 * **End-to-end encryption**: All communication is encrypted
   using [AES256-GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode).
 * **Zero-trust Relay**: The relay only forwards encrypted messages and cannot read them.
-* **Static frontend**: The entire frontend code is within browser, making it easier to audit.
+* **Static frontend**: The entire frontend code is within browser un-minified, making it easier to audit.
 * **On-premise hosting**: Both frontend and relay can be hosted on your own infrastructure and agents can be configured
   to only connect to these relays for complete control.
 
