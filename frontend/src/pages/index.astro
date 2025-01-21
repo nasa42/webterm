@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { CONFIG } from "../scripts/client/config";
 ---
 
 <Layout title="Webterm Terminal">
@@ -88,7 +89,7 @@ import Layout from "../layouts/Layout.astro";
         <div class="row gy-4">
           <div class="col-lg-5">
             <h5 class="mb-3">Webterm</h5>
-            <p class="text-secondary mb-0">An open source project for secure terminal access.</p>
+            <p class="text-secondary">An open source project for secure terminal access.</p>
           </div>
           <div class="col-lg-3">
             <h6 class="mb-3">Documentation</h6>
@@ -122,6 +123,22 @@ import Layout from "../layouts/Layout.astro";
             </ul>
           </div>
         </div>
+
+        {
+          CONFIG.gitCommit && (
+            <div class="row mt-4 pt-2 mb-0 border-top">
+              <div class="col-12 text-right">
+                <p class="text-secondary small">
+                  Deployed commit
+                  <a href={CONFIG.deploymentCommitURL()} class="text-secondary text-decoration-none">
+                    {CONFIG.gitCommit.slice(0, 7)}
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+          )
+        }
       </div>
     </footer>
 
