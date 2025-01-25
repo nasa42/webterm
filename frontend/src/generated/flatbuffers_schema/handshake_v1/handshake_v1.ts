@@ -2,6 +2,25 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
-export { F2rHandshake } from './f2r-handshake.js';
-export { R2fHandshake } from './r2f-handshake.js';
+export { A2rHandshakeError } from './a2r-handshake-error.js';
+export { A2rHandshakeErrorType } from './a2r-handshake-error-type.js';
+export { A2rHandshakeRequestConnection } from './a2r-handshake-request-connection.js';
+export { A2rHandshakeRoot } from './a2r-handshake-root.js';
+export { A2rHandshakeRootPayload } from './a2r-handshake-root-payload.js';
+export { F2rHandshakeError } from './f2r-handshake-error.js';
+export { F2rHandshakeErrorType } from './f2r-handshake-error-type.js';
+export { F2rHandshakeRequestConnection } from './f2r-handshake-request-connection.js';
+export { F2rHandshakeRoot } from './f2r-handshake-root.js';
+export { F2rHandshakeRootPayload } from './f2r-handshake-root-payload.js';
+export { R2aHandshakeError } from './r2a-handshake-error.js';
+export { R2aHandshakeErrorType } from './r2a-handshake-error-type.js';
+export { R2aHandshakeRoot } from './r2a-handshake-root.js';
+export { R2aHandshakeRootPayload } from './r2a-handshake-root-payload.js';
+export { R2aHandshakeSuccess } from './r2a-handshake-success.js';
+export { R2fHandshakeDevice } from './r2f-handshake-device.js';
+export { R2fHandshakeError } from './r2f-handshake-error.js';
+export { R2fHandshakeErrorType } from './r2f-handshake-error-type.js';
+export { R2fHandshakeRoot } from './r2f-handshake-root.js';
+export { R2fHandshakeRootPayload } from './r2f-handshake-root-payload.js';
+export { R2fHandshakeSuccess } from './r2f-handshake-success.js';
 export { Version } from './version.js';

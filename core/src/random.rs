@@ -10,7 +10,7 @@ where
     rng.gen_range(min..max)
 }
 
-pub fn random_string(length: usize) -> String {
+pub fn random_alphanumeric(length: usize) -> String {
     let random_string: String = rand::thread_rng()
         .sample_iter(&Alphanumeric)
         .take(length)

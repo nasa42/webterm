@@ -1,6 +1,6 @@
 use crate::models::agent_connection::AgentConnection;
 use crate::models::frontend_connection::FrontendConnection;
-use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
+use crate::models::handshake_nonce_frontend_registry::HandshakeNonceFrontendRegistry;
 use crate::models::relay_error::RelayError;
 use crate::models::send_payload::SendPayload;
 use crate::models::socket_reader::SocketSubscriber;
@@ -23,22 +23,24 @@ impl Bridge {
     pub async fn connect_and_run(
         socket: WebSocket,
         handshake_nonce: String,
+        device_subname: String,
     ) -> Result<(), RelayError> {
-        let session = Self::from_websocket(socket, handshake_nonce).await?;
+        let session = Self::from_websocket(socket, handshake_nonce, device_subname).await?;
         session.run_loop().await
     }
 
     pub async fn from_websocket(
         socket: WebSocket,
         handshake_nonce: String,
+        device_subname: String,
     ) -> Result<Self, RelayError> {
         // define frontend_connection first, so if subsequent code fails, frontend_connection is
         // dropped and socket is closed
         let frontend_connection = FrontendConnection::new(socket).await;
 
-        let agent_connection = HandshakeNonceRegistry::singleton_frontend()
+        let agent_connection = HandshakeNonceFrontendRegistry::singleton()
             .await
-            .consume_nonce(&handshake_nonce)
+            .consume_nonce(handshake_nonce, device_subname)
             .await?
             .clone();
 

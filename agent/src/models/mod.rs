@@ -1,8 +1,10 @@
 pub mod activity;
 pub mod activity_registry;
 pub mod agent_error;
+mod connection_manager;
 pub mod frontend;
 pub mod frontend_registry;
+pub mod handshaker;
 pub mod panic_error;
 pub mod pty_activity;
 pub mod pty_activity_reader;

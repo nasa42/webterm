@@ -1,5 +1,5 @@
 use crate::models::agent_error::AgentError;
-use crate::models::relay_connection::RelayConnection;
+use crate::models::connection_manager::ConnectionManager;
 use futures::stream::SplitSink;
 use futures::SinkExt;
 use std::sync::Arc;
@@ -18,10 +18,9 @@ pub struct SocketWriter {
 impl SocketWriter {
     pub fn new(
         mut writer_stream: SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
-        rc: Arc<RelayConnection>,
+        cm: Arc<ConnectionManager>,
     ) -> Self {
         let (_tx, mut rx) = mpsc::channel::<Bytes>(16);
-        let rc_clone = rc.clone();
 
         tokio::spawn(async move {
             loop {
@@ -29,7 +28,7 @@ impl SocketWriter {
                 match received {
                     None => {
                         info!("mpsc rx closed");
-                        rc_clone.disconnect().await;
+                        cm.disconnect().await;
                         break;
                     }
                     Some(message) => {
@@ -40,11 +39,10 @@ impl SocketWriter {
                             }
                             Err(error) => {
                                 info!("Error sending message to writer stream: {:?}", error);
-                                rc_clone
-                                    .disconnect_with_error(AgentError::RuntimeError(
-                                        error.to_string(),
-                                    ))
-                                    .await;
+                                cm.disconnect_with_error(AgentError::RuntimeError(
+                                    error.to_string(),
+                                ))
+                                .await;
                                 break;
                             }
                         }

@@ -2,6 +2,7 @@ mod config;
 mod controllers;
 mod handshake;
 mod models;
+mod relay_version;
 mod router;
 mod services;
 

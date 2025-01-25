@@ -1,18 +1,12 @@
 import "@xterm/xterm/css/xterm.css";
 import { Runner } from "../models/Runner.ts";
-import { activeNotification } from "../ui/ActiveNotificationManager.ts";
-import { CONFIG, ELLIPSIS } from "../config.ts";
-import { createF2rHandshake } from "../functions/createF2rHandshake.ts";
-import { readR2fHandshake } from "../parsers/readR2fHandshake.ts";
+import { ELLIPSIS } from "../config.ts";
 import { StoredCredential } from "../models/StoredCredential.ts";
+import { handshakeCompleteSignal, handshakeInitiateSignal } from "../stores.ts";
+import { alertAndThrow } from "../functions/alertAndThrow.ts";
+import { notificationManager } from "../ui/NotificationManager.ts";
 
 const init = async (elementID: string) => {
-  const relay = CONFIG.defaultRelays[0];
-  if (!relay) {
-    console.error("Webterm: Define default relays with environment variable PUBLIC_DEFAULT_RELAYS in .env");
-    return;
-  }
-
   const searchParams = new URLSearchParams(window.location.search);
   const secretKey = searchParams.get("store_key");
   const storeIndex = searchParams.get("store_index");
@@ -25,49 +19,24 @@ const init = async (elementID: string) => {
 
   const creds = await StoredCredential.retrieve(parseInt(storeIndex), secretKey);
 
-  const url = relay.handshakeUrl();
-  const message = createF2rHandshake(creds.serverId);
+  handshakeInitiateSignal.set({ deviceName: creds.serverId });
 
-  let handshakeNonce;
+  handshakeCompleteSignal.subscribe((result) => {
+    if (!result) return;
 
-  try {
-    activeNotification.show(`Establishing handshake${ELLIPSIS}`, "info");
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      body: message,
-    });
+    const { nonce, relay, deviceSubname } = result;
+    const $element = document.getElementById(elementID);
 
-    const buffer = await response.arrayBuffer();
-    const handshakeResponse = readR2fHandshake(new Uint8Array(buffer));
-    handshakeNonce = handshakeResponse.relayAuthNonce();
-
-    if (!handshakeResponse.success() || !handshakeNonce) {
-      throw new Error("Handshake failed");
+    if (!$element) {
+      alertAndThrow("Webterm: Terminal element not found");
+      return;
     }
-  } catch (error) {
-    console.error("Connection failed:", error);
-    alert("Connection failed, please try again");
-    return;
-  }
 
-  if (!handshakeNonce) {
-    alert("Handshake failed, please try again");
-    return;
-  }
-
-  const $element = document.getElementById(elementID);
-
-  if (!$element) {
-    console.error("Webterm: Terminal element not found");
-    return;
-  }
-
-  console.log("Connecting to relay:", relay.websocketUrl(handshakeNonce));
-  activeNotification.show(`Connecting${ELLIPSIS}`, "info");
-  new Runner(relay.websocketUrl(handshakeNonce), $element, creds.serverId, creds.serverPassword);
+    const url = relay.websocketUrl(nonce, deviceSubname);
+    console.log("Connecting to relay:", url);
+    notificationManager.setActive(`Connecting${ELLIPSIS}`, "info");
+    new Runner(url, $element, creds.serverId, creds.serverPassword);
+  });
 };
 
 await init("app-terminal");

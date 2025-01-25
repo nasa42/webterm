@@ -11,11 +11,14 @@ import {
   F2aRoot,
   Version,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
-import { type ActivityInputBlob, F2aRootBlob } from "../types/BinaryBlob.ts";
+import { BinaryBlob } from "../types/BinaryBlob.ts";
 import type { ActivityId } from "../types/BigIntLike.ts";
 import { CONFIG } from "../config.ts";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
 import { type Bits96Array } from "../types/BitsArray.ts";
+import type { ActivityInputBlob } from "./TerminalInputBuilder.ts";
+
+export class F2aRootBlob extends BinaryBlob {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}

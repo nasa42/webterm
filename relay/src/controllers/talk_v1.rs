@@ -1,36 +1,45 @@
-use crate::config::TEST_DEVICE_NAME;
-use crate::models::agent_connection::AgentConnection;
-use crate::models::agent_registry::AgentRegistry;
 use crate::models::bridge::Bridge;
+use crate::models::handshake_nonce_agent_registry::HandshakeNonceAgentRegistry;
 use axum::extract::ws::WebSocket;
 use axum::extract::Query;
 use axum::{extract::WebSocketUpgrade, response::IntoResponse};
-use std::sync::Arc;
 use tracing::{error, info};
 
 #[derive(serde::Deserialize)]
-pub struct Params {
+pub struct FrontendParams {
+    handshake_nonce: String,
+    device_subname: String,
+}
+
+#[derive(serde::Deserialize)]
+pub struct AgentParams {
     handshake_nonce: String,
 }
 
-pub async fn frontend_handler(ws: WebSocketUpgrade, params: Query<Params>) -> impl IntoResponse {
-    let handshake_nonce = params.handshake_nonce.clone();
-
+pub async fn frontend_handler(
+    ws: WebSocketUpgrade,
+    params: Query<FrontendParams>,
+) -> impl IntoResponse {
     ws.write_buffer_size(crate::config::WEBSOCKET_BUFFER_SIZE)
         .max_write_buffer_size(crate::config::WEBSOCKET_MAX_BUFFER_SIZE)
-        .on_upgrade(|socket| on_upgrade_frontend(socket, handshake_nonce))
+        .on_upgrade(move |socket| on_upgrade_frontend(socket, params))
 }
 
-pub async fn agent_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
+pub async fn agent_handler(ws: WebSocketUpgrade, params: Query<AgentParams>) -> impl IntoResponse {
     ws.write_buffer_size(crate::config::WEBSOCKET_BUFFER_SIZE)
         .max_write_buffer_size(crate::config::WEBSOCKET_MAX_BUFFER_SIZE)
-        .on_upgrade(on_upgrade_agent)
+        .on_upgrade(move |socket| on_upgrade_agent(socket, params.handshake_nonce.clone()))
 }
 
-async fn on_upgrade_frontend(socket: WebSocket, handshake_nonce: String) {
+async fn on_upgrade_frontend(socket: WebSocket, params: Query<FrontendParams>) {
     info!("Starting new WebSocket connection for frontend");
 
-    let result = Bridge::connect_and_run(socket, handshake_nonce).await;
+    let result = Bridge::connect_and_run(
+        socket,
+        params.handshake_nonce.clone(),
+        params.device_subname.clone(),
+    )
+    .await;
 
     if let Err(error) = result {
         error!(
@@ -42,12 +51,20 @@ async fn on_upgrade_frontend(socket: WebSocket, handshake_nonce: String) {
     }
 }
 
-async fn on_upgrade_agent(socket: WebSocket) {
+async fn on_upgrade_agent(socket: WebSocket, handshake_nonce: String) {
     info!("Starting new WebSocket connection for agent");
-    let connection = Arc::new(AgentConnection::new(TEST_DEVICE_NAME.to_string(), socket).await);
-    AgentRegistry::register(connection.clone())
-        .await
-        .expect("Failed to register agent");
 
-    connection.wait_until_closed().await;
+    let result = HandshakeNonceAgentRegistry::singleton()
+        .await
+        .consume_nonce(handshake_nonce, socket)
+        .await;
+
+    match result {
+        Ok(connection) => {
+            connection.wait_until_closed().await;
+        }
+        Err(error) => {
+            error!("Agent websocket connection closed with error: {:?}", error);
+        }
+    }
 }

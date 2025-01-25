@@ -1,16 +1,12 @@
 ---
-import NotificationBell from "./NotificationBell.astro";
+import { RibbonActiveNotification } from "./react/entry-points/RibbonActiveNotification";
+import { RibbonNotificationBell } from "./react/entry-points/RibbonNotificationBell";
 ---
 
 <nav class="navbar navbar-expand-lg bg-body-tertiary app-main-nav-ribbon py-0">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">Webterm</a>
-    <div id="app-active-notification" class="d-none flex-grow-1 mx-3">
-      <div class="alert alert-dismissible mb-0 d-flex align-items-center">
-        <span class="flex-grow-1 text-center" id="app-active-notification-message"></span>
-        <button type="button" class="btn-close" aria-label="Close"></button>
-      </div>
-    </div>
+    <RibbonActiveNotification client:only="react" />
     <button
       class="navbar-toggler"
       type="button"
@@ -25,7 +21,7 @@ import NotificationBell from "./NotificationBell.astro";
     <div class="collapse navbar-collapse justify-content-end" id="app-navbar-dropdown">
       <ul class="navbar-nav">
         <li class="nav-item me-2">
-          <NotificationBell />
+          <RibbonNotificationBell client:only="react" />
         </li>
         <li class="nav-item dropdown">
           <a

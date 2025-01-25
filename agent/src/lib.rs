@@ -1,3 +1,4 @@
+pub mod agent_version;
 pub mod args;
 pub mod config;
 pub mod messaging;

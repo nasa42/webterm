@@ -1,5 +1,29 @@
-table R2fHandshake {
-  success: bool;
-  relay_version: Version;
+table R2fHandshakeDevice {
+  subname: string;
+  last_online_timestamp: uint64;
+}
+
+enum R2fHandshakeErrorType: uint8 {
+  ErrorUnspecified = 0,
+  ErrorAgentNotFound = 1,
+}
+
+table R2fHandshakeError {
+  error_type: R2fHandshakeErrorType;
+  error_message: string;
+}
+
+table R2fHandshakeSuccess {
   relay_auth_nonce: string;
+  devices: [R2fHandshakeDevice];
+}
+
+union R2fHandshakeRootPayload {
+  Error: R2fHandshakeError = 1,
+  Success: R2fHandshakeSuccess = 2,
+}
+
+table R2fHandshakeRoot {
+  relay_version: Version;
+  root_payload: R2fHandshakeRootPayload;
 }

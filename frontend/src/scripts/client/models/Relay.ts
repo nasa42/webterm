@@ -34,9 +34,9 @@ export class Relay {
     }
   }
 
-  websocketUrl(handshakeNonce: string): string {
+  websocketUrl(handshakeNonce: string, deviceSubname: string): string {
     const scheme = this.useHttp ? "ws" : "wss";
-    return `${scheme}://${this.host}/talk/v1/frontend?handshake_nonce=${handshakeNonce}`;
+    return `${scheme}://${this.host}/talk/v1/frontend?handshake_nonce=${handshakeNonce}&device_subname=${deviceSubname}`;
   }
 
   handshakeUrl(): string {

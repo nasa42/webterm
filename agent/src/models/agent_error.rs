@@ -25,6 +25,8 @@ pub enum AgentError {
     FrontendNotFound(Option<FrontendId>),
     SessionNotFound(Option<SessionId>),
     ActivityNotFound(Option<ActivityId>),
+    ReqwestError(reqwest::Error),
+    RelayErrorAgentAlreadyExists,
 }
 
 impl std::error::Error for AgentError {}
@@ -47,6 +49,8 @@ impl fmt::Display for AgentError {
             AgentError::FrontendNotFound(e) => write!(f, "Frontend not found: {:?}", e),
             AgentError::SessionNotFound(e) => write!(f, "Session not found: {:?}", e),
             AgentError::ActivityNotFound(e) => write!(f, "Activity not found: {:?}", e),
+            AgentError::ReqwestError(e) => write!(f, "Reqwest error: {}", e),
+            AgentError::RelayErrorAgentAlreadyExists => write!(f, "Agent already exists"),
         }
     }
 }
@@ -102,5 +106,11 @@ impl From<url::ParseError> for AgentError {
 impl From<WebtermError> for AgentError {
     fn from(err: WebtermError) -> Self {
         AgentError::CoreError(err)
+    }
+}
+
+impl From<reqwest::Error> for AgentError {
+    fn from(err: reqwest::Error) -> Self {
+        AgentError::ReqwestError(err)
     }
 }

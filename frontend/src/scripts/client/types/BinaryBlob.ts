@@ -1,4 +1,4 @@
-class BinaryBlob {
+export class BinaryBlob {
   protected _data: Uint8Array;
 
   constructor(data: Uint8Array) {
@@ -9,9 +9,3 @@ class BinaryBlob {
     return this._data;
   }
 }
-
-export class F2aRootBlob extends BinaryBlob {}
-
-export class F2rRootBlob extends BinaryBlob {}
-
-export class ActivityInputBlob extends BinaryBlob {}

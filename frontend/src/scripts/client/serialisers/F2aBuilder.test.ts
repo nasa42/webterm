@@ -11,10 +11,10 @@ import {
   Version,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
 import { CONFIG } from "../config";
-import { ActivityInputBlob } from "../types/BinaryBlob";
 import { ActivityId } from "../types/BigIntLike";
 import { Cryptographer } from "../cryptography/Cryptographer.ts";
 import { Bits96Array } from "../types/BitsArray.ts";
+import { ActivityInputBlob } from "./TerminalInputBuilder.ts";
 
 const { cryptographer } = await Cryptographer.new({
   iterations: 1,

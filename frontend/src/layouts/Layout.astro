@@ -1,11 +1,12 @@
 ---
 import "../styles/main.scss";
+import { HandshakeModal } from "../components/react/entry-points/HandshakeModal.tsx"
 
 interface Props {
   title?: string;
 }
 
-const { title = "Webterm" } = Astro.props;
+const title = Astro.props.title ?? "Webterm";
 ---
 
 <!doctype html>
@@ -20,5 +21,6 @@ const { title = "Webterm" } = Astro.props;
   </head>
   <body>
     <slot />
+    <HandshakeModal client:only="react" />
   </body>
 </html>

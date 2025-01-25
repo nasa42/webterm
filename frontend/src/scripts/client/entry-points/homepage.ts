@@ -10,12 +10,12 @@ const init = async () => {
 
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const $serverId = $form.querySelector("input[name='device-name']") as HTMLInputElement;
+    const $deviceName = $form.querySelector("input[name='device-name']") as HTMLInputElement;
     const $secretKey = $form.querySelector("input[name='secret-key']") as HTMLInputElement;
-    const serverId = $serverId.value;
+    const deviceName = $deviceName.value;
     const secretKey = $secretKey.value;
 
-    const { index, storeKey } = await StoredCredential.store(serverId, secretKey);
+    const { index, storeKey } = await StoredCredential.store(deviceName, secretKey);
 
     window.location.href = `/terminal?store_index=${index}&store_key=${storeKey}`;
   });

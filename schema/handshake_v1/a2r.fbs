@@ -1,0 +1,28 @@
+enum A2rHandshakeErrorType: uint8 {
+  ErrorUnspecified = 0,
+}
+
+table A2rHandshakeError {
+  error_type: A2rHandshakeErrorType;
+  error_message: string;
+}
+
+table A2rHandshakeRequestConnection {
+  device_name: string;
+  device_subname: string;
+}
+
+// table A2rHandshakePowSolution {
+//   pow_iterations: uint64;
+// }
+
+union A2rHandshakeRootPayload {
+  Error: A2rHandshakeError = 1,
+  RequestConnection: A2rHandshakeRequestConnection = 2,
+  // PowSolution: A2rHandshakePowSolution = 4,
+}
+
+table A2rHandshakeRoot {
+  agent_version: Version;
+  root_payload: A2rHandshakeRootPayload;
+}
