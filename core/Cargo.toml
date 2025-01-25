@@ -8,7 +8,7 @@ license.workspace = true
 
 [dependencies]
 aes-gcm = "0.11.0-pre.2"
-flatbuffers = "24.12.23"
+flatbuffers = "25.1.24"
 pbkdf2 = { version = "0.13.0-pre.1", features = ["simple"] }
 rand = "0.8.5"
 semver = "1.0.24"

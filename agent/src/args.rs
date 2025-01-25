@@ -13,4 +13,7 @@ pub struct Args {
     /// Relays to use, comma separated. If blank, default relays are used.
     #[arg(long, env = "WT_RELAYS")]
     pub relays: Option<String>,
+
+    #[arg(long, env = "WT_DEVICE_SUBNAME")]
+    pub device_subname: Option<String>,
 }

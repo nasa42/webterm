@@ -73,10 +73,14 @@ async fn process_plain(
                     "Expected challenge iv for auth present verification, got None".to_string(),
                 ))?),
                 false,
-            )?;
+            );
 
-            if decrypted == frontend.challenge_nonce()?.0.to_vec() {
-                success = true;
+            if let Ok(decrypted) = decrypted {
+                if decrypted == frontend.challenge_nonce()?.0.to_vec() {
+                    success = true;
+                }
+            } else {
+                success = false;
             }
 
             let session_arc = if SessionId(message.resume_session_id()) == SessionId(0) {

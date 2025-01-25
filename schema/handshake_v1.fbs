@@ -1,3 +1,7 @@
+include "./handshake_v1/a2r.fbs";
+include "./handshake_v1/r2a.fbs";
+
 include "./handshake_v1/f2r.fbs";
 include "./handshake_v1/r2f.fbs";
+
 include "./shared/version.fbs";

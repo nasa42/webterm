@@ -45,9 +45,19 @@ impl Relay {
         Ok(Self { host, use_http })
     }
 
-    pub fn websocket_url(&self) -> String {
+    pub fn host(&self) -> &str {
+        &self.host
+    }
+
+    pub fn websocket_url(&self, handshake_nonce: Option<String>) -> String {
         let scheme = if self.use_http { "ws" } else { "wss" };
-        format!("{}://{}/talk/v1/agent", scheme, self.host)
+        let mut base = format!("{}://{}/talk/v1/agent", scheme, self.host);
+
+        if let Some(nonce) = handshake_nonce {
+            base = format!("{}?handshake_nonce={}", base, nonce)
+        }
+
+        base
     }
 
     pub fn handshake_url(&self) -> String {

@@ -1,50 +1,67 @@
 use crate::models::agent_registry::AgentRegistry;
-use crate::models::handshake_nonce_registry::HandshakeNonceRegistry;
-use tracing::error;
-use tracing::{debug, info};
-use webterm_core::generated::flatbuffers_schema::handshake_v1::F2rHandshake;
-use webterm_core::handshake_v1_helpers::create_r2f_handshake;
+use crate::models::handshake_nonce_frontend_registry::HandshakeNonceFrontendRegistry;
+use std::time::SystemTime;
+use tracing::debug;
+use webterm_core::generated::flatbuffers_schema::handshake_v1::{
+    F2rHandshakeRoot, F2rHandshakeRootPayload, R2fHandshakeErrorType,
+};
+use webterm_core::serialisers::handshake_v1::r2f_handshake_builder::R2fHandshakeBuilder;
 
-pub async fn process_f2r_handshake(message: F2rHandshake<'_>) -> Vec<u8> {
-    let req_device_name = message.device_name();
+pub async fn process_f2r_handshake(message: F2rHandshakeRoot<'_>) -> R2fHandshakeBuilder {
+    let builder = R2fHandshakeBuilder::new();
 
-    match req_device_name {
-        None => {
-            error!("No device_name in F2rHandshake");
-            r2f_success_false_message()
-        }
-        Some(device_name) => {
+    match message.root_payload_type() {
+        F2rHandshakeRootPayload::RequestConnection => {
+            let payload = message.root_payload_as_request_connection().unwrap();
+            let device_name = payload.device_name().unwrap_or_default();
+
+            if device_name.is_empty() {
+                return builder.root_payload_error(
+                    R2fHandshakeErrorType::ErrorAgentNotFound,
+                    Some("Agent not found for an empty device name"),
+                );
+            }
+
             debug!("Processing F2rHandshake for device_name: {}", device_name);
-            let agent = AgentRegistry::find(device_name).await;
-            debug!("finished finding agent");
-            match agent {
-                Err(_) => {
-                    error!("Failed to find agent");
-                    r2f_success_false_message()
-                }
-                Ok(agent) => {
-                    info!("Found agent: {}", agent.device_name);
-                    let auth_nonce = HandshakeNonceRegistry::singleton_frontend()
-                        .await
-                        .create_nonce(agent.device_name.clone())
-                        .await;
+            let subnames = AgentRegistry::subnames(device_name).await;
 
-                    match auth_nonce {
-                        Err(_) => {
-                            error!("Failed to create auth_nonce");
-                            r2f_success_false_message()
-                        }
-                        Ok(auth_nonce) => {
-                            debug!("Created auth_nonce: {}", auth_nonce);
-                            create_r2f_handshake(true, Some(&auth_nonce))
-                        }
-                    }
-                }
+            if subnames.is_empty() {
+                return builder.root_payload_error(
+                    R2fHandshakeErrorType::ErrorAgentNotFound,
+                    Some(format!("Agent not found for device: {}", device_name).as_str()),
+                );
+            }
+
+            let auth_nonce = HandshakeNonceFrontendRegistry::singleton()
+                .await
+                .create_nonce(device_name.to_string(), None)
+                .await;
+
+            match auth_nonce {
+                Err(_) => builder.root_payload_error(
+                    R2fHandshakeErrorType::ErrorUnspecified,
+                    Some(
+                        format!("Failed to create auth_nonce for device: {}", device_name).as_str(),
+                    ),
+                ),
+                Ok(auth_nonce) => builder.root_payload_success(
+                    &auth_nonce,
+                    subnames
+                        .iter()
+                        .map(|subname| (subname.to_string(), SystemTime::now()))
+                        .collect(),
+                ),
             }
         }
+        _ => builder.root_payload_error(
+            R2fHandshakeErrorType::ErrorUnspecified,
+            Some(
+                format!(
+                    "Unknown root_payload_type: {:?}",
+                    message.root_payload_type()
+                )
+                .as_str(),
+            ),
+        ),
     }
-}
-
-fn r2f_success_false_message() -> Vec<u8> {
-    create_r2f_handshake(false, None)
 }

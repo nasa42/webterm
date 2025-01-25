@@ -1,0 +1,37 @@
+enum R2aHandshakeErrorType: uint8 {
+  ErrorUnspecified = 0,
+  ErrorDeviceAlreadyExists = 1,
+
+  ErrorDeviceNameInvalidChars = 4,
+  ErrorDeviceNameTooShort = 5,
+  ErrorDeviceNameTooLong = 6,
+
+  ErrorDeviceSubnameInvalidChars = 7,
+  ErrorDeviceSubnameTooShort = 8,
+  ErrorDeviceSubnameTooLong = 9,
+}
+
+table R2aHandshakeError {
+  error_type: R2aHandshakeErrorType;
+  error_message: string;
+}
+
+table R2aHandshakeSuccess {
+  relay_auth_nonce: string;
+}
+
+// table R2aHandshakeRequirePow {
+//   pow_start_nonce: [uint8];
+//   pow_difficulty: uint8;
+// }
+
+union R2aHandshakeRootPayload {
+  Error: R2aHandshakeError = 1,
+  Success: R2aHandshakeSuccess = 2,
+  // RequirePow: R2aHandshakeRequirePow = 4,
+}
+
+table R2aHandshakeRoot {
+  relay_version: Version;
+  root_payload: R2aHandshakeRootPayload;
+}

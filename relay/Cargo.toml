@@ -11,7 +11,7 @@ askama = "0.12.1"
 askama_axum = "0.4.0"
 axum = { version = "0.7.9", features = ["macros", "ws", "http2"] }
 clap = { version = "4.5.23", features = ["derive", "env"] }
-flatbuffers = "24.12.23"
+flatbuffers = "25.1.24"
 futures = "0.3.31"
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.42.0", features = ["full"] }
@@ -19,6 +19,7 @@ tower-http = { version = "0.6.2", features = ["trace"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 webterm-core = { path = "../core", version = "0.1.0" }
+semver = "1.0.24"
 
 [lints.clippy]
 new_without_default = "allow"

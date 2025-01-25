@@ -6,7 +6,10 @@ import {
   F2rRootPayload,
   F2rToAgent,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
-import { type F2aRootBlob, F2rRootBlob } from "../types/BinaryBlob.ts";
+import { BinaryBlob } from "../types/BinaryBlob.ts";
+import type {F2aRootBlob} from "./F2aBuilder.ts";
+
+export class F2rRootBlob extends BinaryBlob {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}

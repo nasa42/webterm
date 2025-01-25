@@ -64,13 +64,13 @@ export class RelayConnection {
   }
 
   async dispatchToAgentEncrypted(payload: F2aBuilder<EncryptionReady>) {
-    console.log("Dispatching message to agent:");
+    console.log("Dispatching encrypted message to agent");
     const f2a = await payload.toFlatbuffersEncrypted(this.runner.cryptographer());
     this.dispatchToRelay(F2rBuilder.new().buildToAgent(f2a));
   }
 
   dispatchToAgentPlain(payload: F2aBuilder<PlainReady>) {
-    console.log("Dispatching message to agent:");
+    console.log("Dispatching plain message to agent");
     this.dispatchToRelay(F2rBuilder.new().buildToAgent(payload.toFlatbuffersPlain()));
   }
 

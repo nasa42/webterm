@@ -8,7 +8,7 @@ import {
   F2rRootPayload,
   F2rToAgent,
 } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
-import { F2aRootBlob } from "../types/BinaryBlob.ts";
+import { F2aRootBlob } from "./F2aBuilder.ts";
 
 describe("F2rBuilder", () => {
   describe("new()", () => {

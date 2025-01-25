@@ -14,7 +14,7 @@ import { readTerminalOutput } from "../parsers/readTerminalOutput.ts";
 import { processTerminalOutput } from "./processTerminalOutput.ts";
 import { ActivityId } from "../types/BigIntLike.ts";
 import { Bits256Array, Bits96Array } from "../types/BitsArray.ts";
-import { activeNotification } from "../ui/ActiveNotificationManager.ts";
+import { notificationManager } from "../ui/NotificationManager.ts";
 
 export const processA2f = async (agentRoot: A2fRoot, send: SendPayload) => {
   switch (agentRoot.format()) {
@@ -49,7 +49,12 @@ const processPlain = async (payload: A2fRoot, send: SendPayload) => {
       const result = payload.plainMessage(new A2fPlainAuthResult()) as A2fPlainAuthResult | null;
       if (!result) return;
       console.info(`received auth result: ${result.successAuth()}`);
-      activeNotification.clear();
+      notificationManager.clearActive();
+      if (!result.successAuth()) {
+        alert("Authentication failed, please check your credentials and try again");
+        window.location.href = "/";
+        return;
+      }
       const resp = F2aBuilder.new();
       send.toAgentEncrypted = resp.buildActivityCreateTerminal();
       return;

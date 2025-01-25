@@ -1,7 +1,9 @@
 import * as flatbuffers from "flatbuffers";
 import { VectorTable } from "../../../generated/flatbuffers_schema/talk_v1/talk_v1.ts";
-import { ActivityInputBlob } from "../types/BinaryBlob.ts";
+import { BinaryBlob } from "../types/BinaryBlob.ts";
 import { PtyInput, PtyInputRoot, PtyResize } from "../../../generated/flatbuffers_schema/talk_v1/activity.ts";
+
+export class ActivityInputBlob extends BinaryBlob {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface BuilderState {}

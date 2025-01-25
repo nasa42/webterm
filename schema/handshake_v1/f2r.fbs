@@ -1,4 +1,25 @@
-table F2rHandshake {
-  frontend_version: Version;
+enum F2rHandshakeErrorType: uint8 {
+  ErrorUnspecified = 0,
+}
+
+table F2rHandshakeError {
+  error_type: F2rHandshakeErrorType;
+  error_message: string;
+}
+
+table F2rHandshakeRequestConnection {
   device_name: string;
+  // in future, make it possible to let a frontend directly sign-in to a device-id.
+  // E.g., the user may enter the Device Name input as "device-name/device-subname"
+  // device_subname: string;
+}
+
+union F2rHandshakeRootPayload {
+  Error: F2rHandshakeError = 1,
+  RequestConnection: F2rHandshakeRequestConnection = 2,
+}
+
+table F2rHandshakeRoot {
+  frontend_version: Version;
+  root_payload: F2rHandshakeRootPayload;
 }

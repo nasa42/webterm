@@ -2,9 +2,9 @@ use crate::config::Config;
 use crate::messaging::process_r2a::process_r2a;
 use crate::models::activity_registry::ActivityRegistry;
 use crate::models::agent_error::AgentError;
+use crate::models::connection_manager::ConnectionManager;
 use crate::models::panic_error::PanicError;
 use crate::models::pty_activity_reader::PtyActivityReader;
-use crate::models::relay_connection::RelayConnection;
 use crate::models::send_payload::SendPayload;
 use crate::models::socket_reader::SocketSubscriber;
 use crate::models::socket_writer::SocketPublisher;
@@ -20,14 +20,14 @@ impl Runner {
     }
 
     pub async fn run(self, config: Arc<Config>) -> Result<(), PanicError> {
-        let rc = RelayConnection::new(config.clone()).await;
+        let cm = ConnectionManager::new(config.clone()).await;
 
         loop {
-            if let Some((relay_pub, relay_sub)) = rc.pub_sub().await {
+            if let Some((relay_pub, relay_sub)) = cm.pub_sub().await {
                 let r2a_task = tokio::spawn(Self::r2a_task(
                     relay_sub,
                     relay_pub.clone(),
-                    rc.clone(),
+                    cm.clone(),
                     config.clone(),
                 ));
 
@@ -60,12 +60,12 @@ impl Runner {
                             }
                         }
                     },
-                    _ = rc.wait_for_disconnect() => {
+                    _ = cm.wait_for_disconnect() => {
                         info!("Received disconnect signal");
                     }
                 }
             } else {
-                rc.wait_for_connect().await;
+                cm.wait_for_connect().await;
             }
         }
     }
@@ -73,7 +73,7 @@ impl Runner {
     async fn r2a_task(
         mut relay_sub: SocketSubscriber,
         relay_pub: SocketPublisher,
-        rc: Arc<RelayConnection>,
+        cm: Arc<ConnectionManager>,
         config: Arc<Config>,
     ) -> Result<(), AgentError> {
         loop {
@@ -84,13 +84,13 @@ impl Runner {
                     let send = process_r2a(&data, send, &config).await?;
                     if send.is_relay_shutdown() {
                         error!("Relay is shutting down");
-                        rc.disconnect().await;
+                        cm.disconnect().await;
                         return Ok(());
                     }
                     send.dispatch(&relay_pub).await?
                 }
                 Err(e) => {
-                    rc.disconnect_with_error(e.into()).await;
+                    cm.disconnect_with_error(e.into()).await;
                     return Ok(());
                 }
                 _ => continue,

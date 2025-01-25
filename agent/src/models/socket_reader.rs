@@ -1,5 +1,5 @@
 use crate::models::agent_error::AgentError;
-use crate::models::relay_connection::RelayConnection;
+use crate::models::connection_manager::ConnectionManager;
 use futures::stream::SplitStream;
 use futures::StreamExt;
 use std::sync::Arc;
@@ -19,11 +19,10 @@ pub struct SocketReader {
 impl SocketReader {
     pub fn new(
         mut reader_stream: SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>,
-        rc: Arc<RelayConnection>,
+        cm: Arc<ConnectionManager>,
     ) -> Self {
         let (_tx, _rx) = broadcast::channel::<Result<Option<Bytes>, ReaderSocketError>>(16);
         let tx = _tx.clone();
-        let rc_clone = rc.clone();
 
         tokio::spawn(async move {
             loop {
@@ -31,7 +30,7 @@ impl SocketReader {
                     let received = match received {
                         Ok(Message::Binary(received)) => Ok(Some(received)),
                         Ok(Message::Close(_)) => {
-                            rc_clone.disconnect().await;
+                            cm.disconnect().await;
                             break;
                         }
                         Ok(Message::Ping(_)) =>
@@ -56,8 +55,7 @@ impl SocketReader {
                         }
                         Err(error) => {
                             error!("Error receiving message from stream: {}", error);
-                            rc_clone
-                                .disconnect_with_error(AgentError::RuntimeError(error.to_string()))
+                            cm.disconnect_with_error(AgentError::RuntimeError(error.to_string()))
                                 .await;
                             break;
                         }
@@ -66,7 +64,7 @@ impl SocketReader {
                     let _ = tx.send(received);
                 } else {
                     info!("Reader stream closed");
-                    rc_clone.disconnect().await;
+                    cm.disconnect().await;
                     break;
                 }
             }

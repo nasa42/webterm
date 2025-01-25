@@ -1,4 +1,5 @@
 import { Relay } from "./models/Relay.ts";
+import {RelayConnectionError} from "./errors.ts";
 
 // should be same as in agent/src/config.rs
 const DEFAULT_RELAYS = [
@@ -40,6 +41,16 @@ const gitCommit = import.meta.env.CF_PAGES_COMMIT_SHA;
 
 export const CONFIG = {
   defaultRelays: defaultRelays(),
+  randomRelay: (): Relay => {
+    const relay = defaultRelays()[0];
+    if (!relay) {
+      throw new RelayConnectionError(
+        "Webterm: Define default relays with environment variable PUBLIC_DEFAULT_RELAYS in .env",
+      );
+    }
+
+    return relay;
+  },
   version: VERSION,
   gitCommit,
   deploymentCommitURL: () => `${repoURL}/commit/${gitCommit}`,
