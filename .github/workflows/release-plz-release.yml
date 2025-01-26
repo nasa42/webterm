@@ -24,8 +24,12 @@ jobs:
           - package_name: webterm-relay
             version: 0.2.0
             tag: webterm-relay-v0.2.0
-        target: [ aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu ]
-        os: [ ubuntu-24.04 ]
+        include:
+          - release.package_name: webterm-agent
+            target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
 
     runs-on: ${{ matrix.os }}
 
