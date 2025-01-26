@@ -88,10 +88,12 @@ jobs:
           # e.g. "0.2.0"
           VERSION="${{ matrix.release.version }}"
 
+          TAG_NAME="${RELEASE_NAME}-v${VERSION}"
           BIN_NAME="${RELEASE_NAME}"
 
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
           echo "BIN_NAME=${BIN_NAME}" >> $GITHUB_ENV
           echo "TARGET=${{ matrix.target }}" >> $GITHUB_ENV
 
@@ -99,6 +101,7 @@ jobs:
         run: |
           echo "Package name: ${{ env.RELEASE_NAME }}"
           echo "Version:      ${{ env.VERSION }}"
+          echo "Tag:          ${{ env.TAG_NAME }}"
           echo "Ref:          ${{ env.GITHUB_REF }}"
           echo "Binary name:  ${{ env.BIN_NAME }}"
           echo "Target:       ${{ env.TARGET }}"
@@ -109,3 +112,4 @@ jobs:
           bin: ${{ env.BIN_NAME }}
           target: ${{ env.TARGET }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ env.TAG_NAME }}
