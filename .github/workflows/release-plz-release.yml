@@ -1,0 +1,111 @@
+name: Release-plz Release w/ Binaries
+
+permissions:
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-plz-release:
+    name: Release-plz release
+    runs-on: ubuntu-latest
+
+    outputs:
+      releases: ${{ steps.parse-releases.outputs.releases }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run release-plz
+        id: release-plz
+        uses: release-plz/action@v0.5
+        with:
+          command: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Parse release outputs
+        id: parse-releases
+        run: |
+          echo "Parsing releases from release-plz..."
+          RELEASES="${{ steps.release-plz.outputs.releases }}"
+          echo "Raw releases data: $RELEASES"
+
+          echo "$RELEASES" | jq -c '.[]' | while read release; do
+            package_name=$(echo "$release" | jq -r '.package_name')
+            if [[ "$package_name" == "webterm-agent" || "$package_name" == "webterm-relay" ]]; then
+              echo "Found relevant release: $package_name"
+              echo "$release" >> relevant_releases.jsonl
+            else
+              echo "Skipping irrelevant release: $package_name"
+            fi
+          done
+
+          if [[ -f relevant_releases.jsonl ]]; then
+            FILTERED=$(cat relevant_releases.jsonl | jq -s)
+            echo "Filtered releases: $FILTERED"
+            echo "releases=$FILTERED" >> $GITHUB_OUTPUT
+          else
+            echo "No relevant releases found."
+            echo "releases=[]" >> $GITHUB_OUTPUT
+          fi
+
+  upload-binaries:
+    name: Upload Binaries
+    needs: release-plz-release
+
+    strategy:
+      matrix:
+        release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
+        target: [ aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu ]
+        os: [ ubuntu-24.04 ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Set environment
+        id: set-env
+        run: |
+          # e.g. "webterm-relay"
+          RELEASE_NAME="${{ matrix.release.package_name }}"
+          # e.g. "0.2.0"
+          VERSION="${{ matrix.release.version }}"
+
+          BIN_NAME="${RELEASE_NAME}"
+
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "BIN_NAME=${BIN_NAME}" >> $GITHUB_ENV
+          echo "TARGET=${{ matrix.target }}" >> $GITHUB_ENV
+
+      - name: Debug environment
+        run: |
+          echo "Package name: ${{ env.RELEASE_NAME }}"
+          echo "Version:      ${{ env.VERSION }}"
+          echo "Ref:          ${{ env.GITHUB_REF }}"
+          echo "Binary name:  ${{ env.BIN_NAME }}"
+          echo "Target:       ${{ env.TARGET }}"
+
+      - name: Upload Rust Binary to GitHub Release
+        uses: taiki-e/upload-rust-binary-action@v1
+        with:
+          bin: ${{ env.BIN_NAME }}
+          target: ${{ env.TARGET }}
+          token: ${{ secrets.GITHUB_TOKEN }}
