@@ -28,7 +28,9 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-24.04
           - release:
-              package_name: webterm-agent
+              package_name:
+                - webterm-agent
+                - webterm-relay
             target: aarch64-unknown-linux-gnu
             os: ubuntu-24.04
 
