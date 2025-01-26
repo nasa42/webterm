@@ -64,6 +64,7 @@ jobs:
   upload-binaries:
     name: Upload Binaries
     needs: release-plz-release
+    if: needs.release-plz-release.outputs.releases != '[]'
 
     strategy:
       matrix:
