@@ -6,17 +6,24 @@ permissions:
 
 on:
   push:
+    branches:
+      - main
+  # TODO: REMOVE AFTER TESTING
+  pull_request:
 
 jobs:
   upload-binaries:
     name: Upload Binaries
-    env:
-      RELEASE_JSON: >
-        { "releases": [ { "package_name": "webterm-core","prs": [ ],"tag": "webterm-core-v0.2.0","version": "0.2.0" },{ "package_name": "webterm-agent","prs": [ ],"tag": "webterm-agent-v0.2.0","version": "0.2.0" },{ "package_name": "webterm-relay","prs": [ ],"tag": "webterm-relay-v0.2.0","version": "0.2.0" } ] }
 
     strategy:
       matrix:
-        release: ${{ fromJSON(env.RELEASE_JSON) }}
+        release:
+          - package_name: webterm-agent
+            version: 0.2.0
+            tag: webterm-agent-v0.2.0
+          - package_name: webterm-relay
+            version: 0.2.0
+            tag: webterm-relay-v0.2.0
         target: [ aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu ]
         os: [ ubuntu-24.04 ]
 
@@ -32,33 +39,27 @@ jobs:
       - name: Set environment
         id: set-env
         run: |
-          # e.g. "webterm-relay"
-          RELEASE_NAME="${{ matrix.release.package_name }}"
-          # e.g. "0.2.0"
+          PACKAGE_NAME="${{ matrix.release.package_name }}"
           VERSION="${{ matrix.release.version }}"
+          TAG_NAME="${{ matrix.release.tag }}"
 
-          TAG_NAME="${RELEASE_NAME}-v${VERSION}"
-          BIN_NAME="${RELEASE_NAME}"
-
-          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> $GITHUB_ENV
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
-          echo "BIN_NAME=${BIN_NAME}" >> $GITHUB_ENV
           echo "TARGET=${{ matrix.target }}" >> $GITHUB_ENV
 
       - name: Debug environment
         run: |
-          echo "Package name: ${{ env.RELEASE_NAME }}"
+          echo "Package name: ${{ env.PACKAGE_NAME }}"
           echo "Version:      ${{ env.VERSION }}"
           echo "Tag:          ${{ env.TAG_NAME }}"
           echo "Ref:          ${{ env.GITHUB_REF }}"
-          echo "Binary name:  ${{ env.BIN_NAME }}"
           echo "Target:       ${{ env.TARGET }}"
 
       - name: Upload Rust Binary to GitHub Release
         uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: ${{ env.BIN_NAME }}
+          bin: ${{ env.PACKAGE_NAME }}
           target: ${{ env.TARGET }}
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: refs/tags/${{ env.TAG_NAME }}
