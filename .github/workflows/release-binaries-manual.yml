@@ -1,4 +1,4 @@
-name: Release Binary (manual)
+name: Release Binaries (manual)
 
 permissions:
   pull-requests: write
@@ -10,7 +10,7 @@ on:
 #      - remove-this-line-to-enable-this-workflow
 
 env:
-  RELEASE_VERSION: # set the version to which to upload
+  RELEASE_VERSION: invalid-release-replace-me
 
 jobs:
   upload-binaries-manual:
