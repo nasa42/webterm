@@ -68,48 +68,49 @@ jobs:
     strategy:
       matrix:
         release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
-        target: [ aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu ]
-        os: [ ubuntu-24.04 ]
+        target:
+          - name: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - name: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+        include:
+          - release:
+              package_name: webterm-agent
+            target:
+              name: x86_64-unknown-linux-gnu
+          - release:
+              package_name: webterm-agent
+            target:
+              name: aarch64-unknown-linux-gnu
+          - release:
+              package_name: webterm-relay
+            target:
+              name: x86_64-unknown-linux-gnu
+          - release:
+              package_name: webterm-relay
+            target:
+              name: aarch64-unknown-linux-gnu
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.target.os }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Set environment
-        id: set-env
-        run: |
-          # e.g. "webterm-relay"
-          RELEASE_NAME="${{ matrix.release.package_name }}"
-          # e.g. "0.2.0"
-          VERSION="${{ matrix.release.version }}"
-
-          TAG_NAME="${RELEASE_NAME}-v${VERSION}"
-          BIN_NAME="${RELEASE_NAME}"
-
-          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
-          echo "BIN_NAME=${BIN_NAME}" >> $GITHUB_ENV
-          echo "TARGET=${{ matrix.target }}" >> $GITHUB_ENV
+      - uses: dtolnay/rust-toolchain@stable
 
       - name: Debug environment
         run: |
-          echo "Package name: ${{ env.RELEASE_NAME }}"
-          echo "Version:      ${{ env.VERSION }}"
-          echo "Tag:          ${{ env.TAG_NAME }}"
+          echo "Package name: ${{ matrix.release.package_name }}"
+          echo "Version:      ${{ matrix.release.version }}"
+          echo "Tag:          ${{ matrix.release.tag }}"
           echo "Ref:          ${{ env.GITHUB_REF }}"
-          echo "Binary name:  ${{ env.BIN_NAME }}"
-          echo "Target:       ${{ env.TARGET }}"
+          echo "Target:       ${{ matrix.target.name }}"
+          echo "OS:           ${{ matrix.target.os }}"
 
       - name: Upload Rust Binary to GitHub Release
         uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: ${{ env.BIN_NAME }}
-          target: ${{ env.TARGET }}
+          bin: ${{ matrix.release.package_name }}
+          target: ${{ matrix.target.name }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: refs/tags/${{ env.TAG_NAME }}
+          ref: refs/tags/${{ matrix.release.tag }}

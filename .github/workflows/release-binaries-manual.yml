@@ -1,0 +1,76 @@
+name: Release Binaries (manual)
+
+permissions:
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    branches:
+      - REMOVE_THIS_LINE_TO_ENABLE_THIS_WORKFLOW
+
+env:
+  RELEASE_VERSION: INVALID_RENAME_VERSION_REPLACE_ME
+
+jobs:
+  upload-binaries-manual:
+    name: Upload Binaries (manual)
+
+    strategy:
+      matrix:
+        release:
+          - package_name: webterm-agent
+          - package_name: webterm-relay
+        target:
+          - name: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - name: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+        include:
+          - release:
+              package_name: webterm-agent
+            target:
+              name: x86_64-unknown-linux-gnu
+          - release:
+              package_name: webterm-agent
+            target:
+              name: aarch64-unknown-linux-gnu
+          - release:
+              package_name: webterm-relay
+            target:
+              name: x86_64-unknown-linux-gnu
+          - release:
+              package_name: webterm-relay
+            target:
+              name: aarch64-unknown-linux-gnu
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Set environment
+        id: set-env
+        run: |
+          TAG_NAME="${{ matrix.release.package_name }}-v${{ env.RELEASE_VERSION }}"
+
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+      - name: Debug environment
+        run: |
+          echo "Package name: ${{ matrix.release.package_name }}"
+          echo "Version:      ${{ env.RELEASE_VERSION }}"
+          echo "Tag:          ${{ env.TAG_NAME }}"
+          echo "Ref:          ${{ env.GITHUB_REF }}"
+          echo "Target:       ${{ matrix.target.name }}"
+          echo "OS:           ${{ matrix.target.os }}"
+
+      - name: Upload Rust Binary to GitHub Release
+        uses: taiki-e/upload-rust-binary-action@v1
+        with:
+          bin: ${{ matrix.release.package_name }}
+          target: ${{ matrix.target.name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: refs/tags/${{ env.TAG_NAME }}
