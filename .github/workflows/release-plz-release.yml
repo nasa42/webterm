@@ -6,10 +6,6 @@ permissions:
 
 on:
   push:
-    branches:
-      - main
-  # TODO: REMOVE AFTER TESTING
-  pull_request:
 
 jobs:
   upload-binaries:
