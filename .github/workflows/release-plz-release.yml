@@ -37,7 +37,8 @@ jobs:
           version: 0.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          # TODO: REMOVE AFTER TESTING
+          CARGO_REGISTRY_TOKEN: INVALID_${{ secrets.CARGO_REGISTRY_TOKEN }}
 
       - name: Parse release outputs
         id: parse-releases
