@@ -12,65 +12,15 @@ on:
   pull_request:
 
 jobs:
-  release-plz-release:
-    name: Release-plz release
-    runs-on: ubuntu-latest
-
-    outputs:
-      releases: ${{ steps.parse-releases.outputs.releases }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Run release-plz
-        id: release-plz
-        uses: release-plz/action@v0.5
-        with:
-          command: release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # TODO: REMOVE AFTER TESTING
-          CARGO_REGISTRY_TOKEN: INVALID_${{ secrets.CARGO_REGISTRY_TOKEN }}
-
-      - name: Parse release outputs
-        id: parse-releases
-        run: |
-          echo "Parsing releases from release-plz..."
-          RELEASES="${{ steps.release-plz.outputs.releases }}"
-          echo "Raw releases data: $RELEASES"
-
-          echo "$RELEASES" | jq -c '.[]' | while read release; do
-            package_name=$(echo "$release" | jq -r '.package_name')
-            if [[ "$package_name" == "webterm-agent" || "$package_name" == "webterm-relay" ]]; then
-              echo "Found relevant release: $package_name"
-              echo "$release" >> relevant_releases.jsonl
-            else
-              echo "Skipping irrelevant release: $package_name"
-            fi
-          done
-
-          if [[ -f relevant_releases.jsonl ]]; then
-            FILTERED=$(cat relevant_releases.jsonl | jq -s)
-            echo "Filtered releases: $FILTERED"
-            echo "releases=$FILTERED" >> $GITHUB_OUTPUT
-          else
-            echo "No relevant releases found."
-            echo "releases=[]" >> $GITHUB_OUTPUT
-          fi
-
   upload-binaries:
     name: Upload Binaries
-    needs: release-plz-release
+    env:
+      RELEASE_JSON: >
+        { "releases": [ { "package_name": "webterm-core","prs": [ ],"tag": "webterm-core-v0.2.0","version": "0.2.0" },{ "package_name": "webterm-agent","prs": [ ],"tag": "webterm-agent-v0.2.0","version": "0.2.0" },{ "package_name": "webterm-relay","prs": [ ],"tag": "webterm-relay-v0.2.0","version": "0.2.0" } ] }
 
     strategy:
       matrix:
-        release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
+        release: ${{ fromJSON(env.RELEASE_JSON) }}
         target: [ aarch64-unknown-linux-gnu, x86_64-unknown-linux-gnu ]
         os: [ ubuntu-24.04 ]
 
