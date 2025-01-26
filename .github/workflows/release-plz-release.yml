@@ -33,8 +33,6 @@ jobs:
         uses: release-plz/action@v0.5
         with:
           command: release
-          # TODO: REMOVE AFTER TESTING
-          version: 0.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # TODO: REMOVE AFTER TESTING
