@@ -25,11 +25,12 @@ jobs:
             version: 0.2.0
             tag: webterm-relay-v0.2.0
         include:
-          - release:
-              - package_name: webterm-agent
-            target: aarch64-unknown-linux-gnu
-            os: ubuntu-24.04
           - target: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - release: # an example of how to limit a target to only specific packages
+              - package_name: webterm-agent
+              - package_name: webterm-relay
+            target: aarch64-unknown-linux-gnu
             os: ubuntu-24.04
 
     runs-on: ${{ matrix.os }}
