@@ -16,4 +16,7 @@ pub struct Args {
 
     #[arg(long, env = "WT_DEVICE_SUBNAME")]
     pub device_subname: Option<String>,
+
+    #[arg(long, env = "WT_DAEMON", short = 'd')]
+    pub daemon: bool,
 }

@@ -1,6 +1,7 @@
 pub mod agent_version;
 pub mod args;
 pub mod config;
+pub mod daemonise;
 pub mod messaging;
 pub mod models;
 
