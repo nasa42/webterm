@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/react": "^4.1.6",
+    "@astrojs/react": "^4.2.0",
     "@emotion/react": "^11.14.0",
     "@nanostores/react": "^0.8.4",
     "@popperjs/core": "^2.11.8",
