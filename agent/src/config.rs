@@ -53,6 +53,19 @@ impl Config {
         &self.args.secret_key
     }
 
+    #[inline]
+    pub fn is_unix(&self) -> bool {
+        cfg!(unix)
+    }
+
+    pub fn wants_daemon(&self) -> bool {
+        self.args.daemon
+    }
+
+    pub fn can_daemon(&self) -> bool {
+        self.is_unix()
+    }
+
     fn init_available_relays(args: &Args) -> Vec<Arc<Relay>> {
         let mut result: Vec<Arc<Relay>> = args
             .relays
