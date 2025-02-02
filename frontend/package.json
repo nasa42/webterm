@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/react": "^4.1.6",
+    "@astrojs/react": "^4.2.0",
     "@emotion/react": "^11.14.0",
     "@nanostores/react": "^0.8.4",
     "@popperjs/core": "^2.11.8",
@@ -23,7 +23,7 @@
     "@types/react-dom": "^19.0.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "astro": "^5.1.1",
+    "astro": "^5.2.3",
     "bootstrap": "^5.3.3",
     "ejs": "^3.1.10",
     "flatbuffers": "^25.1.24",

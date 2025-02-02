@@ -10,17 +10,17 @@ repository.workspace = true
 [dependencies]
 askama = "0.12.1"
 axum = { version = "0.8.1", features = ["macros", "ws", "http2"] }
-clap = { version = "4.5.23", features = ["derive", "env"] }
+clap = { version = "4.5.27", features = ["derive", "env"] }
 flatbuffers = "25.1.24"
 futures = "0.3.31"
 git-version = "0.3.9"
 semver = "1.0.24"
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.42.0", features = ["full"] }
-tower-http = { version = "0.6.2", features = ["trace"] }
+tower-http = { version = "0.6.2", features = ["trace", "cors"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-webterm-core = { path = "../core", version = "0.2.0" }
+webterm-core = { path = "../core", version = "0.2.2" }
 
 [lints.clippy]
 new_without_default = "allow"

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.0...webterm-agent-v0.2.1) - 2025-02-02
+
+### Added
+
+- *(agent)* Implement daemonisation. (#86)
+
+### Other
+
+- Bump clap from 4.5.23 to 4.5.27 (#94)
+- Bump gethostname from 0.5.0 to 1.0.0 (#93)
+
 ## [0.2.0](https://github.com/nasa42/webterm/compare/webterm-agent-v0.1.0...webterm-agent-v0.2.0) - 2025-01-25
 
 ### Added
