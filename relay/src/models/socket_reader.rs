@@ -42,7 +42,7 @@ impl SocketReader {
                         }
                     };
 
-                    let _ = tx.send(received);
+                    let _ = tx.send(received.map(|opt| opt.map(|bytes| bytes.to_vec())));
                 } else {
                     info!("Reader stream closed");
                     break;

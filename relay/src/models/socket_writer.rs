@@ -31,7 +31,7 @@ impl SocketWriter {
                         let result = writer_stream
                             .lock()
                             .await
-                            .send(Message::Binary(message))
+                            .send(Message::Binary(message.into()))
                             .await;
                         match result {
                             Ok(_) => {
