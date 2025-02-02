@@ -10,7 +10,7 @@ repository.workspace = true
 [dependencies]
 askama = "0.12.1"
 axum = { version = "0.8.1", features = ["macros", "ws", "http2"] }
-clap = { version = "4.5.23", features = ["derive", "env"] }
+clap = { version = "4.5.27", features = ["derive", "env"] }
 flatbuffers = "25.1.24"
 futures = "0.3.31"
 semver = "1.0.24"
