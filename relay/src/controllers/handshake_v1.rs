@@ -1,10 +1,9 @@
 use crate::handshake::process_a2r_handshake::process_a2r_handshake;
 use crate::handshake::process_f2r_handshake::process_f2r_handshake;
 use crate::relay_version::relay_version_to_flatbuffers;
-use askama_axum::IntoResponse;
 use axum::body::Bytes;
 use axum::http::{header, StatusCode};
-use axum::response::Response;
+use axum::response::{IntoResponse, Response};
 use webterm_core::flatbuffers_helpers::read_message;
 use webterm_core::generated::flatbuffers_schema::handshake_v1::{
     A2rHandshakeRoot, F2rHandshakeRoot,

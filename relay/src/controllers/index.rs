@@ -1,4 +1,6 @@
-use askama_axum::Template;
+use crate::helpers::render_response::render_response;
+use askama::Template;
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
 #[derive(Template)]
@@ -9,8 +11,10 @@ struct IndexTemplate<'a> {
 }
 
 pub async fn index_handler() -> impl IntoResponse {
-    IndexTemplate {
-        browser_title: "Web Terminal Relay",
+    let template = IndexTemplate {
+        browser_title: "Webterm Relay",
         project_url: "https://github.com/nasa42/webterm",
-    }
+    };
+
+    render_response(StatusCode::OK, &template)
 }
