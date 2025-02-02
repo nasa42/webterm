@@ -23,7 +23,7 @@
     "@types/react-dom": "^19.0.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "astro": "^5.1.1",
+    "astro": "^5.2.3",
     "bootstrap": "^5.3.3",
     "flatbuffers": "^25.1.24",
     "lodash-es": "^4.17.21",
