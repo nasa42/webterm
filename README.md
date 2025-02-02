@@ -37,13 +37,15 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 
 ## Quickstart
 
-1. Install Webterm agent using Cargo:
+1. Install the Webterm agent:
    ```bash
-   cargo install webterm-agent
+   # This command will install a single binary at /usr/bin/webterm-agent, no other files will be touched
+   curl -sSfL https://webterm.run/install.sh | bash
    ```
 
 2. Start the Webterm agent:
    ```bash
+   # Pass --daemon to run the agent in the background
    webterm-agent --device-name <DEVICE_NAME> --secret-key <SECRET_KEY>
    ```
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
 # Usage:
-#   curl -sSfL https://webterm.run/get | bash
+#   curl -sSfL https://webterm.run/install.sh | bash
 
 set -euo pipefail
 
 LATEST_VERSION_URL="https://webterm.run/latest.txt"
 REPO_BASE_URL="https://github.com/nasa42/webterm/releases/download"
-BINARY_NAME="webterm-agent"
+BINARY_NAME="<%= binary_name %>"
 
 # By default, install to /usr/bin unless the user provides INSTALL_DIR
 DEFAULT_INSTALL_DIR="/usr/bin"
@@ -27,7 +27,6 @@ echo "Latest version: ${LATEST_VERSION}"
 # Check if ${BINARY_NAME} is already installed and get installed version
 INSTALLED_VERSION=""
 if [ -x "${INSTALL_DIR}/${BINARY_NAME}" ]; then
-  # Example output: "webterm-agent 0.2.0"
   INSTALLED_VERSION="$("${INSTALL_DIR}/${BINARY_NAME}" --version 2>/dev/null | awk '{print $2}')"
   echo "Installed version: ${INSTALLED_VERSION}"
 fi
@@ -42,10 +41,10 @@ fi
 ARCH="$(uname -m)"
 case "${ARCH}" in
     x86_64)
-        ARCHIVE="webterm-agent-x86_64-unknown-linux-gnu.tar.gz"
+        ARCHIVE="${BINARY_NAME}-x86_64-unknown-linux-gnu.tar.gz"
         ;;
     aarch64|arm64)
-        ARCHIVE="webterm-agent-aarch64-unknown-linux-gnu.tar.gz"
+        ARCHIVE="${BINARY_NAME}-aarch64-unknown-linux-gnu.tar.gz"
         ;;
     *)
         echo "Unsupported architecture: ${ARCH}"
@@ -54,7 +53,7 @@ case "${ARCH}" in
         ;;
 esac
 
-DOWNLOAD_URL="${REPO_BASE_URL}/webterm-agent-v${LATEST_VERSION}/${ARCHIVE}"
+DOWNLOAD_URL="${REPO_BASE_URL}/${BINARY_NAME}-v${LATEST_VERSION}/${ARCHIVE}"
 
 echo "Downloading ${BINARY_NAME} ${LATEST_VERSION} for architecture ${ARCH}..."
 curl -sSfL "${DOWNLOAD_URL}" -o "${ARCHIVE}"
