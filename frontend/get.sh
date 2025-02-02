@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+#
+# Usage:
+#   curl -sSfL https://webterm.run/get | bash
+
+set -euo pipefail
+
+LATEST_VERSION_URL="https://webterm.run/latest.txt"
+REPO_BASE_URL="https://github.com/nasa42/webterm/releases/download"
+BINARY_NAME="webterm-agent"
+
+# By default, install to /usr/bin unless the user provides INSTALL_DIR
+DEFAULT_INSTALL_DIR="/usr/bin"
+INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+
+echo "Checking latest ${BINARY_NAME} version..."
+
+# Fetch the latest version from a remote text file
+LATEST_VERSION="$(curl -sSfL "${LATEST_VERSION_URL}" | tr -d '\r\n')"
+if [ -z "${LATEST_VERSION}" ]; then
+  echo "Unable to fetch the latest version from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
+  exit 1
+fi
+
+echo "Latest version: ${LATEST_VERSION}"
+
+# Check if ${BINARY_NAME} is already installed and get installed version
+INSTALLED_VERSION=""
+if [ -x "${INSTALL_DIR}/${BINARY_NAME}" ]; then
+  # Example output: "webterm-agent 0.2.0"
+  INSTALLED_VERSION="$("${INSTALL_DIR}/${BINARY_NAME}" --version 2>/dev/null | awk '{print $2}')"
+  echo "Installed version: ${INSTALLED_VERSION}"
+fi
+
+# If installed version matches latest version, skip installation
+if [ "${INSTALLED_VERSION}" = "${LATEST_VERSION}" ]; then
+  echo "${BINARY_NAME} is already up to date (version ${INSTALLED_VERSION}). No action needed."
+  exit 0
+fi
+
+# Determine architecture
+ARCH="$(uname -m)"
+case "${ARCH}" in
+    x86_64)
+        ARCHIVE="webterm-agent-x86_64-unknown-linux-gnu.tar.gz"
+        ;;
+    aarch64|arm64)
+        ARCHIVE="webterm-agent-aarch64-unknown-linux-gnu.tar.gz"
+        ;;
+    *)
+        echo "Unsupported architecture: ${ARCH}"
+        echo "Please download and install ${BINARY_NAME} manually for your system."
+        exit 1
+        ;;
+esac
+
+DOWNLOAD_URL="${REPO_BASE_URL}/webterm-agent-v${LATEST_VERSION}/${ARCHIVE}"
+
+echo "Downloading ${BINARY_NAME} ${LATEST_VERSION} for architecture ${ARCH}..."
+curl -sSfL "${DOWNLOAD_URL}" -o "${ARCHIVE}"
+
+echo "Download complete. Extracting..."
+tar -xzf "${ARCHIVE}"
+rm -f "${ARCHIVE}"
+
+# Check if we can write to the chosen directory
+if [ ! -w "${INSTALL_DIR}" ]; then
+  echo "You do not have write permissions to '${INSTALL_DIR}'."
+  echo "To perform a system-wide install, re-run with sudo:"
+  echo "  sudo curl -sSfL https://webterm.run/get | bash"
+  echo
+  echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
+  echo "  curl -sSfL https://webterm.run/get | INSTALL_DIR=\"\$HOME/bin\" bash"
+  rm -f "${BINARY_NAME}"
+  exit 1
+fi
+
+echo "Installing ${BINARY_NAME} to '${INSTALL_DIR}'..."
+mv "${BINARY_NAME}" "${INSTALL_DIR}/${BINARY_NAME}"
+chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
+
+echo "Installation successful!"
+echo "To verify, run:"
+echo "  ${INSTALL_DIR}/${BINARY_NAME} --version"
+echo
+echo "To uninstall, just remove the binary (no additional files or configurations are left behind)"
+echo "  rm ${INSTALL_DIR}/${BINARY_NAME}"
+echo
+echo "Learn more at https://webterm.run"
