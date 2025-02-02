@@ -1,6 +1,7 @@
 mod config;
 mod controllers;
 mod handshake;
+mod helpers;
 mod models;
 mod relay_version;
 mod router;
