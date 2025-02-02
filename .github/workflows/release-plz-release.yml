@@ -53,7 +53,7 @@ jobs:
           done
 
           if [[ -f relevant_releases.jsonl ]]; then
-            FILTERED=$(cat relevant_releases.jsonl | jq -s)
+            FILTERED=$(cat relevant_releases.jsonl | jq -sc)
             echo "Filtered releases: $FILTERED"
             echo "releases=$FILTERED" >> $GITHUB_OUTPUT
           else
