@@ -1,6 +1,7 @@
 use crate::controllers;
 use axum::routing::post;
 use axum::{routing::get, Router};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 
 pub fn app_router() -> Router {
@@ -26,6 +27,7 @@ pub fn app_router() -> Router {
             get(controllers::talk_v1::frontend_handler),
         )
         .fallback(get(controllers::not_found::handler))
+        .layer(CorsLayer::permissive())
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::new())
