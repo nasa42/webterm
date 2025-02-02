@@ -39,7 +39,7 @@ jobs:
         id: parse-releases
         run: |
           echo "Parsing releases from release-plz..."
-          RELEASES="${{ steps.release-plz.outputs.releases }}"
+          RELEASES='${{ steps.release-plz.outputs.releases }}'
           echo "Raw releases data: $RELEASES"
 
           echo "$RELEASES" | jq -c '.[]' | while read release; do
