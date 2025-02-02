@@ -37,13 +37,15 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 
 ## Quickstart
 
-1. Install Webterm agent using Cargo:
+1. Install the Webterm agent:
    ```bash
-   cargo install webterm-agent
+   # This command will install a single binary at /usr/bin/webterm-agent, no other files will be touched
+   curl -sSfL https://webterm.run/install.sh | bash
    ```
 
 2. Start the Webterm agent:
    ```bash
+   # Pass --daemon to run the agent in the background
    webterm-agent --device-name <DEVICE_NAME> --secret-key <SECRET_KEY>
    ```
 
@@ -68,8 +70,8 @@ Webterm is made of 3 components:
 2. **Relay**: A stateless server that routes communication between the Agent and the Frontend.
 3. **Frontend (Browser)**: A fully static website used to access the terminal from any modern browser.
 
-When `webterm-agent` runs on a device, it registers itself to a Relay with the specified _Server ID_ and keeps a
-persistent WebSocket connection open. Whenever a Frontend requests to connect a _Server ID_, the Relay
+When `webterm-agent` runs on a device, it registers itself to a Relay with the specified _Device Name_ and keeps a
+persistent WebSocket connection open. Whenever a Frontend requests to connect a _Device Name_, the Relay
 requests a connection to the Agent, which verifies the Frontend using
 [zero-knowledge proof](https://en.wikipedia.org/wiki/Zero-knowledge_proof). Upon successful verification, an encrypted
 session is established using a key derived via [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2). The original _Secret
@@ -122,9 +124,11 @@ may not be feasible:
 * **SSO Sign-In**: Integrate single sign-on and authorisation.
 * **File Browser**: Browse & manage server files in the browser.
 * **Auditing**: Add support for logging all stdin and stdout.
-* **Metrics**: Show live server metrics (CPU, Memory etc) as well as historical metrics up to N days (user configurable).
+* **Metrics**: Show live server metrics (CPU, Memory etc) as well as historical metrics up to N days (user
+  configurable).
 * **Custom Plugins**: Add support for custom plugins.
-* **Relay failover**: High-availibility, load balancing, and automaic failover for relays with near-zero interruptions to live sessions.
+* **Relay failover**: High-availibility, load balancing, and automaic failover for relays with near-zero interruptions
+  to live sessions.
 
 ## Licence
 

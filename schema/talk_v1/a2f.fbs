@@ -46,7 +46,7 @@ table A2fPlainAuthPreamble {
   challenge_nonce: [uint8];
 
   // DoS protection:
-  // however, if the "server ID" is not easily guessable, it is hard to DoS the server
+  // however, if the "Device Name" is not easily guessable, it is hard to DoS the server
   // pow_start_nonce: [uint8];
   // pow_difficulty: uint8;
 }
