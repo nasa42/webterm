@@ -2405,7 +2405,7 @@ dependencies = [
 
 [[package]]
 name = "webterm-agent"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "clap",
  "daemonize",
@@ -2425,7 +2425,7 @@ dependencies = [
 
 [[package]]
 name = "webterm-core"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "aes-gcm",
  "flatbuffers",
@@ -2440,7 +2440,7 @@ dependencies = [
 
 [[package]]
 name = "webterm-relay"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "askama",
  "axum",
