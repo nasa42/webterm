@@ -3,7 +3,7 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about = "Learn more at https://github.com/nasa42/webterm", long_about = None)]
 pub struct Args {
-    /// Server ID, must be unique at least 16 characters long
+    /// Device Name, must be unique at least 16 characters long
     #[arg(long, env = "WT_DEVICE_NAME")]
     pub device_name: String,
 

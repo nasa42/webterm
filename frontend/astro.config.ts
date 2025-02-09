@@ -6,6 +6,7 @@ import vitePluginSvgr from "vite-plugin-svgr";
 
 // https://astro.build/config
 export default defineConfig({
+  trailingSlash: "never",
   vite: {
     plugins: [webtermVersionPlugin(), vitePluginSvgr()],
     build: {

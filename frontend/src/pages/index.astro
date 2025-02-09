@@ -41,14 +41,23 @@ import { CONFIG } from "../scripts/client/config";
                 Install the free and open-source agent, built with Rust for high efficiency and extremely light resource
                 usage.
               </p>
-              <div class="bg-light p-3 rounded mb-4">
-                <code>
-                  # Install the agent <br />
-                  cargo install webterm-agent <br />
-                  <br />
-                  # Run the agent <br />
-                  webterm-agent --device-name &lt;DEVICE_NAME&gt; --secret-key &lt;SECRET_KEY&gt;
-                </code>
+              <div>
+                <ol>
+                  <li class="mb-4">
+                    <p>Install the agent</p>
+                    <code class="bg-light px-4 py-4 rounded-4 d-block">
+                      curl -sSfL https://webterm.run/install.sh | bash
+                    </code>
+                  </li>
+
+                  <li class="mb-4">
+                    <p>Run the agent (add <code>--daemon</code> to run in background)</p>
+
+                    <code class="bg-light px-4 py-4 rounded d-block">
+                      webterm-agent --device-name &lt;DEVICE_NAME&gt; --secret-key &lt;SECRET_KEY&gt;
+                    </code>
+                  </li>
+                </ol>
               </div>
               <div class="mt-3">
                 <a href="https://github.com/nasa42/webterm#quickstart" class="btn btn-outline-primary me-3"
@@ -68,7 +77,7 @@ import { CONFIG } from "../scripts/client/config";
             <div class="card-body p-4">
               <form id="app-homepage-form">
                 <div class="mb-4">
-                  <label for="app-device-name" class="form-label fw-medium">Server ID</label>
+                  <label for="app-device-name" class="form-label fw-medium">Device Name</label>
                   <input type="text" class="form-control form-control-lg" id="app-device-name" name="device-name" />
                 </div>
                 <div class="mb-4">
