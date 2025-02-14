@@ -53,6 +53,21 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 
 _(Binary distributions and detailed installation instructions for more platforms are coming soon.)_
 
+## Build from source
+
+To build Webterm from source, you will need Rust and Cargo installed first.
+If you have not already set them up, refer to [The Cargo Book](https://doc.rust-lang.org/cargo/getting-started/installation.html) for installation instructions.
+Webterm also depends on OpenSSL, so confirm that it is installed on your system.
+If you are on an Ubuntu/Debian-based platform and need to install OpenSSL, run:
+```bash
+sudo apt-get install libssl-dev
+```
+
+Once these prerequisites are in place, simply run:
+```bash
+cargo build
+```
+
 ## Screenshots
 
 ![image](https://github.com/user-attachments/assets/06240ef7-e51d-4176-a957-87948688f8a6)
