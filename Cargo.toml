@@ -10,4 +10,5 @@ license = "MIT"
 repository = "https://github.com/nasa42/webterm"
 
 [profile.release]
+codegen-units = 1
 lto = true
