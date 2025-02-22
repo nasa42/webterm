@@ -53,20 +53,9 @@ Written in Rust, Webterm is built from the ground up for security, performance, 
 
 _(Binary distributions and detailed installation instructions for more platforms are coming soon.)_
 
-## Build from source
+## Build from Source
 
-To build Webterm from source, you will need Rust and Cargo installed first.
-If you have not already set them up, refer to [The Cargo Book](https://doc.rust-lang.org/cargo/getting-started/installation.html) for installation instructions.
-Webterm also depends on OpenSSL, so confirm that it is installed on your system.
-If you are on an Ubuntu/Debian-based platform and need to install OpenSSL, run:
-```bash
-sudo apt-get install libssl-dev
-```
-
-Once these prerequisites are in place, simply run:
-```bash
-cargo build
-```
+See doc: [Build Instructions](./docs/build-instructions.md).
 
 ## Screenshots
 
@@ -116,7 +105,8 @@ may not be feasible:
 * **Zero-trust Relay**: The relay only forwards encrypted messages and cannot read them.
 * **Static frontend**: The entire frontend code is within browser un-minified, making it easier to audit.
 * **On-premise hosting**: Both frontend and relay can be hosted on your own infrastructure and agents can be configured
-  to only connect to these relays for complete control.
+  to only connect to these relays for complete control (see self-hosting docs for [relay](./docs/deploy-relay.md)
+  and [frontend](./docs/deploy-frontend.md))
 
 ## FAQs
 
