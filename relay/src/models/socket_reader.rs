@@ -1,9 +1,7 @@
-use crate::models::agent_connection::AgentConnection;
-use crate::models::socket_connection::SocketConnection;
 use axum::extract::ws::{Message, WebSocket};
 use futures::stream::SplitStream;
 use futures::StreamExt;
-use std::sync::{Arc, Once};
+use std::sync::Arc;
 use tokio::sync::{broadcast, Notify};
 use tracing::{error, info};
 use webterm_core::models::reader_socket_error::ReaderSocketError;

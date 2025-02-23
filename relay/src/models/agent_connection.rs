@@ -1,13 +1,7 @@
 use crate::models::agent_registry::AgentRegistry;
-use crate::models::frontend_connection::FrontendConnection;
 use crate::models::socket_connection::SocketConnection;
-use crate::models::socket_reader::{SocketReader, SocketSubscriber};
-use crate::models::socket_writer::{SocketPublisher, SocketWriter};
 use axum::extract::ws::WebSocket;
-use futures::StreamExt;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
-use tokio::sync::Notify;
 use tracing::error;
 use webterm_core::models::device_id::DeviceId;
 use webterm_core::types::FrontendId;

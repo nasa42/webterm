@@ -4,7 +4,7 @@ use crate::models::relay_error::RelayError;
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, OnceLock};
 use tokio::sync::RwLock;
-use tracing::{debug, error};
+use tracing::debug;
 use webterm_core::models::device_id::DeviceId;
 
 pub struct AgentRegistry {
