@@ -91,7 +91,7 @@ main() {
     if [ ${#versions[@]} -eq 0 ]; then
         echo "Unable to fetch versions from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
         exit 1
-    }
+    fi
     echo "Available versions: ${versions[*]}"
 
     local installed_version="$(get_installed_version "${INSTALL_DIR}")"
