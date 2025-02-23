@@ -21,7 +21,7 @@ tokio-tungstenite = { version = "0.26.1", features = ["native-tls"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 url = "2.5.4"
-webterm-core = { path = "../core", version = "0.2.4" }
+webterm-core = { path = "../core", version = "0.2.5" }
 
 [lints.clippy]
 new_without_default = "allow"
