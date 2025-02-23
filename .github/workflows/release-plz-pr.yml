@@ -25,6 +25,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Run release-plz
+        id: release-plz
         uses: release-plz/action@v0.5
         with:
           command: release-pr
@@ -35,14 +36,15 @@ jobs:
       - name: Update package.json and latest.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ steps.release-plz.outputs.pr }}
+          RELEASE_PLZ_PR: ${{ steps.release-plz.outputs.pr }}
         run: |
           set -e
-          pr_number=${{ fromJSON(steps.release-plz.outputs.pr).number }}
+          echo "RELEASE_PLZ_PR: $RELEASE_PLZ_PR"
+          pr_number=$(echo "$RELEASE_PLZ_PR" | jq -r .number)
           if [[ -n "$pr_number" ]]; then
             gh pr checkout $pr_number
             bash ./scripts/update-latest-txt.sh
             git add frontend/latest.txt frontend/package.json
-            git commit -m "Update latest.text and package.json in frontend"
+            git commit -m "Update latest.txt and package.json in frontend"
             git push
           fi
