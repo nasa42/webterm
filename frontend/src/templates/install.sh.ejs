@@ -8,81 +8,127 @@ set -euo pipefail
 LATEST_VERSION_URL="https://webterm.run/latest.txt"
 REPO_BASE_URL="https://github.com/nasa42/webterm/releases/download"
 BINARY_NAME="<%= binary_name %>"
-
-# By default, install to /usr/bin unless the user provides INSTALL_DIR
 DEFAULT_INSTALL_DIR="/usr/bin"
 INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 
-echo "Checking latest ${BINARY_NAME} version..."
+get_architecture() {
+    local arch="$(uname -m)"
+    case "${arch}" in
+        x86_64)
+            echo "${BINARY_NAME}-x86_64-unknown-linux-gnu.tar.gz"
+            ;;
+        aarch64|arm64)
+            echo "${BINARY_NAME}-aarch64-unknown-linux-gnu.tar.gz"
+            ;;
+        *)
+            echo ""
+            return 1
+            ;;
+    esac
+}
 
-# Fetch the latest version from a remote text file
-LATEST_VERSION="$(curl -sSfL "${LATEST_VERSION_URL}" | tr -d '\r\n')"
-if [ -z "${LATEST_VERSION}" ]; then
-  echo "Unable to fetch the latest version from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
-  exit 1
-fi
+get_installed_version() {
+    local install_dir="$1"
+    if [ -x "${install_dir}/${BINARY_NAME}" ]; then
+        "${install_dir}/${BINARY_NAME}" --version 2>/dev/null | awk '{print $2}'
+    fi
+}
 
-echo "Latest version: ${LATEST_VERSION}"
+try_version() {
+    local version="$1"
+    local archive="$2"
+    local download_url="${REPO_BASE_URL}/${BINARY_NAME}-v${version}/${archive}"
 
-# Check if ${BINARY_NAME} is already installed and get installed version
-INSTALLED_VERSION=""
-if [ -x "${INSTALL_DIR}/${BINARY_NAME}" ]; then
-  INSTALLED_VERSION="$("${INSTALL_DIR}/${BINARY_NAME}" --version 2>/dev/null | awk '{print $2}')"
-  echo "Installed version: ${INSTALLED_VERSION}"
-fi
+    echo "Trying to download ${BINARY_NAME} ${version}..."
+    if curl -sSfL "${download_url}" -o "${archive}" 2>/dev/null; then
+        echo "Download successful for version ${version}. Extracting..."
+        if tar -xzf "${archive}"; then
+            rm -f "${archive}"
+            return 0
+        fi
+        rm -f "${archive}"
+    fi
+    return 1
+}
 
-# If installed version matches latest version, skip installation
-if [ "${INSTALLED_VERSION}" = "${LATEST_VERSION}" ]; then
-  echo "${BINARY_NAME} is already up to date (version ${INSTALLED_VERSION}). No action needed."
-  exit 0
-fi
+install_binary() {
+    local install_dir="$1"
+    local version="$2"
 
-# Determine architecture
-ARCH="$(uname -m)"
-case "${ARCH}" in
-    x86_64)
-        ARCHIVE="${BINARY_NAME}-x86_64-unknown-linux-gnu.tar.gz"
-        ;;
-    aarch64|arm64)
-        ARCHIVE="${BINARY_NAME}-aarch64-unknown-linux-gnu.tar.gz"
-        ;;
-    *)
-        echo "Unsupported architecture: ${ARCH}"
+    if [ ! -w "${install_dir}" ]; then
+        echo "You do not have write permissions to '${install_dir}'."
+        echo "To perform a system-wide install, re-run with sudo:"
+        echo "  sudo curl -sSfL https://webterm.run/get | bash"
+        echo
+        echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
+        echo "  curl -sSfL https://webterm.run/get | INSTALL_DIR=\"\$HOME/bin\" bash"
+        rm -f "${BINARY_NAME}"
+        return 1
+    fi
+
+    echo "Installing ${BINARY_NAME} version ${version} to '${install_dir}'..."
+    mv "${BINARY_NAME}" "${install_dir}/${BINARY_NAME}"
+    chmod +x "${install_dir}/${BINARY_NAME}"
+    return 0
+}
+
+print_success() {
+    local install_dir="$1"
+    echo "Installation successful!"
+    echo "To verify, run:"
+    echo "  ${install_dir}/${BINARY_NAME} --version"
+    echo
+    echo "To uninstall, just remove the binary (no additional files or configurations are left behind)"
+    echo "  rm ${install_dir}/${BINARY_NAME}"
+    echo
+    echo "Learn more at https://webterm.run"
+}
+
+main() {
+    echo "Checking available ${BINARY_NAME} versions..."
+
+    local versions=($(curl -sSfL "${LATEST_VERSION_URL}" | tr -d '\r'))
+    if [ ${#versions[@]} -eq 0 ]; then
+        echo "Unable to fetch versions from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
+        exit 1
+    }
+    echo "Available versions: ${versions[*]}"
+
+    local installed_version="$(get_installed_version "${INSTALL_DIR}")"
+    if [ -n "${installed_version}" ]; then
+        echo "Installed version: ${installed_version}"
+    fi
+
+    local archive
+    archive="$(get_architecture)" || {
+        echo "Unsupported architecture: $(uname -m)"
         echo "Please download and install ${BINARY_NAME} manually for your system."
         exit 1
-        ;;
-esac
+    }
 
-DOWNLOAD_URL="${REPO_BASE_URL}/${BINARY_NAME}-v${LATEST_VERSION}/${ARCHIVE}"
+    local success=0
+    local version
+    for version in "${versions[@]}"; do
+        if [ "${installed_version}" = "${version}" ]; then
+            echo "${BINARY_NAME} version ${version} is already installed. No action needed."
+            exit 0
+        fi
 
-echo "Downloading ${BINARY_NAME} ${LATEST_VERSION} for architecture ${ARCH}..."
-curl -sSfL "${DOWNLOAD_URL}" -o "${ARCHIVE}"
+        if try_version "${version}" "${archive}"; then
+            success=1
+            break
+        else
+            echo "Version ${version} not available, trying next version..."
+        fi
+    done
 
-echo "Download complete. Extracting..."
-tar -xzf "${ARCHIVE}"
-rm -f "${ARCHIVE}"
+    if [ ${success} -eq 0 ]; then
+        echo "Failed to download any version. Please check your internet connection or try again later."
+        exit 1
+    fi
 
-# Check if we can write to the chosen directory
-if [ ! -w "${INSTALL_DIR}" ]; then
-  echo "You do not have write permissions to '${INSTALL_DIR}'."
-  echo "To perform a system-wide install, re-run with sudo:"
-  echo "  sudo curl -sSfL https://webterm.run/get | bash"
-  echo
-  echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
-  echo "  curl -sSfL https://webterm.run/get | INSTALL_DIR=\"\$HOME/bin\" bash"
-  rm -f "${BINARY_NAME}"
-  exit 1
-fi
+    install_binary "${INSTALL_DIR}" "${version}" || exit 1
+    print_success "${INSTALL_DIR}"
+}
 
-echo "Installing ${BINARY_NAME} to '${INSTALL_DIR}'..."
-mv "${BINARY_NAME}" "${INSTALL_DIR}/${BINARY_NAME}"
-chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
-
-echo "Installation successful!"
-echo "To verify, run:"
-echo "  ${INSTALL_DIR}/${BINARY_NAME} --version"
-echo
-echo "To uninstall, just remove the binary (no additional files or configurations are left behind)"
-echo "  rm ${INSTALL_DIR}/${BINARY_NAME}"
-echo
-echo "Learn more at https://webterm.run"
+main
