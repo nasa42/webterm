@@ -51,7 +51,7 @@ cargo build
 
 ```bash
 # Run the agent and connect to the locally running relay
-cargo run --bin webterm-agent -- --device-name "<device name>" --secret-key "<secret key>" --relays localhost:4200
+cargo run --bin webterm-agent -- --device-name "<device name>" --secret-key "<secret key>" --relays http://localhost:4200
 ```
 
 ## Building the Frontend
