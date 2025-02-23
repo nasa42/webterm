@@ -25,7 +25,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - name: Update package.json and latest.txt
-        run: ./script/update-latest-txt.sh
+        run: ./scripts/update-latest-txt.sh
       - name: Run release-plz
         uses: release-plz/action@v0.5
         with:
