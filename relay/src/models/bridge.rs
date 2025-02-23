@@ -64,11 +64,11 @@ impl Bridge {
 
         let frontend_id = self.frontend_id;
 
-        let frontend_sub = fc.subscriber();
-        let agent_sub = ac.subscriber();
+        let frontend_sub = fc.socket().subscriber();
+        let agent_sub = ac.socket().subscriber();
 
-        let frontend_pub = fc.publisher();
-        let agent_pub = ac.publisher();
+        let frontend_pub = fc.socket().publisher();
+        let agent_pub = ac.socket().publisher();
 
         let f2r_task = tokio::spawn(Self::f2r_task(
             frontend_sub,
@@ -77,8 +77,8 @@ impl Bridge {
             frontend_id,
         ));
 
-        let frontend_pub = fc.publisher();
-        let agent_pub = ac.publisher();
+        let frontend_pub = fc.socket().publisher();
+        let agent_pub = ac.socket().publisher();
 
         let a2r_task = tokio::spawn(Self::a2r_task(
             agent_sub,

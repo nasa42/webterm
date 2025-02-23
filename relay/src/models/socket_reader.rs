@@ -1,7 +1,8 @@
 use axum::extract::ws::{Message, WebSocket};
 use futures::stream::SplitStream;
 use futures::StreamExt;
-use tokio::sync::broadcast;
+use std::sync::Arc;
+use tokio::sync::{broadcast, Notify};
 use tracing::{error, info};
 use webterm_core::models::reader_socket_error::ReaderSocketError;
 
@@ -12,7 +13,7 @@ pub struct SocketReader {
 }
 
 impl SocketReader {
-    pub fn new(mut reader_stream: SplitStream<WebSocket>) -> Self {
+    pub fn new(mut reader_stream: SplitStream<WebSocket>, close_notifier: Arc<Notify>) -> Self {
         let (_tx, _rx) = broadcast::channel::<Result<Option<Vec<u8>>, ReaderSocketError>>(16);
         let tx = _tx.clone();
         tokio::spawn(async move {
@@ -48,6 +49,8 @@ impl SocketReader {
                     break;
                 }
             }
+
+            close_notifier.notify_waiters();
         });
         Self { _tx }
     }

@@ -85,21 +85,18 @@ impl AgentRegistry {
         Ok(())
     }
 
-    #[allow(dead_code)]
     pub async fn remove(device_id: DeviceId) -> Result<Arc<AgentConnection>, RelayError> {
         let registry = Self::singleton().await;
-        let result = registry
-            .agents
-            .write()
-            .await
-            .remove(&device_id)
-            .ok_or(RelayError::AgentNotFound);
+        let mut agents = registry.agents.write().await;
+        let mut devices = registry.devices.write().await;
 
-        if let Some(subnames) = registry.devices.write().await.get_mut(device_id.name()) {
+        let result = agents.remove(&device_id).ok_or(RelayError::AgentNotFound);
+
+        if let Some(subnames) = devices.get_mut(device_id.name()) {
             subnames.remove(device_id.subname());
 
             if subnames.is_empty() {
-                registry.devices.write().await.remove(device_id.name());
+                devices.remove(device_id.name());
             }
         }
 

@@ -6,5 +6,6 @@ pub mod handshake_nonce_agent_registry;
 pub mod handshake_nonce_frontend_registry;
 pub mod relay_error;
 pub mod send_payload;
+pub mod socket_connection;
 pub mod socket_reader;
 pub mod socket_writer;
