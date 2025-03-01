@@ -124,6 +124,14 @@ may not be feasible:
 
   **A**: Yes, both the frontend and relay can be hosted on-premise or on your private cloud for complete control.
 
+* **Q**: _What is a `Device Name` and what is a `Device Subname`?_
+
+  **A**: Webterm allows multiple devices to connect with the same name to a relay. This makes it easier to manage
+  multiple devices under the same name. For e.g., if you've an automation script that installs and runs Webterm agent,
+  you can run the automation script on multiple servers without changing the `--device-name` value. Webterm will
+  automatically assign a "Device Subname" to uniquely identify the device (by default hostname of the device is used as
+  subname and may be suffixed by random letters if hostname is not enough to uniquely identify the device).
+
 ## Roadmap / Future Ideas
 
 * **SSO Sign-In**: Integrate single sign-on and authorisation.
