@@ -1,7 +1,15 @@
+use std::fmt;
+
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct DeviceId {
     device_name: String,
     device_subname: String,
+}
+
+impl fmt::Display for DeviceId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}/{}", self.device_name, self.device_subname)
+    }
 }
 
 impl DeviceId {

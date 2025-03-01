@@ -30,13 +30,7 @@ pub async fn process_a2r_handshake(message: A2rHandshakeRoot<'_>) -> R2aHandshak
             if AgentRegistry::exists(&device_id).await {
                 return builder.root_payload_error(
                     R2aHandshakeErrorType::ErrorDeviceAlreadyExists,
-                    Some(
-                        format!(
-                            "Device with name: {} and subname: {} already exists",
-                            device_name, device_subname
-                        )
-                        .as_str(),
-                    ),
+                    Some(format!("Device {} is already connected", device_id,).as_str()),
                 );
             }
 
