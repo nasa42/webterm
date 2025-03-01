@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Clarify Device Name and Device Subname. (#127)
 - Add self-hosting deployment docs. (#120)
-- Bump the non-major group with 3 updates (#107)
 
 ## [0.2.4](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.3...webterm-agent-v0.2.4) - 2025-02-09
 
