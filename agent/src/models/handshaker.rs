@@ -46,7 +46,7 @@ async fn initiate(
     subname: String,
 ) -> Result<(Arc<Relay>, String), AgentError> {
     info!(
-        "Starting handshake: {} with device name: {}, subname: {}",
+        "Starting handshake: {} with device {}/{}",
         relay.host(),
         config.device_name(),
         subname
