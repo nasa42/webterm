@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5](https://github.com/nasa42/webterm/compare/webterm-relay-v0.2.4...webterm-relay-v0.2.5) - 2025-03-01
+
+### Fixed
+
+- *(relay)* Remove reference to the Agent from Relay after it is disconnected. (#121)
+
 ## [0.2.4](https://github.com/nasa42/webterm/compare/webterm-relay-v0.2.3...webterm-relay-v0.2.4) - 2025-02-09
 
 ### Added

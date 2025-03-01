@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.4...webterm-agent-v0.2.5) - 2025-03-01
+
+### Other
+
+- Add self-hosting deployment docs. (#120)
+
 ## [0.2.4](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.3...webterm-agent-v0.2.4) - 2025-02-09
 
 ### Added
