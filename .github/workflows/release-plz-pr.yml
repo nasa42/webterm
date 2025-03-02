@@ -41,7 +41,8 @@ jobs:
           set -e
           echo "RELEASE_PLZ_PR: $RELEASE_PLZ_PR"
           pr_number=$(echo "$RELEASE_PLZ_PR" | jq -r .number)
-          if [[ -n "$pr_number" ]]; then
+          if [[ -n "$pr_number" && "$pr_number" != "null" ]]; then
+            echo "Found release PR $pr_number"
             gh pr checkout $pr_number
             bash ./scripts/update-latest-txt.sh
             cd frontend
@@ -50,4 +51,6 @@ jobs:
             git add frontend/latest.txt frontend/package.json frontend/package-lock.json
             git commit -m "Update latest.txt and package.json in frontend"
             git push
+          else
+            echo "Release PR is $pr_number, skipping."
           fi
