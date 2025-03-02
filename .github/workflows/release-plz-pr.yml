@@ -48,6 +48,6 @@ jobs:
             git add frontend/latest.txt frontend/package.json
             git commit -m "Update latest.txt and package.json in frontend"
             git push
-          elif [[ "$pr_number" == "null" ]]; then
-            echo "Release PR is $pr_number; skipping."
+          else
+            echo "Release PR is $pr_number, skipping."
           fi
