@@ -17,7 +17,7 @@ pty-process = { version = "0.4.0", features = ["async"] }
 reqwest = "0.12.12"
 semver = "1.0.25"
 tokio = "1.43.0"
-tokio-tungstenite = { version = "0.26.1", features = ["native-tls"] }
+tokio-tungstenite = { version = "0.26.2", features = ["native-tls"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 url = "2.5.4"
