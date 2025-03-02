@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { css } from "@emotion/react";
-import BellIcon from "../../../../node_modules/@tabler/icons/icons/outline/bell.svg?react";
+import BellIcon from "../../../node_modules/@tabler/icons/icons/outline/bell.svg?react";
 import { useStore } from "@nanostores/react";
-import { notificationListSignal } from "../../../scripts/client/stores.ts";
-import { type Notification, notificationManager } from "../../../scripts/client/ui/NotificationManager.ts";
+import { notificationListSignal } from "../../scripts/client/stores.ts";
+import { type Notification, notificationManager } from "../../scripts/client/ui/NotificationManager.ts";
 
 export const RibbonNotificationBell: React.FC = () => {
   const signal = useStore(notificationListSignal);

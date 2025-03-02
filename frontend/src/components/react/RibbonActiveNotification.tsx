@@ -1,6 +1,6 @@
 import { useStore } from "@nanostores/react";
 import React from "react";
-import { activeNotificationStore } from "../../../scripts/client/stores.ts";
+import { activeNotificationStore } from "../../scripts/client/stores.ts";
 
 const clearNotification = () => {
   activeNotificationStore.set(null);

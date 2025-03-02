@@ -12,5 +12,4 @@ export const notificationListSignal = atom(0);
 export const handshakeInitiateSignal = atom<{ deviceName: string } | null>(null);
 export const handshakeCompleteSignal = atom<{ nonce: string; relay: Relay; deviceSubname: string } | null>(null);
 
-export const agentAuthInitiateSignal = atom<{ deviceName: string } | null>(null);
-export const agentAuthCompleteSignal = atom<{ nonce: string; relay: Relay; deviceSubname: string } | null>(null);
+export const currentTerminalStore = atom<{ deviceName: string; deviceSubname: string } | null>(null);

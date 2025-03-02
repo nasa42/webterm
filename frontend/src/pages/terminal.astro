@@ -1,13 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import TerminalTopRibbon from "../components/TerminalTopRibbon.astro";
+import { TerminalTopRibbon } from "../components/react/entry-points/TerminalTopRibbon.tsx";
 ---
 
 <Layout>
   <div class="container-fluid min-vh-100 d-flex flex-column g-0">
-    <div class="row gx-2">
-      <TerminalTopRibbon />
-    </div>
+    <TerminalTopRibbon client:only="react" />
     <div id="app-terminal" class="row flex-grow-1"></div>
   </div>
   <script src="../scripts/client/entry-points/terminal.ts"></script>

@@ -1,23 +1,2 @@
 @import "bootstrap/scss/bootstrap";
 @import "./theme";
-
-.app-main-nav-ribbon {
-  &.navbar {
-    font-size: 0.85rem; // Reduce overall navbar font size
-  }
-
-  .navbar-brand {
-    font-size: 0.9rem; // Slightly larger font size for the brand name
-  }
-
-  .navbar-nav .nav-link,
-  .navbar-nav .dropdown-menu {
-    font-size: 0.8rem; // Smaller font size for nav links and dropdown items
-  }
-
-  // Optional: Reduce padding for dropdown items
-  .dropdown-item {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-  }
-}
