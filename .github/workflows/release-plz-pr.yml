@@ -44,7 +44,10 @@ jobs:
           if [[ -n "$pr_number" ]]; then
             gh pr checkout $pr_number
             bash ./scripts/update-latest-txt.sh
-            git add frontend/latest.txt frontend/package.json
+            cd frontend
+            npm install --package-lock-only
+            cd ..
+            git add frontend/latest.txt frontend/package.json frontend/package-lock.json
             git commit -m "Update latest.txt and package.json in frontend"
             git push
           fi
