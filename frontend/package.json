@@ -19,7 +19,7 @@
     "@nanostores/react": "^0.8.4",
     "@popperjs/core": "^2.11.8",
     "@tabler/icons": "^3.30.0",
-    "@types/react": "^19.0.7",
+    "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.3",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
