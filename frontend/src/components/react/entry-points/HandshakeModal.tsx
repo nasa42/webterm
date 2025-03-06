@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ELLIPSIS } from "../../../scripts/client/config.ts";
 import { useStore } from "@nanostores/react";
-import { handshakeCompleteSignal, handshakeInitiateSignal } from "../../../scripts/client/stores.ts";
+import {
+  currentTerminalStore,
+  handshakeCompleteSignal,
+  handshakeInitiateSignal,
+} from "../../../scripts/client/stores.ts";
 import { RelayHandshake } from "../../../scripts/client/models/RelayHandshake.ts";
 import { Modal } from "bootstrap";
 import { alertAndThrow } from "../../../scripts/client/functions/alertAndThrow.ts";
@@ -79,6 +83,10 @@ export const HandshakeModal: React.FC = () => {
       deviceSubname: subname,
       relay: receivedRelay!,
       nonce: receivedNonce!,
+    });
+    currentTerminalStore.set({
+      deviceSubname: subname,
+      deviceName: currentInput?.deviceName || "",
     });
   };
 
