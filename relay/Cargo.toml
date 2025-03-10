@@ -15,7 +15,7 @@ flatbuffers = "25.1.24"
 futures = "0.3.31"
 git-version = "0.3.9"
 semver = "1.0.25"
-serde = { version = "1.0.217", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["full"] }
 tower-http = { version = "0.6.2", features = ["trace", "cors"] }
 tracing = "0.1.41"
