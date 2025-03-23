@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.5...webterm-agent-v0.2.6) - 2025-03-22
+
+### Other
+
+- update Cargo.lock dependencies
+
 ## [0.2.5](https://github.com/nasa42/webterm/compare/webterm-agent-v0.2.4...webterm-agent-v0.2.5) - 2025-03-01
 
 ### Other
