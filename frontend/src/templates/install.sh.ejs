@@ -15,10 +15,10 @@ get_architecture() {
     local arch="$(uname -m)"
     case "${arch}" in
         x86_64)
-            echo "${BINARY_NAME}-x86_64-unknown-linux-gnu.tar.gz"
+            echo "${BINARY_NAME}-x86_64-unknown-linux-musl.tar.gz"
             ;;
         aarch64|arm64)
-            echo "${BINARY_NAME}-aarch64-unknown-linux-gnu.tar.gz"
+            echo "${BINARY_NAME}-aarch64-unknown-linux-musl.tar.gz"
             ;;
         *)
             echo ""
@@ -40,6 +40,7 @@ try_version() {
     local download_url="${REPO_BASE_URL}/${BINARY_NAME}-v${version}/${archive}"
 
     echo "Trying to download ${BINARY_NAME} ${version}..."
+    echo "Downloading from ${download_url}..."
     if curl -sSfL "${download_url}" -o "${archive}" 2>/dev/null; then
         echo "Download successful for version ${version}. Extracting..."
         if tar -xzf "${archive}"; then
@@ -58,10 +59,10 @@ install_binary() {
     if [ ! -w "${install_dir}" ]; then
         echo "You do not have write permissions to '${install_dir}'."
         echo "To perform a system-wide install, re-run with sudo:"
-        echo "  sudo curl -sSfL https://webterm.run/get | bash"
+        echo "  curl -sSfL https://webterm.run/install.sh | sudo bash"
         echo
         echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
-        echo "  curl -sSfL https://webterm.run/get | INSTALL_DIR=\"\$HOME/bin\" bash"
+        echo "  curl -sSfL https://webterm.run/install.sh | INSTALL_DIR=\"\$HOME/bin\" bash"
         rm -f "${BINARY_NAME}"
         return 1
     fi

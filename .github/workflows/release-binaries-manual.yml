@@ -22,27 +22,27 @@ jobs:
           - package_name: webterm-agent
           - package_name: webterm-relay
         target:
-          - name: x86_64-unknown-linux-gnu
+          - name: x86_64-unknown-linux-musl
             os: ubuntu-24.04
-          - name: aarch64-unknown-linux-gnu
+          - name: aarch64-unknown-linux-musl
             os: ubuntu-24.04-arm
         include:
           - release:
               package_name: webterm-agent
             target:
-              name: x86_64-unknown-linux-gnu
+              name: x86_64-unknown-linux-musl
           - release:
               package_name: webterm-agent
             target:
-              name: aarch64-unknown-linux-gnu
+              name: aarch64-unknown-linux-musl
           - release:
               package_name: webterm-relay
             target:
-              name: x86_64-unknown-linux-gnu
+              name: x86_64-unknown-linux-musl
           - release:
               package_name: webterm-relay
             target:
-              name: aarch64-unknown-linux-gnu
+              name: aarch64-unknown-linux-musl
 
     runs-on: ${{ matrix.target.os }}
 
