@@ -10,7 +10,7 @@ use webterm_core::generated::flatbuffers_schema::handshake_v1::{
 use webterm_core::models::device_id::DeviceId;
 use webterm_core::serialisers::handshake_v1::r2a_handshake_builder::R2aHandshakeBuilder;
 
-pub async fn process_a2r_handshake(message: A2rHandshakeRoot<'_>) -> R2aHandshakeBuilder {
+pub async fn process_a2r_handshake(message: A2rHandshakeRoot<'_>) -> R2aHandshakeBuilder<'_> {
     let builder = R2aHandshakeBuilder::new();
 
     match message.root_payload_type() {

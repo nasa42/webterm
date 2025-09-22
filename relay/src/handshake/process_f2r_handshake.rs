@@ -7,7 +7,7 @@ use webterm_core::generated::flatbuffers_schema::handshake_v1::{
 };
 use webterm_core::serialisers::handshake_v1::r2f_handshake_builder::R2fHandshakeBuilder;
 
-pub async fn process_f2r_handshake(message: F2rHandshakeRoot<'_>) -> R2fHandshakeBuilder {
+pub async fn process_f2r_handshake(message: F2rHandshakeRoot<'_>) -> R2fHandshakeBuilder<'_> {
     let builder = R2fHandshakeBuilder::new();
 
     match message.root_payload_type() {
