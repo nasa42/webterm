@@ -25,3 +25,16 @@ webterm-core = { path = "../core", version = "0.2.5" }
 
 [lints.clippy]
 new_without_default = "allow"
+# Suppress this fow now:
+#
+# error: the `Err`-variant returned from this function is very large
+#  --> agent/src/models/frontend.rs:76:10
+#   |
+#76 |     ) -> Result<bool, AgentError> {
+#   |          ^^^^^^^^^^^^^^^^^^^^^^^^
+#   |
+#  ::: agent/src/models/agent_error.rs:16:5
+#   |
+#16 |     SocketError(tungstenite::Error),
+#   |     ------------------------------- the largest variant contains at least 136 bytes
+result_large_err = "allow"
