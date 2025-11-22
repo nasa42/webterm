@@ -9,7 +9,7 @@ pub struct IvCounter {
 impl IvCounter {
     pub fn new() -> Self {
         let mut random_start = random_in_range(0, 1_u64 << 62);
-        if random_start % 2 != 0 {
+        if !random_start.is_multiple_of(2) {
             random_start += 1
         }
         Self {
