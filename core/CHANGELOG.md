@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6](https://github.com/nasa42/webterm/compare/webterm-core-v0.2.5...webterm-core-v0.2.6) - 2025-11-22
+
+### Other
+
+- Fix clippy warning in `iv_counter.rs`. ([#187](https://github.com/nasa42/webterm/pull/187))
+
 ## [0.2.5](https://github.com/nasa42/webterm/compare/webterm-core-v0.2.4...webterm-core-v0.2.5) - 2025-03-01
 
 ### Other
